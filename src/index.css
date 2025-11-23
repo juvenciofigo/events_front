@@ -1,0 +1,194 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    /* Primary Brand Colors */
+    --color-primary: #c026d3;
+    /* fuchsia-600 */
+    --color-primary-hover: #a21caf;
+    /* fuchsia-700 */
+    --color-primary-light: #e879f9;
+    /* fuchsia-400 */
+    --color-primary-dark: #86198f;
+    /* fuchsia-800 */
+
+    /* Secondary Colors */
+    --color-secondary: #06b6d4;
+    /* cyan-500 */
+    --color-secondary-hover: #0891b2;
+    /* cyan-600 */
+    --color-accent: #9333ea;
+    /* purple-600 */
+    --color-accent-hover: #7e22ce;
+    /* purple-700 */
+
+    /* Background Colors */
+    --color-background: #020617;
+    /* slate-950 */
+    --color-surface: #0f172a;
+    /* slate-900 */
+    --color-surface-hover: #1e293b;
+    /* slate-800 */
+    --color-surface-light: #334155;
+    /* slate-700 */
+
+    /* Text Colors */
+    --color-text: #ffffff;
+    --color-text-secondary: #e2e8f0;
+    /* slate-200 */
+    --color-text-muted: #94a3b8;
+    /* slate-400 */
+    --color-text-disabled: #64748b;
+    /* slate-500 */
+
+    /* Status Colors */
+    --color-success: #22c55e;
+    /* green-500 */
+    --color-success-light: #4ade80;
+    /* green-400 */
+    --color-warning: #eab308;
+    /* yellow-500 */
+    --color-warning-light: #facc15;
+    /* yellow-400 */
+    --color-error: #ef4444;
+    /* red-500 */
+    --color-error-light: #f87171;
+    /* red-400 */
+    --color-info: #3b82f6;
+    /* blue-500 */
+
+    /* Border & Divider */
+    --border-color: rgba(255, 255, 255, 0.1);
+    --border-color-light: rgba(255, 255, 255, 0.05);
+    --border-color-strong: rgba(255, 255, 255, 0.2);
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-primary: 0 10px 15px -3px rgba(192, 38, 211, 0.2);
+
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+
+    /* Border Radius */
+    --radius-sm: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.5rem;
+    --radius-full: 9999px;
+}
+
+/* Light Mode */
+.light {
+    /* Background Colors */
+    --color-background: #ffffff;
+    --color-surface: #f8fafc;
+    /* slate-50 */
+    --color-surface-hover: #f1f5f9;
+    /* slate-100 */
+    --color-surface-light: #e2e8f0;
+    /* slate-200 */
+
+    /* Text Colors */
+    --color-text: #0f172a;
+    /* slate-900 */
+    --color-text-secondary: #1e293b;
+    /* slate-800 */
+    --color-text-muted: #64748b;
+    /* slate-500 */
+    --color-text-disabled: #94a3b8;
+    /* slate-400 */
+
+    /* Border & Divider */
+    --border-color: rgba(0, 0, 0, 0.1);
+    --border-color-light: rgba(0, 0, 0, 0.05);
+    --border-color-strong: rgba(0, 0, 0, 0.2);
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-primary: 0 10px 15px -3px rgba(192, 38, 211, 0.15);
+}
+
+html,
+body,
+#root {
+    height: 100%;
+}
+
+body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-background);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-surface-highlight);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
+}
+
+/* Utility classes for hiding scrollbar but keeping functionality */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Animations */
+@keyframes gradient-x {
+
+    0%,
+    100% {
+        background-size: 200% 200%;
+        background-position: left center;
+    }
+
+    50% {
+        background-size: 200% 200%;
+        background-position: right center;
+    }
+}
+
+.animate-gradient-x {
+    animation: gradient-x 3s ease infinite;
+}
+
+/* View Transitions */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+    z-index: 1;
+}
+
+::view-transition-new(root) {
+    z-index: 9999;
+}
