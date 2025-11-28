@@ -56,7 +56,7 @@ export default function EventsList() {
                 </div>
                 <Link
                     to="/events/create"
-                    className="px-6 py-3 bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-500 hover:to-purple-500 text-white rounded-xl shadow-lg shadow-fuchsia-900/20 transition-all flex items-center font-bold transform hover:-translate-y-1"
+                    className="px-6 py-3 bg-gradient-to-r from-primary to-accent hover:from-primary-hover hover:to-accent-hover text-white rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center font-bold transform hover:-translate-y-1"
                 >
                     <PlusIcon className="w-5 h-5 mr-2" />
                     Criar Novo Evento
@@ -77,7 +77,7 @@ export default function EventsList() {
                             <div className="absolute top-4 right-4">
                                 <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${event.status === 'active'
                                     ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                                    : "bg-slate-500/20 text-muted border border-slate-500/30"
+                                    : "bg-surface/20 text-muted border border-surface/30"
                                     }`}>
                                     {event.status === 'active' ? 'Ativo' : 'Rascunho'}
                                 </span>
@@ -92,15 +92,15 @@ export default function EventsList() {
 
                             <div className="space-y-3 mb-6">
                                 <div className="flex items-center text-muted text-sm">
-                                    <CalendarIcon className="w-4 h-4 mr-2 text-slate-500" />
+                                    <CalendarIcon className="w-4 h-4 mr-2 text-text-muted" />
                                     {event.date}
                                 </div>
                                 <div className="flex items-center text-muted text-sm">
-                                    <MapPinIcon className="w-4 h-4 mr-2 text-slate-500" />
+                                    <MapPinIcon className="w-4 h-4 mr-2 text-text-muted" />
                                     {event.location}
                                 </div>
                                 <div className="flex items-center text-muted text-sm">
-                                    <UserGroupIcon className="w-4 h-4 mr-2 text-slate-500" />
+                                    <UserGroupIcon className="w-4 h-4 mr-2 text-text-muted" />
                                     {event.attendees} participantes estimados
                                 </div>
                             </div>

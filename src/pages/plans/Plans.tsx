@@ -1,11 +1,12 @@
 import Button from "@/components/Form/Button";
 import MultiStateBadge from "@/components/transitions/MultiStateBadge";
-import PathMorphing, { MENU_PATHS } from "@/components/transitions/PathMorphing";
+import PathMorphing, { MENU_PATHS,CHECK_ARROW_PATHS } from "@/components/transitions/PathMorphing";
 import PriceSwitcher from "@/components/transitions/PriceSwitcher";
 import React from "react";
 
 export default function Plans() {
     const [price, setPrice] = React.useState(29);
+    
     const [badgeState, setBadgeState] = React.useState<"idle" | "loading" | "success" | "error">("idle");
 
     const togglePrice = () => setPrice(p => p === 29 ? 290 : 29);

@@ -3,8 +3,15 @@ module.exports = {
     darkMode: "class",
     theme: {
         extend: {
+            keyframes: {
+                'orbit': {
+                    '0%': { transform: 'translate(-50%, -50%) rotate(0deg) translateX(300px) rotate(0deg)' },
+                    '100%': { transform: 'translate(-50%, -50%) rotate(360deg) translateX(300px) rotate(-360deg)' },
+                },
+            },
             animation: {
                 'gradient-x-slow': 'gradient-x 10s ease infinite',
+                'orbit-slow': 'orbit 20s linear infinite',
             },
             colors: {
                 primary: {
@@ -16,6 +23,7 @@ module.exports = {
                 secondary: {
                     DEFAULT: 'var(--color-secondary)',
                     hover: 'var(--color-secondary-hover)',
+                    light: 'var(--color-secondary-light)',
                 },
                 accent: {
                     DEFAULT: 'var(--color-accent)',

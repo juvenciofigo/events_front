@@ -9,10 +9,10 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
                     <div className="col-span-1 md:col-span-1">
                         <div className="flex items-center gap-2 mb-4">
-                            <div className="w-6 h-6 bg-gradient-to-tr from-fuchsia-500 to-cyan-500 rounded-md flex items-center justify-center shadow-lg shadow-fuchsia-500/20">
+                            <div className="w-6 h-6 bg-gradient-to-tr from-primary to-secondary rounded-md flex items-center justify-center shadow-lg shadow-primary/20">
                                 <SparklesIcon className="w-4 h-4 text-text" />
                             </div>
-                            <span className="text-base font-bold text-text">EVENTS.IO</span>
+                            <span className="text-base font-bold text-text">PROVIDENCES</span>
                         </div>
                         <p className="text-muted text-xs leading-relaxed mb-4">
                             Redefinindo a experiência de gestão de eventos com design, tecnologia e paixão.
@@ -95,7 +95,7 @@ export default function Footer() {
                                 </Link>
                             </li>
                             <li>
-                                <a href="mailto:contact@events.io" className="hover:text-primary transition-colors">
+                                <a href="mailto:contact@PROVIDENCES" className="hover:text-primary transition-colors">
                                     Contato
                                 </a>
                             </li>
@@ -118,7 +118,7 @@ export default function Footer() {
                     </div>
                 </div>
                 <div className="border-t border-border pt-6 text-center text-xs text-muted">
-                    © {new Date().getFullYear()} Events.io. Todos os direitos reservados.
+                    © {new Date().getFullYear()} PROVIDENCES. Todos os direitos reservados.
                 </div>
             </div>
         </footer>

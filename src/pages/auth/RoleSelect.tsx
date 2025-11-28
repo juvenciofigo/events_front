@@ -1,20 +1,21 @@
 import React, { useMemo } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuthStore, SelectedProfile } from "../../stores/useAuthStore";
-import { SparklesIcon } from "@heroicons/react/24/outline";
+import { PlusCircleIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 import Header from "./Header";
 
-type AvailableProfile = {
-    id: string;
-    Profile: "organizer" | "supplier";
+type ProfileOption = {
+    type: "organizer" | "supplier";
     label: string;
     emoji: string;
     desc: string;
+    hasRole: boolean;
+    profileId?: string;
 };
 
-export default function ProfileSelect() {
+export default function RoleSelect() {
     const navigate = useNavigate();
-    const setProfile = useAuthStore((s) => s.setProfile);
+    const setSelectedProfile = useAuthStore((s) => s.setSelectedProfile);
     const profiles = useAuthStore((s) => s.profiles);
     const user = useAuthStore((s) => s.user);
     const [selected, setSelected] = React.useState<SelectedProfile | null>(null);
@@ -23,67 +24,172 @@ export default function ProfileSelect() {
         if (!user) {
             navigate("/auth/login");
         }
-    }, [user]);
+    }, [user, navigate]);
 
-    const availableProfiles = useMemo(() => {
-        const Profiles: AvailableProfile[] = [];
-        if (profiles?.organizer) {
-            Profiles.push({
-                id: profiles?.organizer,
-                Profile: "organizer",
+    const profileOptions: ProfileOption[] = useMemo(() => {
+        return [
+            {
+                type: "organizer",
                 label: "Organizador",
                 emoji: "📋",
-                desc: "Criar e gerencia eventos",
-            });
-        }
-
-        if (profiles?.supplier) {
-            Profiles.push({
-                id: profiles?.supplier,
-                Profile: "supplier",
+                desc: "Criar e gerenciar eventos",
+                hasRole: !!profiles?.organizer,
+                profileId: profiles?.organizer || undefined,
+            },
+            {
+                type: "supplier",
                 label: "Fornecedor",
                 emoji: "🏢",
-                desc: "Oferecer serviços",
-            });
-        }
-        return Profiles;
+                desc: "Oferecer serviços para eventos",
+                hasRole: !!profiles?.supplier,
+                profileId: profiles?.supplier || undefined,
+            },
+        ];
     }, [profiles]);
 
-    function handleSelectProfile(ProfileId: string, profile: "organizer" | "supplier") {
-        setSelected({ id: ProfileId, profile });
+    const hasAnyRole = profileOptions.some(p => p.hasRole);
+    // const hasBothRoles = profileOptions.every(p => p.hasRole);
+
+    function handleSelectProfile(option: ProfileOption) {
+
+        if (option.hasRole && option.profileId) {
+            // User already has this role, navigate to it
+            setSelected({ id: option.profileId, role: option.type });
+        } else {
+            // User doesn't have this role, navigate to registration page
+            handleRequestRole(option.type);
+        }
+    }
+
+    function handleRequestRole(roleType: "organizer" | "supplier") {
+        // Navigate to role-specific registration page
+        if (roleType === "organizer") {
+            navigate("/auth/register-organizers");
+        } else {
+            navigate("/auth/register-suppliers");
+        }
     }
 
     React.useEffect(() => {
         if (selected) {
-            setProfile(selected);
-            navigate(`/${selected?.profile}`);
+            setSelectedProfile(selected);
+            if (selected?.role === "organizer") {
+                navigate("/dashboard/organizers");
+            } else if (selected?.role === "supplier") {
+                navigate("/dashboard/suppliers");
+            }
         }
-    }, [selected]);
+    }, [selected, setSelectedProfile, navigate]);
 
     return (
         <div className="min-h-screen bg-background text-text font-sans selection:bg-primary selection:text-text flex px-4 justify-center relative overflow-hidden">
             {/* Background Effects */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/20 rounded-full blur-[120px] -z-10 animate-pulse"></div>
-            <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-secondary/10 rounded-full blur-[100px] -z-10"></div>
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] -z-10"></div>
+            <div className="fixed inset-0 pointer-events-none">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/30 rounded-full blur-[120px] animate-pulse"></div>
+                {/* <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-purple-950/10 rounded-full blur-[100px]"></div> */}
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
+            </div>
 
-            <div className="w-full max-w-lg">
+            <div className="w-full max-w-2xl flex flex-col">
+                <Header
+                    back={{ backLink: "/auth/login", backTitle: "Voltar para login" }}
+                    h={hasAnyRole ? "Escolha seu Perfil" : "Crie seu Perfil"}
+                    p={hasAnyRole
+                        ? "Selecione como você deseja acessar a plataforma ou adicione um novo perfil"
+                        : "Escolha o tipo de perfil que deseja criar"
+                    }
+                />
 
-                <Header h="Escolha seu Perfil" p="Selecione como você deseja acessar a plataforma" />
+                {/* {hasBothRoles && (
+                    <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded">
+                        <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
+                            <CheckCircleIcon className="h-5 w-5" />
+                            <p className="text-sm font-medium">
+                                Você tem acesso a ambos os perfis! Escolha qual deseja usar agora.
+                            </p>
+                        </div>
+                    </div>
+                )} */}
 
-                <div className={`grid gap-4 ${availableProfiles.length <= 2 ? "grid-cols-2" : "grid-cols-1"}`}>
-                    {availableProfiles.map((Profile) => (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:grow  py-2">
+                    {profileOptions.map((option) => (
                         <div
-                            key={Profile.id}
-                            onClick={() => handleSelectProfile(Profile.id, Profile.Profile)}
-                            className="group p-6 border border-border-color bg-surface rounded-sm cursor-pointer text-center transition-all hover:border-primary/50 hover:bg-surface-hover hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1"
+                            key={option.type}
+                            onClick={() => handleSelectProfile(option)}
+                            className={`
+                                group relative p-4 h-fit self-center border rounded cursor-pointer text-center transition-all
+                                ${option.hasRole
+                                    ? "border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-900/10 hover:border-green-400 dark:hover:border-green-600 hover:shadow-lg hover:shadow-green-500/10"
+                                    : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-fuchsia-400 dark:hover:border-fuchsia-600 hover:shadow-lg hover:shadow-fuchsia-500/10"
+                                }
+                                hover:-translate-y-1
+                            `}
                         >
-                            <div className="text-4xl mb-4 transform group-hover:scale-110 transition-transform duration-300">{Profile.emoji}</div>
-                            <div className="font-bold text-lg text-text group-hover:text-primary transition-colors">{Profile.label}</div>
-                            <div className="text-sm text-muted mt-2 group-hover:text-text-secondary transition-colors">{Profile.desc}</div>
+                            {/* Status Badge */}
+                            <div className="absolute top-3 right-3">
+                                {option.hasRole ? (
+                                    <div className="flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-xs font-medium">
+                                        <CheckCircleIcon className="h-3 w-3" />
+                                        Ativo
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full text-xs font-medium">
+                                        <PlusCircleIcon className="h-3 w-3" />
+                                        Criar
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Emoji */}
+                            <div className="text-5xl mb-2 transform group-hover:scale-110 transition-transform duration-300">
+                                {option.emoji}
+                            </div>
+
+                            {/* Title */}
+                            <div className={`font-bold text-xl transition-colors ${option.hasRole
+                                ? "text-green-700 dark:text-green-400"
+                                : "text-gray-900 dark:text-white group-hover:text-primary dark:group-hover:text-primary-light"
+                                }`}>
+                                {option.label}
+                            </div>
+
+                            {/* Description */}
+                            <div className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                {option.desc}
+                            </div>
+
+                            {/* Action Button */}
+                            <div className={`
+                                inline-flex items-center gap-2 px-4 py-2 rounded text-sm font-medium transition-colors
+                                ${option.hasRole
+                                    ? "bg-green-600 text-white group-hover:bg-green-700"
+                                    : "bg-primary text-white group-hover:bg-primary-hover"
+                                }
+                            `}>
+                                {option.hasRole ? (
+                                    <>
+                                        <CheckCircleIcon className="h-4 w-4" />
+                                        Acessar
+                                    </>
+                                ) : (
+                                    <>
+                                        <PlusCircleIcon className="h-4 w-4" />
+                                        Criar
+                                    </>
+                                )}
+                            </div>
                         </div>
                     ))}
                 </div>
+
+                {/* Info Message */}
+                {/* {!hasAnyRole && (
+                    <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded">
+                        <p className="text-sm text-blue-700 dark:text-blue-400 text-center">
+                            💡 Você pode criar ambos os perfis e alternar entre eles quando quiser!
+                        </p>
+                    </div>
+                )} */}
             </div>
         </div>
     );

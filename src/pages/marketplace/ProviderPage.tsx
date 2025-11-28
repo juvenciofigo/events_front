@@ -103,7 +103,7 @@ export default function ProviderPage() {
                         </div>
                         <div className="flex-1 mb-2">
                             <div className="flex items-center gap-3 mb-2">
-                                <Badge variant="primary" className="bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 backdrop-blur-md">
+                                <Badge variant="primary" className="bg-secondary/20 text-secondary-light border border-secondary/30 backdrop-blur-md">
                                     {provider.category}
                                 </Badge>
                                 <div className="flex items-center text-yellow-400 bg-yellow-400/10 px-2 py-0.5 rounded border border-yellow-400/20">
@@ -151,7 +151,7 @@ export default function ProviderPage() {
                         <div className="mt-6 flex flex-wrap gap-3">
                             {provider.features.map((feature, index) => (
                                 <div key={index} className="px-4 py-2 bg-surface border border-white/10 rounded-lg text-text-secondary text-sm flex items-center">
-                                    <CheckBadgeIcon className="w-4 h-4 text-cyan-500 mr-2" />
+                                    <CheckBadgeIcon className="w-4 h-4 text-secondary mr-2" />
                                     {feature}
                                 </div>
                             ))}
@@ -162,7 +162,7 @@ export default function ProviderPage() {
                     <section>
                         <div className="flex flex-col md:flex-row justify-between items-end mb-6 gap-4">
                             <h2 className="text-2xl font-bold text-text flex items-center">
-                                <span className="w-8 h-1 bg-cyan-500 rounded-full mr-3"></span>
+                                <span className="w-8 h-1 bg-secondary rounded-full mr-3"></span>
                                 Galeria
                             </h2>
 
@@ -259,7 +259,7 @@ export default function ProviderPage() {
                                                         <ArrowLeftIcon className="w-6 h-6" />
                                                     </button>
                                                 </div>
-                                                <div className="p-6 bg-slate-900 border-t border-white/10">
+                                                <div className="p-6 bg-surface border-t border-white/10">
                                                     <h3 className="text-xl font-bold text-text mb-2">{activeAlbum.title}</h3>
                                                     <p className="text-muted text-sm">
                                                         Item {index + 1} de {activeAlbum.items.length}

@@ -18,7 +18,7 @@ export default function Navbar() {
     const { theme, toggleTheme } = useTheme();
     const [showNotifications, setShowNotifications] = useState(false);
     const notificationRef = useRef<HTMLDivElement>(null);
-
+    const selectedProfile = useAuthStore((s) => s.selectedProfile);
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
@@ -67,11 +67,11 @@ export default function Navbar() {
                 </div>
 
                 {/* User Profile */}
-                {user ? (
+                {user && selectedProfile ? (
                     <div className="flex items-center gap-2 pl-4 border-l border">
                         <div className="text-right hidden md:block">
                             <div className="text-xs font-bold text-text">{user.name}</div>
-                            <div className="text-[10px] text-muted capitalize">{user.roles?.[0] || "User"}</div>
+                            <div className="text-[10px] text-muted capitalize">{selectedProfile.role === "organizer" ? "Organizador" : "Fornecedor"}</div>
                         </div>
                         <button className="flex items-center gap-1.5 group">
                             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-accent flex items-center justify-center text-white text-sm font-bold border-2 border-surface group-hover:border-primary transition-colors">

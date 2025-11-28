@@ -7,6 +7,7 @@ interface PathMorphingProps {
     width?: number;
     height?: number;
     color?: string;
+    onClick?: () => void;
 }
 
 export default function PathMorphing({
@@ -14,25 +15,31 @@ export default function PathMorphing({
     className = "",
     width = 24,
     height = 24,
-    color = "currentColor"
+    color = "currentColor",
+    onClick,
+    ...rest
 }: PathMorphingProps) {
     const [index, setIndex] = useState(0);
 
-    const toggle = () => {
+    const handleClick = () => {
         setIndex((prev) => (prev + 1) % paths.length);
+        if (onClick) {
+            onClick();
+        }
     };
 
     return (
         <button
-            onClick={toggle}
-            className={`inline-flex items-center justify-center p-2 rounded-full hover:bg-white/10 transition-colors ${className}`}
+            {...rest}
+            onClick={handleClick}
+            className={`inline-flex items-center justify-center hover:bg-white/10 transition-colors ${className}`}
             title="Click to morph"
         >
             <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} fill="none" xmlns="http://www.w3.org/2000/svg">
                 <motion.path
                     d={paths[index]}
                     stroke={color}
-                    strokeWidth="2"
+                    strokeWidth="1"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     initial={false}

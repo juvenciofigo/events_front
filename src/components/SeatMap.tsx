@@ -22,7 +22,7 @@ export default function SeatMap({ initial = [] as Seat[], onChange }: { initial?
 
     return (
         <div
-            className="w-full h-96 bg-slate-950 border border-white/10 rounded-2xl relative overflow-hidden cursor-crosshair"
+            className="w-full h-96 bg-background border border-white/10 rounded-2xl relative overflow-hidden cursor-crosshair"
             onClick={addSeat}>
             <div className="absolute inset-0 opacity-20 pointer-events-none"
                 style={{ backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)', backgroundSize: '20px 20px' }}>
@@ -32,12 +32,12 @@ export default function SeatMap({ initial = [] as Seat[], onChange }: { initial?
                 <div
                     key={s.id}
                     style={{ left: s.x - 12, top: s.y - 12 }}
-                    className="absolute w-8 h-8 rounded-full bg-fuchsia-600 border-2 border-white/20 text-white flex items-center justify-center text-xs font-bold shadow-lg shadow-fuchsia-900/50 hover:scale-110 transition-transform cursor-pointer">
+                    className="absolute w-8 h-8 rounded-full bg-primary border-2 border-white/20 text-white flex items-center justify-center text-xs font-bold shadow-lg shadow-primary/50 hover:scale-110 transition-transform cursor-pointer">
                     {s.name}
                 </div>
             ))}
             {seats.length === 0 && (
-                <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 pointer-events-none">
+                <div className="w-full h-full flex flex-col items-center justify-center text-text-muted pointer-events-none">
                     <p className="mb-2">Clique no mapa para adicionar assentos</p>
                     <span className="text-xs opacity-50">Arraste para mover (em breve)</span>
                 </div>

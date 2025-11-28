@@ -16,7 +16,7 @@ const variants = {
 };
 
 const colorMap: Record<BadgeState, string> = {
-    idle: "bg-slate-100 text-slate-600 border-slate-200",
+    idle: "bg-surface-light text-text-muted border-borderColor",
     loading: "bg-blue-100 text-blue-600 border-blue-200",
     success: "bg-green-100 text-green-600 border-green-200",
     error: "bg-red-100 text-red-600 border-red-200",

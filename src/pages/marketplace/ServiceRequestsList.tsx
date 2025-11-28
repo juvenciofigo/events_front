@@ -14,7 +14,7 @@ const REQUESTS = [
     {
         id: 1,
         title: "Buffet Completo para Casamento",
-        organizer: "Maria Silva",
+        organizers: "Maria Silva",
         date: "15 Dez, 2024",
         location: "São Paulo, SP",
         budget: "R$ 15.000 - 20.000",
@@ -25,7 +25,7 @@ const REQUESTS = [
     {
         id: 2,
         title: "Fotógrafo para Evento Corporativo",
-        organizer: "Tech Solutions Inc.",
+        organizers: "Tech Solutions Inc.",
         date: "20 Jan, 2025",
         location: "Campinas, SP",
         budget: "R$ 3.000 - 5.000",
@@ -36,7 +36,7 @@ const REQUESTS = [
     {
         id: 3,
         title: "DJ e Iluminação para Festa de 15 Anos",
-        organizer: "Ana Paula",
+        organizers: "Ana Paula",
         date: "10 Fev, 2025",
         location: "Santos, SP",
         budget: "R$ 4.000 - 6.000",
@@ -47,7 +47,7 @@ const REQUESTS = [
     {
         id: 4,
         title: "Decoração Floral para Mini Wedding",
-        organizer: "Carla Oliveira",
+        organizers: "Carla Oliveira",
         date: "05 Mar, 2025",
         location: "São Paulo, SP",
         budget: "R$ 8.000 - 12.000",
@@ -58,7 +58,7 @@ const REQUESTS = [
     {
         id: 5,
         title: "Segurança para Show",
-        organizer: "Festival Indie",
+        organizers: "Festival Indie",
         date: "15 Abr, 2025",
         location: "São Paulo, SP",
         budget: "A combinar",
@@ -163,9 +163,9 @@ export default function ServiceRequestsList() {
                             <div className="pt-4 border-t border-white/5 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-accent to-primary flex items-center justify-center text-xs font-bold text-white">
-                                        {req.organizer.substring(0, 2).toUpperCase()}
+                                        {req.organizers.substring(0, 2).toUpperCase()}
                                     </div>
-                                    <span className="text-sm text-text-secondary">{req.organizer}</span>
+                                    <span className="text-sm text-text-secondary">{req.organizers}</span>
                                 </div>
                                 <Link
                                     to={`/marketplace/requests/${req.id}`}

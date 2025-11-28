@@ -14,7 +14,7 @@ import {
 const REQUEST_DATA = {
     id: 1,
     title: "Buffet Completo para Casamento",
-    organizer: {
+    organizers: {
         id: "org123",
         name: "Maria Silva",
         rating: 4.8,
@@ -46,8 +46,8 @@ export default function ServiceRequestDetails() {
     const handleStartChat = () => {
         // Logic to start chat
         // In a real app, this would create a chat room via API and then redirect
-        console.log(`Starting chat with organizer ${request.organizer.id} for request ${request.id}`);
-        navigate(`/chat/new?organizer=${request.organizer.id}&request=${request.id}`);
+        console.log(`Starting chat with organizers ${request.organizers.id} for request ${request.id}`);
+        navigate(`/chat/new?organizers=${request.organizers.id}&request=${request.id}`);
     };
 
     return (
@@ -117,17 +117,17 @@ export default function ServiceRequestDetails() {
                             <h3 className="text-sm font-bold text-muted uppercase tracking-wider mb-4">Organizador</h3>
                             <div className="flex items-center gap-4 mb-6">
                                 <img
-                                    src={request.organizer.avatar}
-                                    alt={request.organizer.name}
+                                    src={request.organizers.avatar}
+                                    alt={request.organizers.name}
                                     className="w-12 h-12 rounded-full object-cover border-2 border-white/10"
                                 />
                                 <div>
                                     <div className="font-bold text-text flex items-center">
-                                        {request.organizer.name}
+                                        {request.organizers.name}
                                         <CheckBadgeIcon className="w-4 h-4 ml-1 text-secondary" />
                                     </div>
                                     <div className="text-xs text-muted">
-                                        {request.organizer.eventsCount} eventos realizados
+                                        {request.organizers.eventsCount} eventos realizados
                                     </div>
                                 </div>
                             </div>

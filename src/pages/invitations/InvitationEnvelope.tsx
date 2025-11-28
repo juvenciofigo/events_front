@@ -27,13 +27,13 @@ export default function InvitationEnvelope() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 flex items-center justify-center p-8 overflow-auto relative">
+        <div className="min-h-screen bg-gradient-to-br from-background via-purple-950 to-background flex items-center justify-center p-8 overflow-auto relative">
             {/* Partículas de fundo */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 {[...Array(20)].map((_, i) => (
                     <div
                         key={i}
-                        className="absolute w-1 h-1 bg-fuchsia-400/30 rounded-full animate-pulse"
+                        className="absolute w-1 h-1 bg-primary-light/30 rounded-full animate-pulse"
                         style={{
                             left: `${Math.random() * 100}%`,
                             top: `${Math.random() * 100}%`,
@@ -50,16 +50,16 @@ export default function InvitationEnvelope() {
                     className={`mb-6 transition-all duration-1000 ease-out ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20 pointer-events-none'
                         }`}
                 >
-                    <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl shadow-2xl p-8 text-slate-900 border-4 border-fuchsia-500/20">
+                    <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl shadow-2xl p-8 text-text border-4 border-primary/20">
                         {/* Header decorativo */}
-                        <div className="text-center mb-6 border-b-2 border-fuchsia-200 pb-4">
-                            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-fuchsia-500 to-purple-600 rounded-full mb-3 shadow-lg">
+                        <div className="text-center mb-6 border-b-2 border-primary/20 pb-4">
+                            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-full mb-3 shadow-lg">
                                 <SparklesIcon className="w-8 h-8 text-white" />
                             </div>
-                            <h1 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-fuchsia-600 to-purple-600 mb-2">
+                            <h1 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent mb-2">
                                 Você está convidado!
                             </h1>
-                            <p className="text-sm text-slate-600 italic">Por {invitation.hostName}</p>
+                            <p className="text-sm text-text-muted italic">Por {invitation.hostName}</p>
                         </div>
 
                         {/* Título do evento */}
@@ -73,50 +73,50 @@ export default function InvitationEnvelope() {
                         </p>
 
                         {/* Detalhes do evento */}
-                        <div className="space-y-3 bg-slate-50 rounded-lg p-4 border border-slate-200">
+                        <div className="space-y-3 bg-slate-50 rounded-lg p-4 border border-borderColor">
                             <div className="flex items-start gap-3">
-                                <CalendarIcon className="w-5 h-5 text-fuchsia-600 mt-0.5 flex-shrink-0" />
+                                <CalendarIcon className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                                 <div>
-                                    <p className="text-xs font-semibold text-slate-600">Data</p>
-                                    <p className="text-sm font-bold text-slate-900">{invitation.date}</p>
+                                    <p className="text-xs font-semibold text-text-muted">Data</p>
+                                    <p className="text-sm font-bold text-text">{invitation.date}</p>
                                 </div>
                             </div>
 
                             <div className="flex items-start gap-3">
-                                <ClockIcon className="w-5 h-5 text-fuchsia-600 mt-0.5 flex-shrink-0" />
+                                <ClockIcon className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                                 <div>
-                                    <p className="text-xs font-semibold text-slate-600">Horário</p>
-                                    <p className="text-sm font-bold text-slate-900">{invitation.time}</p>
+                                    <p className="text-xs font-semibold text-text-muted">Horário</p>
+                                    <p className="text-sm font-bold text-text">{invitation.time}</p>
                                 </div>
                             </div>
 
                             <div className="flex items-start gap-3">
-                                <MapPinIcon className="w-5 h-5 text-fuchsia-600 mt-0.5 flex-shrink-0" />
+                                <MapPinIcon className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                                 <div>
-                                    <p className="text-xs font-semibold text-slate-600">Local</p>
-                                    <p className="text-sm font-bold text-slate-900">{invitation.location}</p>
+                                    <p className="text-xs font-semibold text-text-muted">Local</p>
+                                    <p className="text-sm font-bold text-text">{invitation.location}</p>
                                 </div>
                             </div>
                         </div>
 
                         {/* Dress code */}
                         <div className="mt-4 text-center">
-                            <p className="text-xs text-slate-600 italic">{invitation.dresscode}</p>
+                            <p className="text-xs text-text-muted italic">{invitation.dresscode}</p>
                         </div>
 
                         {/* Botões de ação */}
                         <div className="mt-6 flex gap-2">
-                            <button className="flex-1 px-4 py-2.5 bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-500 hover:to-purple-500 text-white text-sm font-bold rounded-lg shadow-lg transition-all">
+                            <button className="flex-1 px-4 py-2.5 bg-gradient-to-r from-primary to-accent hover:from-primary-hover hover:to-accent-hover text-white text-sm font-bold rounded-lg shadow-lg transition-all">
                                 Confirmar Presença
                             </button>
-                            <button className="flex-1 px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-900 text-sm font-bold rounded-lg transition-all">
+                            <button className="flex-1 px-4 py-2.5 bg-surface-light hover:bg-surface-hover text-text text-sm font-bold rounded-lg transition-all">
                                 Não Poderei Ir
                             </button>
                         </div>
 
                         {/* Footer decorativo */}
-                        <div className="mt-6 pt-4 border-t border-slate-200 text-center">
-                            <p className="text-xs text-slate-500">
+                        <div className="mt-6 pt-4 border-t border-borderColor text-center">
+                            <p className="text-xs text-text-muted">
                                 Esperamos por você! ✨
                             </p>
                         </div>
@@ -126,10 +126,10 @@ export default function InvitationEnvelope() {
                 {/* Envelope */}
                 <div className="relative">
                     {/* Envelope Base */}
-                    <div className="relative w-full aspect-[16/10] bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg shadow-2xl border border-white/10">
+                    <div className="relative w-full aspect-[16/10] bg-gradient-to-br from-surface-hover to-surface rounded-lg shadow-2xl border border-white/10">
                         {/* Envelope Flap (tampa) */}
                         <div
-                            className={`absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-br from-slate-700 to-slate-800 origin-top transition-all duration-1000 ease-out border-b border-white/10 ${isOpen ? '-rotate-x-180 -translate-y-full' : 'rotate-x-0'
+                            className={`absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-br from-surface-light to-surface-hover origin-top transition-all duration-1000 ease-out border-b border-white/10 ${isOpen ? '-rotate-x-180 -translate-y-full' : 'rotate-x-0'
                                 }`}
                             style={{
                                 transformStyle: 'preserve-3d',
@@ -138,8 +138,8 @@ export default function InvitationEnvelope() {
                             }}
                         >
                             {/* Selo decorativo */}
-                            <div className="absolute top-4 right-8 w-12 h-12 bg-fuchsia-600/20 backdrop-blur-sm border-2 border-fuchsia-500/50 rounded-full flex items-center justify-center">
-                                <SparklesIcon className="w-6 h-6 text-fuchsia-400" />
+                            <div className="absolute top-4 right-8 w-12 h-12 bg-primary/20 backdrop-blur-sm border-2 border-primary/50 rounded-full flex items-center justify-center">
+                                <SparklesIcon className="w-6 h-6 text-primary-light" />
                             </div>
                         </div>
                     </div>

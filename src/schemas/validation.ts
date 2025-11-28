@@ -5,7 +5,7 @@ import * as z from "zod";
 export const loginSchema = z.object({
     email: z.string().email("Email inválido").min(1, "Email é obrigatório"),
     password: z.string().min(5, "Senha deve ter no mínimo 5 caracteres"),
-    // role: z.enum(["organizer", "supplier", "guest"]).optional().nullable(),
+    // role: z.enum(["organizers", "suppliers", "guest"]).optional().nullable(),
 });
 
 export type LoginForm = z.infer<typeof loginSchema>;
@@ -31,7 +31,7 @@ export const forgotPasswordSchema = z.object({
 export type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;
 
 export const roleSelectSchema = z.object({
-    role: z.enum(["organizer", "supplier", "guest"], {
+    role: z.enum(["organizers", "suppliers", "guest"], {
         errorMap: () => ({ message: "Selecione um perfil válido" }),
     }),
 });

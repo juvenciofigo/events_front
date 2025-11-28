@@ -107,7 +107,7 @@ export default function EventManage() {
                                 : "border-transparent text-muted hover:text-text hover:border-white/10"
                                 }`}
                         >
-                            <tab.icon className={`w-5 h-5 mr-2 ${activeTab === tab.id ? "text-primary" : "text-slate-500"}`} />
+                            <tab.icon className={`w-5 h-5 mr-2 ${activeTab === tab.id ? "text-primary" : "text-text-muted"}`} />
                             {tab.label}
                         </button>
                     ))}
@@ -123,7 +123,7 @@ export default function EventManage() {
                             <div className="bg-surface/50 border border-white/10 rounded-2xl p-6">
                                 <div className="text-muted text-sm mb-1">Ingressos Vendidos</div>
                                 <div className="text-3xl font-black text-text">{event.stats.ticketsSold}</div>
-                                <div className="text-xs text-slate-500 mt-2">
+                                <div className="text-xs text-text-muted mt-2">
                                     de {event.stats.totalTickets} disponíveis
                                     <div className="w-full h-1.5 bg-slate-800 rounded-full mt-1 overflow-hidden">
                                         <div className="h-full bg-primary" style={{ width: `${(event.stats.ticketsSold / event.stats.totalTickets) * 100}%` }}></div>
@@ -140,7 +140,7 @@ export default function EventManage() {
                             <div className="bg-surface/50 border border-white/10 rounded-2xl p-6">
                                 <div className="text-muted text-sm mb-1">Visualizações da Página</div>
                                 <div className="text-3xl font-black text-text">{event.stats.views}</div>
-                                <div className="text-xs text-slate-500 mt-2">
+                                <div className="text-xs text-text-muted mt-2">
                                     Últimos 30 dias
                                 </div>
                             </div>
@@ -164,10 +164,10 @@ export default function EventManage() {
                                             </div>
                                             <div>
                                                 <div className="text-text font-medium">Novo ingresso vendido</div>
-                                                <div className="text-xs text-slate-500">João Silva comprou 2x Pista Premium</div>
+                                                <div className="text-xs text-text-muted">João Silva comprou 2x Pista Premium</div>
                                             </div>
                                         </div>
-                                        <div className="text-xs text-slate-500">Há 2 horas</div>
+                                        <div className="text-xs text-text-muted">Há 2 horas</div>
                                     </div>
                                 ))}
                             </div>
@@ -182,7 +182,7 @@ export default function EventManage() {
                 {activeTab !== "overview" && activeTab !== "guests" && activeTab !== "seats" && (
                     <div className="flex flex-col items-center justify-center py-20 text-center">
                         <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-6">
-                            <Cog6ToothIcon className="w-10 h-10 text-slate-500" />
+                            <Cog6ToothIcon className="w-10 h-10 text-text-muted" />
                         </div>
                         <h3 className="text-2xl font-bold text-text mb-2">Em Desenvolvimento</h3>
                         <p className="text-muted max-w-md">

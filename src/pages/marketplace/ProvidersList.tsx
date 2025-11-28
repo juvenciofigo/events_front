@@ -4,6 +4,9 @@ import Card from "../../components/Card";
 import Badge from "../../components/Badge";
 import Avatar from "../../components/Avatar";
 import { MagnifyingGlassIcon, FunnelIcon } from "@heroicons/react/24/outline";
+import Input from "@/components/Form/Input";
+import Select from "@/components/Form/Select";
+import MainNav from "@/components/MainNav";
 
 // Mock Data
 interface Provider {
@@ -96,122 +99,127 @@ export default function ProvidersList() {
     }, [searchQuery, selectedCategory]);
 
     return (
-        <div className="p-6 space-y-6">
-            {/* Header Section */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold text-text">Marketplace de Serviços</h1>
-                    <p className="text-muted mt-1">Encontre os melhores fornecedores para o seu evento</p>
-                </div>
+        <>
+            {/* Navigation */}
+            <MainNav>
+                {/* Page Header with Search and Filters - Fixed below MainNav */}
+                <div className="fixed w-full z-10 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-950 border-b border-gray-200 dark:border-gray-800">
+                    <div className="max-w-7xl mx-auto px-2 py-2 md:py-4 sm:px-6 lg:px-8 sm:py-8">
+                        {/* Header Section */}
+                        <div className="flex flex-col md:flex-row justify-between items-start gap-1 mb-4 md:items-center md:gap-6 md:mb-6">
+                            <div>
+                                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                                    Marketplace de Serviços
+                                </h1>
+                                <p className="text-gray-600 dark:text-gray-400 mt-2">
+                                    Encontre os melhores fornecedores para o seu evento
+                                </p>
+                            </div>
 
-                <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                    <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <MagnifyingGlassIcon className="h-5 w-5 text-muted" />
-                        </div>
-                        <input
-                            type="text"
-                            placeholder="Buscar fornecedores..."
-                            className="pl-10 pr-4 py-2 border border-border rounded-lg bg-surface text-text focus:ring-2 focus:ring-primary focus:border-transparent w-full sm:w-64"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    </div>
-
-                    <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <FunnelIcon className="h-5 w-5 text-muted" />
-                        </div>
-                        <select
-                            value={selectedCategory}
-                            onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="pl-10 pr-8 py-2 border border-border rounded-lg bg-surface text-text focus:ring-2 focus:ring-primary focus:border-transparent appearance-none w-full sm:w-48"
-                        >
-                            {CATEGORIES.map(category => (
-                                <option key={category} value={category}>{category}</option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            {/* Categories Tabs (Optional visual enhancement) */}
-            <div className="flex overflow-x-auto pb-2 gap-2 no-scrollbar">
-                {CATEGORIES.map(category => (
-                    <button
-                        key={category}
-                        onClick={() => setSelectedCategory(category)}
-                        className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${selectedCategory === category
-                            ? "bg-primary text-white"
-                            : "bg-surface text-text-secondary hover:bg-surface-hover"
-                            }`}
-                    >
-                        {category}
-                    </button>
-                ))}
-            </div>
-
-            {/* Providers Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProviders.map(provider => (
-                    <Link key={provider.id} to={`/marketplace/${provider.id}`} className="group">
-                        <Card className="h-full hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-border">
-                            <div className="relative h-48 -mx-4 -mt-4 mb-4 overflow-hidden">
-                                <img
-                                    src={provider.image}
-                                    alt={provider.name}
-                                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                            {/* Search and Filter */}
+                            <div className="flex flex-col sm:flex-row gap-1 md:gap-3 w-full md:w-auto">
+                                <Input
+                                    icon={<MagnifyingGlassIcon className="h-3 w-3 md:h-5 md:w-5 absolute top-[10px]" />}
+                                    InputClassName="pl-10"
+                                    placeholder="Buscar fornecedores..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
                                 />
-                                <div className="absolute top-2 right-2">
-                                    <Badge variant="primary" className="bg-surface/90 text-primary backdrop-blur-sm shadow-sm">
-                                        {provider.category}
-                                    </Badge>
-                                </div>
+                                <Select
+                                    selectClassName="pl-10 pr-4 md:py-2 py-1"
+                                    icon={<FunnelIcon className="h-3 w-3 md:h-5 md:w-5"  />}
+                                    options={CATEGORIES.map(category => ({ value: category, label: category }))}
+                                    value={selectedCategory}
+                                    onChange={(e) => setSelectedCategory(e.target.value)}
+                                />
                             </div>
+                        </div>
 
-                            <div className="flex justify-between items-start mb-2">
-                                <h3 className="text-xl font-semibold text-text group-hover:text-primary transition-colors">
-                                    {provider.name}
-                                </h3>
-                                <div className="flex items-center bg-yellow-50 dark:bg-yellow-900/20 px-2 py-1 rounded text-xs font-bold text-yellow-700 dark:text-yellow-500">
-                                    <span>★ {provider.rating}</span>
-                                    <span className="ml-1 font-normal text-muted">({provider.reviewCount})</span>
-                                </div>
-                            </div>
-
-                            <p className="text-text-secondary text-sm mb-4 line-clamp-2">
-                                {provider.description}
-                            </p>
-
-                            <div className="flex items-center justify-between pt-4 border-t border-border">
-                                <div className="text-sm text-muted">
-                                    A partir de
-                                </div>
-                                <div className="text-lg font-bold text-primary">
-                                    R$ {provider.minPrice.toLocaleString('pt-BR')}
-                                </div>
-                            </div>
-                        </Card>
-                    </Link>
-                ))}
-            </div>
-
-            {/* Empty State */}
-            {filteredProviders.length === 0 && (
-                <div className="text-center py-12">
-                    <div className="bg-surface rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-4">
-                        <MagnifyingGlassIcon className="h-8 w-8 text-muted" />
+                        {/* Categories Tabs */}
+                        <div className="flex overflow-x-auto gap-2 no-scrollbar">
+                            {CATEGORIES.map(category => (
+                                <button
+                                    key={category}
+                                    onClick={() => setSelectedCategory(category)}
+                                    className={`px-2 py-1 text-xs md:px-4 md:py-2 rounded-full md:text-sm font-medium whitespace-nowrap transition-colors ${selectedCategory === category
+                                        ? "bg-primary text-white"
+                                        : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                                        }`}
+                                >
+                                    {category}
+                                </button>
+                            ))}
+                        </div>
                     </div>
-                    <h3 className="text-lg font-medium text-text">Nenhum fornecedor encontrado</h3>
-                    <p className="text-muted mt-1">Tente ajustar seus filtros ou busca.</p>
-                    <button
-                        onClick={() => { setSearchQuery(""); setSelectedCategory("Todos"); }}
-                        className="mt-4 text-primary hover:underline font-medium"
-                    >
-                        Limpar filtros
-                    </button>
                 </div>
-            )}
-        </div>
+            </MainNav>
+
+
+
+            {/* Main Content - with padding to account for both fixed headers */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-[275px]">
+                {/* Providers Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredProviders.map(provider => (
+                        <Link key={provider.id} to={`/marketplace/${provider.id}`} className="group">
+                            <Card className="h-full hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-200 dark:border-gray-700">
+                                <div className="relative h-48 -mx-4 -mt-4 mb-4 overflow-hidden">
+                                    <img
+                                        src={provider.image}
+                                        alt={provider.name}
+                                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                                    />
+                                    <div className="absolute top-2 right-2">
+                                        <Badge variant="primary" className="bg-white/90 dark:bg-gray-800/90 text-primary dark:text-primary-light backdrop-blur-sm shadow-sm">
+                                            {provider.category}
+                                        </Badge>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-between items-start mb-2">
+                                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white group-hover:text-primary dark:group-hover:text-primary-light transition-colors">
+                                        {provider.name}
+                                    </h3>
+                                    <div className="flex items-center bg-yellow-50 dark:bg-yellow-900/20 px-2 py-1 rounded text-xs font-bold text-yellow-700 dark:text-yellow-500">
+                                        <span>★ {provider.rating}</span>
+                                        <span className="ml-1 font-normal text-gray-500 dark:text-gray-400">({provider.reviewCount})</span>
+                                    </div>
+                                </div>
+
+                                <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
+                                    {provider.description}
+                                </p>
+
+                                <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+                                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                                        A partir de
+                                    </div>
+                                    <div className="text-lg font-bold text-primary dark:text-primary-light">
+                                        R$ {provider.minPrice.toLocaleString('pt-BR')}
+                                    </div>
+                                </div>
+                            </Card>
+                        </Link>
+                    ))}
+                </div>
+
+                {/* Empty State */}
+                {filteredProviders.length === 0 && (
+                    <div className="text-center py-12">
+                        <div className="bg-gray-100 dark:bg-gray-800 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-4">
+                            <MagnifyingGlassIcon className="h-8 w-8 text-gray-500 dark:text-gray-400" />
+                        </div>
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">Nenhum fornecedor encontrado</h3>
+                        <p className="text-gray-600 dark:text-gray-400 mt-1">Tente ajustar seus filtros ou busca.</p>
+                        <button
+                            onClick={() => { setSearchQuery(""); setSelectedCategory("Todos"); }}
+                            className="mt-4 text-primary dark:text-primary-light hover:underline font-medium"
+                        >
+                            Limpar filtros
+                        </button>
+                    </div>
+                )}
+            </div>
+        </>
     );
 }

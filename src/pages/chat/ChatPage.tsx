@@ -66,10 +66,10 @@ export default function ChatPage() {
             setActiveChat(chatId);
         } else {
             // If no chat ID but query params exist (new chat), handle it
-            const organizerId = searchParams.get("organizer");
+            const organizerId = searchParams.get("organizers");
             if (organizerId) {
                 // In a real app, find or create chat
-                console.log("New chat with organizer:", organizerId);
+                console.log("New chat with organizers:", organizerId);
             }
         }
     }, [chatId, searchParams]);

@@ -1,10 +1,10 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
-import { useAuthStore, Profile } from "../stores/useAuthStore";
+import { useAuthStore, SelectedProfile } from "../stores/useAuthStore";
 
 interface Props {
     children: React.ReactElement;
-    allowedProfile?: Array<Profile>;
+    allowedProfile?: Array<SelectedProfile["role"]>;
 }
 
 export default function ProtectedRoute({ children, allowedProfile }: Props) {
@@ -20,7 +20,7 @@ export default function ProtectedRoute({ children, allowedProfile }: Props) {
         );
     }
 
-    if (allowedProfile && !allowedProfile.includes(selectedProfile.profile)) {
+    if (allowedProfile && !allowedProfile.includes(selectedProfile.role)) {
         return (
             <Navigate
                 to="/auth/role"

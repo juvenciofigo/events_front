@@ -54,7 +54,7 @@ export default function GuestList() {
             {/* Header Actions */}
             <div className="flex flex-col md:flex-row justify-between gap-4">
                 <div className="relative flex-1">
-                    <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                    <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
                     <input
                         type="text"
                         placeholder="Buscar participantes..."

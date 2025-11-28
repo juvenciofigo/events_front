@@ -3,16 +3,11 @@ import React from "react";
 import {
     BriefcaseIcon,
     ClockIcon,
-    CheckCircleIcon,
     CurrencyDollarIcon,
     ChatBubbleLeftRightIcon,
     CalendarDaysIcon
 } from "@heroicons/react/24/outline";
 import Button from "../../components/Form/Button";
-import { SelectedProfile } from "@/stores/useAuthStore";
-
-
-
 
 export default function SupplierDashboard() {
     return (

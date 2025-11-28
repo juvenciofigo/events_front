@@ -3,11 +3,8 @@ import { axiosBase } from "./axiosClient";
 export async function loginApi(payload: { email: string; password: string }) {
     try {
         const resp = await axiosBase.post("/auth/login", payload, { withCredentials: true });
-
-        console.log(resp);
         return resp.data;
     } catch (err) {
-        console.error("authApi.loginApi error", err);
         throw err;
     }
 }
@@ -19,5 +16,6 @@ export async function logoutApi() {
 
 export async function refreshApi() {
     const resp = await axiosBase.post("/auth/refresh", {}, { withCredentials: true });
-    return resp.data; // expect { accessToken }
+    return resp.data;
 }
+
