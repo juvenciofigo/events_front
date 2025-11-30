@@ -7,7 +7,7 @@ import {
     ChatBubbleLeftRightIcon,
     CalendarDaysIcon
 } from "@heroicons/react/24/outline";
-import Button from "../../components/Form/Button";
+import Button from "../../../components/Form/Button";
 
 export default function SupplierDashboard() {
     return (

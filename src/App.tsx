@@ -6,10 +6,10 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import RoleSelect from "./pages/auth/RoleSelect";
 import RegisterOrganizer from "./pages/auth/RegisterOrganizer";
 import RegisterSupplier from "./pages/auth/RegisterSupplier";
-import OrganizerDashboard from "./pages/dashboards/OrganizerDashboard";
-import SupplierDashboard from "./pages/dashboards/SupplierDashboard";
+import OrganizerDashboard from "./pages/dashboards/organizer/OrganizerDashboard";
+import SupplierDashboard from "./pages/dashboards/supplier/SupplierDashboard";
 import GuestDashboard from "./pages/dashboards/GuestDashboard";
-import LayoutDashboard from "./components/LayoutDashboard";
+import LayoutDashboard from "./pages/dashboards/LayoutDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Events
@@ -62,6 +62,7 @@ import Terms from "./pages/content/Terms";
 import Privacy from "./pages/content/Privacy";
 import { useTheme } from "./hooks/useTheme";
 import { ToastProvider } from "./contexts/ToastContext";
+import Index from "./pages/dashboards/organizer/Index";
 
 export default function App() {
     // Initialize theme to apply dark/light class to document root
@@ -145,7 +146,24 @@ export default function App() {
                                 <OrganizerDashboard />
                             </ProtectedRoute>
                         }
-                    />
+                    >
+                        <Route
+                            index
+                            element={
+                                // <ProtectedRoute allowedProfile={["organizer"]}>
+                                    <Index />
+                                // </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="events"
+                            element={
+                                // <ProtectedRoute allowedProfile={["organizer"]}>
+                                    <EventsList />
+                                // </ProtectedRoute>
+                            }
+                        />
+                    </Route>
 
                     {/* Supplier */}
                     <Route
@@ -161,14 +179,14 @@ export default function App() {
 
 
                 {/* Events */}
-                <Route
+                {/* <Route
                     path="/events"
                     element={
                         // <ProtectedRoute allowedProfile={["organizer"]}>
                         <EventsList />
                         // </ProtectedRoute>
                     }
-                />
+                /> */}
                 <Route
                     path="/events/create"
                     element={

@@ -21,12 +21,10 @@ export const dashboardApi = {
     // Get dashboard stats
     getStats: async (organizerId: string): Promise<DashboardStats> => {
         try {
-            
             const { data } = await api.get(`organizers/${organizerId}/stats`);
             return data;
         } catch (error) {
             console.error("Erro ao buscar estatísticas do dashboard:", error);
-
             throw error;
         }
     },
@@ -101,8 +99,8 @@ export const dashboardApi = {
     getFeedback: async (target: string, targetId: string, limit: number = 10): Promise<Feedback[]> => {
         try {
             const { data } = await api.get(`/reviews?target=${target}&targetId=${targetId}&limit=${limit}`);
-            console.log(data);
             
+
             return data?.items;
         } catch (error) {
             console.error("Erro ao buscar feedback:", error);

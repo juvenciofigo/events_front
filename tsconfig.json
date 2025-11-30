@@ -2,7 +2,10 @@
     "compilerOptions": {
         "target": "ES2021",
         "useDefineForClassFields": true,
-        "lib": ["DOM", "ESNext"],
+        "lib": [
+            "DOM",
+            "ESNext"
+        ],
         "allowJs": false,
         "skipLibCheck": true,
         "esModuleInterop": true,
@@ -15,12 +18,17 @@
         "isolatedModules": true,
         "noEmit": true,
         "jsx": "react-jsx",
-        "types": ["vite/client"],
+        "types": [
+            "vite/client"
+        ],
         "baseUrl": ".",
         "paths": {
-            "@/*": ["src/*"]
-        },
-        "ignoreDeprecations": "6.0"
+            "@/*": [
+                "src/*"
+            ]
+        }
     },
-    "include": ["src"]
+    "include": [
+        "src"
+    ]
 }

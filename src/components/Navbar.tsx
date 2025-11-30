@@ -11,8 +11,12 @@ import {
 import Button from "./Form/Button";
 import NotificationList from "./NotificationList";
 import ToggleTheme from "./ToggleTheme";
+import Logo from "./Logo";
+import PathMorphing, { MENU_PATHS } from "./transitions/PathMorphing";
+import { useSystemStore } from "../stores/useSystem";
 
 export default function Navbar() {
+    const { setMobileMenuOpen } = useSystemStore();
     const user = useAuthStore((s) => s.user);
     const logout = useAuthStore((s) => s.logout);
     const { theme, toggleTheme } = useTheme();
@@ -33,16 +37,12 @@ export default function Navbar() {
     }, []);
 
     return (
+
         <header className="w-full bg-surface/50 backdrop-blur-md border-b border transition-colors p-3 flex items-center justify-between sticky top-0 z-40">
 
-            {/* Search Bar (Optional/Placeholder) */}
-            <div className="hidden md:flex items-center bg-background/50 border rounded-full px-3 py-1.5 w-80 focus-within:border-primary/50 transition-colors">
-                <MagnifyingGlassIcon className="w-4 h-4 text-muted mr-2" />
-                <input
-                    type="text"
-                    placeholder="Buscar..."
-                    className="bg-transparent border-none text-xs text-text placeholder-text-muted focus:ring-0 w-full"
-                />
+            <div className="flex">
+                <PathMorphing aria-label="Toggle menu" onClick={() => setMobileMenuOpen()} paths={MENU_PATHS} className="flex md:hidden" />
+                <Logo />
             </div>
 
             <div className="flex items-center gap-4 ml-auto">

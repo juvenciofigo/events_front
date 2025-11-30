@@ -176,5 +176,6 @@ export function useDashboardData() {
         isLoading: stats.isLoading || salesChart.isLoading || tasks.isLoading,
         // Helper para verificar se há erro
         hasError: stats.isError || salesChart.isError || tasks.isError,
+        error: stats.error || salesChart.error || tasks.error,
     };
 }

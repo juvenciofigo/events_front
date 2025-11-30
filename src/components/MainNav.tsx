@@ -44,6 +44,7 @@ export default function MainNav({ children }: Props) {
                         <ToggleTheme />
                         {buttons.map((item) =>
                             <Link
+                                key={item.link}
                                 to={item.link}
                                 className="text-text-secondary hover:text-secondary transition-colors"
                             >{item.label}</Link>

@@ -3,7 +3,7 @@ export interface DashboardStats {
     totalEvents: number;
     ticketsSold: number;
     revenue: number;
-    totalGuests: number;
+    guests: number;
     hasEvents: boolean;
     hasPaidEvents: boolean;
     hasPrivateEvents: boolean;
@@ -43,12 +43,12 @@ export interface Supplier {
 }
 
 export interface Message {
-        id: number;
-        from: string;
-        message: string;
-        event: string;
-        time: string;
-        unread: boolean;
+    id: number;
+    from: string;
+    message: string;
+    event: string;
+    time: string;
+    unread: boolean;
 }
 
 export interface FinancialData {
@@ -83,9 +83,9 @@ export interface Alert {
 }
 
 export interface UpcomingEvent {
-    id: number;
-    name: string;
+    id: string;
+    title: string;
     date: string;
-    location: string;
+    location: string | null;
     estimatedGuest: number;
 }

@@ -5,7 +5,9 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     size?: "sm" | "md" | "lg";
     isLoading?: boolean;
     fullWidth?: boolean;
+    label?: string;
     children: React.ReactNode;
+    onClick?: () => void;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, Props>(
@@ -15,14 +17,16 @@ const Button = React.forwardRef<HTMLButtonElement, Props>(
             size = "md",
             isLoading = false,
             fullWidth = false,
+            label="",
             children,
             className = "",
             disabled,
+            onClick,
             ...rest
         },
         ref
     ) => {
-        const baseStyles = "font-bold rounded-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2";
+        const baseStyles = "font-bold rounded transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2";
 
         const variantStyles = {
             primary: "bg-gradient-to-r from-primary to-accent hover:from-primary-hover hover:to-accent-hover text-white shadow-lg shadow-primary/20 focus:ring-primary",
@@ -33,8 +37,8 @@ const Button = React.forwardRef<HTMLButtonElement, Props>(
 
         const sizeStyles = {
             sm: "px-2 py-1 text-xs",
-            md: "px-4 py-2 text-sm",
-            lg: "px-6 py-3 text-base",
+            md: "px-3 py-1 text-sm",
+            lg: "px-4 py-2 text-base",
         };
 
         const widthStyle = fullWidth ? "w-full" : "w-fit";
@@ -44,6 +48,7 @@ const Button = React.forwardRef<HTMLButtonElement, Props>(
                 ref={ref}
                 className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${widthStyle} ${className}`}
                 disabled={disabled || isLoading}
+                onClick={onClick}
                 {...rest}
             >
                 {isLoading && (
@@ -68,7 +73,7 @@ const Button = React.forwardRef<HTMLButtonElement, Props>(
                         />
                     </svg>
                 )}
-                {children}
+                {children} {label}
             </button>
         );
     }
