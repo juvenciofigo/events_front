@@ -1,10 +1,11 @@
 import React from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
-import Sidebar from "../../components/Sidebar";
+import Sidebar from "./components/Sidebar";
 import { useGetOrganizerProfile, useGetSupplierProfile } from "@/hooks/useProfile"
 import { useToast } from "@/contexts/ToastContext";
 import { organizerProfile, supplierProfile } from "@/stores/useProfileStore";
+import Loading from "@/components/Loading";
 
 export interface OutletContext {
     profile: organizerProfile | supplierProfile;
@@ -35,6 +36,10 @@ export default function LayoutDashboard() {
         role = "supplier";
     } else {
         navigate("/auth/role")
+    }
+
+    if (isLoading) {
+        return <Loading text="Carregando perfil..." fullScreen />;
     }
 
     return (

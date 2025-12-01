@@ -36,6 +36,7 @@ export interface profileStore {
     setSupplierProfile: (profile: supplierProfile) => void;
     getOrganizerProfile: () => organizerProfile | undefined;
     getSupplierProfile: () => supplierProfile | undefined;
+    getProfile: () => organizerProfile | supplierProfile | undefined;
 }
 
 export const useProfileStore = create<profileStore>((set, get) => ({
@@ -46,4 +47,5 @@ export const useProfileStore = create<profileStore>((set, get) => ({
     setSupplierProfile: (profile: supplierProfile) => set({ supplierProfile: profile }),
     getOrganizerProfile: () => get().organizerProfile,
     getSupplierProfile: () => get().supplierProfile,
+    getProfile: () => get().organizerProfile || get().supplierProfile,
 }));

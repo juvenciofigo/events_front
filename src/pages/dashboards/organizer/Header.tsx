@@ -17,7 +17,7 @@ export default function Header({ name, title, description, buttonLabel, buttonLi
     return (
         <div className="flex flex-row justify-between items-start md:items-center mb-8 gap-4">
             <div>
-                <h1 className="text-lg md:text-xl lg:text-3xl font-black tracking-tight text-text mb-2">
+                <h1 className="text-base md:text-xl lg:text-2xl font-black tracking-tight text-text mb-2">
                     {title || 'Dashboard'}
                 </h1>
                 <p className="text-muted">
@@ -26,13 +26,14 @@ export default function Header({ name, title, description, buttonLabel, buttonLi
                         : description}
                 </p>
             </div>
-            <Button
-                onClick={() => navigate(buttonLink || '')}>
-                <div className="flex flex-row items-center gap-1">
-                    <PlusIcon className="md:w-5 md:h-5 w-4 h-4" />
-                    <span className="text-sm font-semibold text-nowrap">{buttonLabel}</span>
-                </div>
-            </Button>
+            {buttonLabel && buttonLink &&
+                <Button
+                    onClick={() => navigate(buttonLink)}>
+                    <div className="flex flex-row items-center gap-1">
+                        <PlusIcon className="md:w-5 md:h-5 w-4 h-4" />
+                        <span className="text-sm font-semibold text-nowrap">{buttonLabel}</span>
+                    </div>
+                </Button>}
         </div>
     )
 }

@@ -1,20 +1,45 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import {
-    PlusIcon,
-    CalendarIcon,
-    MapPinIcon,
-    UserGroupIcon,
-    PencilSquareIcon,
-    ChartBarIcon,
-    EllipsisHorizontalIcon
-} from "@heroicons/react/24/outline";
 import Header from "../dashboards/organizer/Header";
 import { useGetOrganizerEvents } from "@/hooks/useEvents";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { OutletContext } from "../dashboards/LayoutDashboard";
 import { organizerProfile } from "@/stores/useProfileStore";
 import Button from "@/components/Form/Button";
+import EventCard from "@/components/EventCard";
+import { CalendarIcon, ChartBarIcon, EllipsisHorizontalIcon, PencilSquareIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { Event } from "@/types/events";
+
+
+function EventActions({ event }: { event: Event }) {
+    const navigate = useNavigate();
+    return (
+        <div className="flex justify-center gap-2 pt-4 border-t border-white/5">
+            <Button
+                size="md"
+                onClick={() => navigate(`/dashboard/organizers/events/${event.id}/edit`)}
+            >
+                <PencilSquareIcon className="w-4 h-4" />
+                Editar
+            </Button>
+
+            <Button
+                size="md"
+                onClick={() => navigate(`/dashboard/organizers/events/${event.id}/manage`)}
+            >
+                <ChartBarIcon className="w-4 h-4" />
+                Gerenciar
+            </Button>
+
+            <Button
+                size="md"
+                onClick={() => navigate(`/dashboard/organizers/events/${event.id}/manage`)}
+            >
+                <EllipsisHorizontalIcon className="w-4 h-4" />
+            </Button>
+        </div>
+    )
+}
 
 // Mock Data
 const EVENTS = [
@@ -78,6 +103,9 @@ export default function EventsList() {
         );
     }
 
+    console.log(data);
+    
+
 
 
 
@@ -89,7 +117,7 @@ export default function EventsList() {
                 title="Meus Eventos"
                 description="Gerencia seus eventos, acompanhe vendas e edite detalhes."
                 buttonLabel="Novo Evento"
-                buttonLink="/events/create"
+                buttonLink="/dashboard/organizers/events/create"
             />
 
             {/* Events Grid */}
@@ -98,92 +126,29 @@ export default function EventsList() {
                     <div className="flex justify-center py-20">
                         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
                     </div>
-                // ) : error ? (
-                //     <div className="text-center py-20">
-                //         <p className="text-error">Erro ao carregar eventos. Tente novamente.</p>
-                //     </div>
-                // ) : !data?.items || data.items.length === 0 ? (
-                //     <div className="text-center py-20 bg-surface/30 rounded border border-white/5">
-                //         <CalendarIcon className="w-16 h-16 text-muted mx-auto mb-4" />
-                //         <h3 className="text-xl font-bold text-text mb-2">Nenhum evento encontrado</h3>
-                //         <p className="text-muted mb-6">Comece criando seu primeiro evento agora mesmo.</p>
-                //         <Button onClick={() => navigate('/events/create')}>
-                //             <PlusIcon className="w-4 h-4" />
-                //             Criar Evento
-                //         </Button>
-                //     </div>
+                    ) : error ? (
+                        <div className="text-center py-20">
+                            <p className="text-error">Erro ao carregar eventos. Tente novamente.</p>
+                        </div>
+                    ) : !data || data.length === 0 ? (
+                        <div className="text-center py-20 bg-surface/30 rounded border border-white/5">
+                            <CalendarIcon className="w-16 h-16 text-muted mx-auto mb-4" />
+                            <h3 className="text-xl font-bold text-text mb-2">Nenhum evento encontrado</h3>
+                            <p className="text-muted mb-6">Comece criando seu primeiro evento agora mesmo.</p>
+                            <Button onClick={() => navigate('/events/create')}>
+                                <PlusIcon className="w-4 h-4" />
+                                Criar Evento
+                            </Button>
+                        </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {EVENTS.map((event) => (
-                            <div key={event.id} className="group bg-surface/50 border border-white/5 rounded overflow-hidden hover:border-primary/30 transition-all hover:shadow-2xl hover:shadow-primary/10">
-                                {/* Image */}
-                                <div className="h-48 overflow-hidden relative">
-                                    <img
-                                        src={event.image || "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=800&q=80"}
-                                        alt={event.title}
-                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                    />
-                                    <div className="absolute top-4 right-4">
-                                        <span className={`px-3 py-1 rounded text-xs font-bold uppercase tracking-wider ${event.status === 'active'
-                                            ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                                            : "bg-surface/20 text-muted border border-surface/30"
-                                            }`}>
-                                            {event.status === 'active' ? 'Ativo' : 'Rascunho'}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {/* Content */}
-                                <div className="p-6">
-                                    <h3 className="text-xl font-bold text-text mb-4 group-hover:text-primary-light transition-colors line-clamp-1">
-                                        {event.title}
-                                    </h3>
-
-                                    <div className="space-y-3 mb-6">
-                                        <div className="flex items-center text-muted text-sm">
-                                            <CalendarIcon className="w-4 h-4 mr-2 text-text-muted" />
-                                            {new Date(event.start_date).toLocaleDateString()}
-                                        </div>
-                                        <div className="flex items-center text-muted text-sm">
-                                            <MapPinIcon className="w-4 h-4 mr-2 text-text-muted" />
-                                            {event.location}
-                                        </div>
-                                        <div className="flex items-center text-muted text-sm">
-                                            <UserGroupIcon className="w-4 h-4 mr-2 text-text-muted" />
-                                            {event.attendees_count || 0} participantes
-                                        </div>
-                                    </div>
-
-                                    {/* Actions */}
-                                    <div className="flex justify-center gap-2 pt-4 border-t border-white/5">
-                                        <Button
-                                            size="md"
-                                            onClick={() => navigate(`/events/edit/${event.id}`)}
-                                        >
-                                            <PencilSquareIcon className="w-4 h-4" />
-                                            Editar
-                                        </Button>
-
-                                        <Button
-                                            size="md"
-                                            onClick={() => navigate(`/events/${event.id}/manage`)}
-                                        >
-                                            <ChartBarIcon className="w-4 h-4" />
-                                            Gerenciar
-                                        </Button>
-
-                                        <Button
-                                            size="md"
-                                            onClick={() => navigate(`/events/${event.id}/manage`)}
-                                        >
-                                            <EllipsisHorizontalIcon className="w-4 h-4" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
+                        {data.map((event) => (
+                            <EventCard key={event.id} actions={<EventActions event={event} />} event={event} />
                         ))}
                     </div>
                 )}
         </div>
     );
 }
+
+

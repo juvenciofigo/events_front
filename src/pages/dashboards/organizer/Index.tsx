@@ -21,9 +21,9 @@ import { useToast } from "@/contexts/ToastContext";
 import CardDashboard from "../components/CardDashboard";
 import { DashboardStats, UpcomingEvent } from "@/types/dashboard";
 import Header from "./Header";
-import { OutletContext } from "../LayoutDashboard";
 import ErrorState from "@/components/ErrorState";
 import Loading from "@/components/Loading";
+import { OutletContext } from "./OrganizerDashboard";
 
 
 export default function Index() {

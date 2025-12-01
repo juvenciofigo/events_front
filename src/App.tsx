@@ -149,19 +149,23 @@ export default function App() {
                     >
                         <Route
                             index
-                            element={
-                                // <ProtectedRoute allowedProfile={["organizer"]}>
-                                    <Index />
-                                // </ProtectedRoute>
-                            }
+                            element={<Index />}
                         />
                         <Route
                             path="events"
-                            element={
-                                // <ProtectedRoute allowedProfile={["organizer"]}>
-                                    <EventsList />
-                                // </ProtectedRoute>
-                            }
+                            element={<EventsList />}
+                        />
+                        <Route
+                            path="events/create"
+                            element={<EventCreate />}
+                        />
+                        <Route
+                            path="events/:id/edit"
+                            element={<EventEdit />}
+                        />
+                        <Route
+                            path="events/:id/manage"
+                            element={<EventManage />}
                         />
                     </Route>
 
@@ -187,14 +191,7 @@ export default function App() {
                         // </ProtectedRoute>
                     }
                 /> */}
-                <Route
-                    path="/events/create"
-                    element={
-                        // <ProtectedRoute allowedProfile={["organizer"]}>
-                        <EventCreate />
-                        // </ProtectedRoute>
-                    }
-                />
+
                 <Route
                     path="/events/:id"
                     element={
@@ -203,22 +200,7 @@ export default function App() {
                         // </ProtectedRoute>
                     }
                 />
-                <Route
-                    path="/events/:id/manage"
-                    element={
-                        // <ProtectedRoute allowedProfile={["organizer"]}>
-                        <EventManage />
-                        // </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/events/:id/edit"
-                    element={
-                        // <ProtectedRoute allowedProfile={["organizer"]}>
-                        <EventEdit />
-                        // </ProtectedRoute>
-                    }
-                />
+
                 <Route
                     path="/events/:id/album"
                     element={

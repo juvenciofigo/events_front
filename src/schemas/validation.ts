@@ -41,18 +41,40 @@ export type RoleSelectForm = z.infer<typeof roleSelectSchema>;
 // ============ Event Schemas ============
 
 export const eventCreateSchema = z.object({
-    name: z.string().min(3, "Nome deve ter no mínimo 3 caracteres").max(100, "Nome muito longo"),
-    type: z.string().min(2, "Tipo deve ter no mínimo 2 caracteres").max(50, "Tipo muito longo"),
+    title: z.string().min(3, "Nome deve ter no mínimo 3 caracteres").max(100, "Nome muito longo"),
+    category: z.string().min(2, "Categoria deve ter no mínimo 2 caracteres").max(50, "Categoria muito longa"),
+    estimatedGuest: z.number().int("Capacidade deve ser um número inteiro").nonnegative("Capacidade deve ser positiva").optional(),
+    budgetEstimated: z.number().int("Capacidade deve ser um número inteiro").nonnegative("Capacidade deve ser positiva").optional(),
+    budgetSpent: z.number().int("Capacidade deve ser um número inteiro").nonnegative("Capacidade deve ser positiva").optional(),
     description: z.string().max(1000, "Descrição muito longa").optional(),
-    date: z
+    dateStart: z
         .string()
         .refine((date) => {
             const d = new Date(date);
             return !isNaN(d.getTime());
         }, "Data inválida")
+        .refine((date) => {
+            const d = new Date(date);
+            return d >= new Date();
+        }, "A data de início não pode ser no passado"),
+    dateEnd: z
+        .string()
+        .refine((date) => {
+            if (!date) return true;
+            const d = new Date(date);
+            return !isNaN(d.getTime());
+        }, "Data inválida")
         .optional(),
-    location: z.string().max(200, "Local muito longo").optional(),
-    capacity: z.coerce.number().int("Capacidade deve ser um número inteiro").positive("Capacidade deve ser positiva").optional(),
+    isPublic: z.boolean(),
+    image: z.any().optional(),
+}).refine((data) => {
+    if (!data.dateEnd || !data.dateStart) return true;
+    const start = new Date(data.dateStart);
+    const end = new Date(data.dateEnd);
+    return end >= start;
+}, {
+    message: "A data de término deve ser posterior à data de início",
+    path: ["dateEnd"],
 });
 
 export type EventCreateForm = z.infer<typeof eventCreateSchema>;

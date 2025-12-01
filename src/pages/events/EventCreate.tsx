@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
     PhotoIcon,
     CalendarIcon,
@@ -10,20 +10,57 @@ import {
 import Input from "@/components/Form/Input";
 import Button from "@/components/Form/Button";
 import Select from "@/components/Form/Select";
+import Header from "../dashboards/organizer/Header";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { eventCreateSchema, type EventCreateForm } from "@/schemas/validation";
+import { useCreateEvent } from "@/hooks/useEvents";
+import { useToast } from "@/contexts/ToastContext";
 
 export default function EventCreate() {
-    const { register, handleSubmit, formState: { errors } } = useForm();
     const navigate = useNavigate();
-    const [category, setCategory] = useState("");
+    const toast = useToast();
+    const createEventMutation = useCreateEvent();
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<EventCreateForm>({
+        resolver: zodResolver(eventCreateSchema),
+        defaultValues: {
+            title: "",
+            category: "",
+            estimatedGuest: 0,
+            budgetEstimated: 0,
+            budgetSpent: 0,
+            description: "",
+            dateStart: "",
+            dateEnd: "",
+            isPublic: false
+        },
+    });
 
-    const onSubmit = (data: any) => {
-        console.log("Criar evento:", data);
-        // Logic to create event
-        navigate("/events");
+    const categories = [{ value: "", label: "Selecione uma categoria" },
+    { value: "music", label: "Música" },
+    { value: "tech", label: "Tecnologia" },
+    { value: "art", label: "Arte" },
+    { value: "business", label: "Negócios" }]
+
+    const onSubmit = (data: EventCreateForm) => {
+        createEventMutation.mutate(data, {
+            onSuccess: () => {
+                toast.success("Evento criado com sucesso!");
+                // navigate("/dashboard/organizers/events");
+            },
+            onError: (error: any) => {
+                toast.error(error?.response?.data?.message || "Erro ao criar evento.");
+            },
+        });
     };
 
+
     return (
-        <div className="min-h-screen bg-background text-text font-sans selection:bg-primary selection:text-text flex p-2 md:px-4 justify-center relative overflow-hidden">
+        <div className="min-h-screen text-text font-sans selection:bg-primary selection:text-text flex justify-center relative overflow-hidden">
             {/* Background Effects */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden">
                 <div className="absolute top-1/2 left-1/2 w-[800px] h-[500px] bg-primary/30 rounded-full blur-[120px] animate-orbit-slow"></div>
@@ -33,19 +70,21 @@ export default function EventCreate() {
             <div className="w-full relative z-10">
                 {/* Header */}
                 <div className="mb-8">
-                    <button
-                        onClick={() => navigate(-1)}
+                    <Link
+                        to="/dashboard/organizers/events"
                         className="flex items-center text-muted hover:text-text transition-colors mb-4"
                     >
                         <ArrowLeftIcon className="w-4 h-4 mr-2" />
-                        Voltar
-                    </button>
-                    <h1 className="text-3xl font-black tracking-tight text-text">
-                        Criar Novo Evento
-                    </h1>
-                    <p className="text-muted mt-2">
-                        Preencha as informações abaixo para publicar seu evento.
-                    </p>
+                        Voltar Para Eventos
+                    </Link>
+
+                    <Header
+                        name={null}
+                        title="Criar Evento"
+                        description="Preencha as informações abaixo para publicar seu evento."
+                        buttonLabel=""
+                        buttonLink="/dashboard/organizers/events/create"
+                    />
                 </div>
 
                 {/* Form */}
@@ -71,29 +110,51 @@ export default function EventCreate() {
                                     errors={errors.title}
                                 />
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <Select
+                                        {...register("category")}
                                         label="Categoria"
-                                        value={category}
                                         isRequired
-                                        onChange={(e) => setCategory(e.target.value)}
+                                        selectClassName="pl-2 md:py-2 py-1"
+                                        options={categories}
+                                        errors={errors.category}
+                                    />
+                                    <Select
+                                        {...register("isPublic", {
+                                            setValueAs: (v) => v === "true"
+                                        })}
+                                        label="O evento é publico?"
+                                        isRequired
                                         selectClassName="pl-2 md:py-2 py-1"
                                         options={[
-                                            { value: "", label: "Selecione uma categoria" },
-                                            { value: "music", label: "Música" },
-                                            { value: "tech", label: "Tecnologia" },
-                                            { value: "art", label: "Arte" },
-                                            { value: "business", label: "Negócios" }
+                                            { value: "true", label: "Evento Público" },
+                                            { value: "false", label: "Evento Privado" },
                                         ]}
+                                        errors={errors.isPublic}
                                     />
                                     <Input
-                                        {...register("capacity")}
+                                        {...register("estimatedGuest", { valueAsNumber: true })}
                                         label="Capacidade Estimada"
                                         type="number"
-                                        isRequired
                                         placeholder="Ex: 500"
                                         InputClassName="pl-2 md:py-2 py-1"
-                                        errors={errors.capacity}
+                                        errors={errors.estimatedGuest}
+                                    />
+                                    <Input
+                                        {...register("budgetEstimated", { valueAsNumber: true })}
+                                        label="Orçamento Estimado"
+                                        type="number"
+                                        placeholder="Ex: 500"
+                                        InputClassName="pl-2 md:py-2 py-1"
+                                        errors={errors.budgetEstimated}
+                                    />
+                                    <Input
+                                        {...register("budgetSpent", { valueAsNumber: true })}
+                                        label="Orçamento Gasto"
+                                        type="number"
+                                        placeholder="Ex: 500"
+                                        InputClassName="pl-2 md:py-2 py-1"
+                                        errors={errors.budgetSpent}
                                     />
                                 </div>
 
@@ -121,34 +182,24 @@ export default function EventCreate() {
                             <div className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <Input
-                                        {...register("startDate")}
+                                        {...register("dateStart")}
                                         label="Data de Início"
                                         type="datetime-local"
                                         isRequired
                                         InputClassName="pl-10 md:py-2 py-1"
                                         icon={<CalendarIcon className="w-4 h-4 text-text-muted" />}
-                                        errors={errors.startDate}
+                                        errors={errors.dateStart}
                                     />
                                     <Input
-                                        {...register("endDate")}
+                                        {...register("dateEnd")}
                                         label="Data de Término"
                                         type="datetime-local"
                                         InputClassName="pl-10 md:py-2 py-1"
                                         icon={<CalendarIcon className="w-4 h-4 text-text-muted" />}
-                                        errors={errors.endDate}
+                                        errors={errors.dateEnd}
                                     />
                                 </div>
 
-                                <Input
-                                    {...register("location")}
-                                    label="Localização"
-                                    type="text"
-                                    isRequired
-                                    placeholder="Endereço completo ou nome do local"
-                                    InputClassName="pl-10 md:py-2 py-1"
-                                    icon={<MapPinIcon className="w-4 h-4 text-text-muted" />}
-                                    errors={errors.location}
-                                />
                             </div>
                         </div>
                     </div>
@@ -161,25 +212,51 @@ export default function EventCreate() {
                             Mídia
                         </h2>
 
-                        <div className="border-2 border-dashed border-white/10 rounded p-8 flex flex-col items-center justify-center hover:border-primary/50 transition-colors cursor-pointer bg-background/30">
-                            <div className="w-16 h-16 rounded bg-white/5 flex items-center justify-center mb-4">
-                                <PhotoIcon className="w-8 h-8 text-muted" />
-                            </div>
-                            <p className="text-text font-medium mb-1">Clique para fazer upload da capa</p>
-                            <p className="text-sm text-muted">PNG, JPG até 5MB</p>
+                        <div className="relative">
+                            <input
+                                type="file"
+                                id="event-image"
+                                className="hidden"
+                                accept="image/*"
+                                {...register("image", {
+                                    onChange: (e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                            const reader = new FileReader();
+                                            reader.onloadend = () => {
+                                                setPreviewImage(reader.result as string);
+                                            };
+                                            reader.readAsDataURL(file);
+                                        }
+                                    }
+                                })}
+                            />
+                            <label
+                                htmlFor="event-image"
+                                className={`border-2 border-dashed border-white/10 rounded p-8 flex flex-col items-center justify-center hover:border-primary/50 transition-colors cursor-pointer bg-background/30 ${previewImage ? 'border-primary' : ''}`}
+                            >
+                                {previewImage ? (
+                                    <div className="relative w-full h-64">
+                                        <img src={previewImage} alt="Preview" className="w-full h-full object-cover rounded" />
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition-opacity rounded">
+                                            <p className="text-white font-medium">Clique para alterar</p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className="w-16 h-16 rounded bg-white/5 flex items-center justify-center mb-4">
+                                            <PhotoIcon className="w-8 h-8 text-muted" />
+                                        </div>
+                                        <p className="text-text font-medium mb-1">Clique para fazer upload da capa</p>
+                                        <p className="text-sm text-muted">PNG, JPG até 5MB</p>
+                                    </>
+                                )}
+                            </label>
                         </div>
                     </div>
 
                     {/* Action Buttons */}
                     <div className="flex justify-end gap-4 pt-4">
-                        <Button
-                            type="button"
-                            onClick={() => navigate(-1)}
-                            variant="secondary"
-                            size="sm"
-                        >
-                            Cancelar
-                        </Button>
                         <Button
                             type="submit"
                             variant="primary"

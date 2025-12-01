@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as api from "../services/storageApi";
 import { eventsApi } from "@/services/eventsApi";
+import { EventCreateForm } from "@/schemas/validation";
 
 export function useEvents() {
     return useQuery({ queryKey: ["events"], queryFn: api.getEvents });
@@ -12,7 +13,9 @@ export function useEvent(id?: string) {
 
 export function useCreateEvent() {
     const qc = useQueryClient();
-    return useMutation({ mutationFn: (data: any) => api.createEvent(data), onSuccess: () => qc.invalidateQueries({ queryKey: ["events"] }) });
+    return useMutation({ 
+        mutationFn: (data: EventCreateForm) => eventsApi.createEvent(data), 
+        onSuccess: () => qc.invalidateQueries({ queryKey: ["events"] }) });
 }
 
 export function useUpdateEvent() {

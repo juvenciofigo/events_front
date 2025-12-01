@@ -1,21 +1,19 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import {
-    HomeIcon,
-    CalendarIcon,
-    PlusCircleIcon,
-    ShoppingBagIcon,
-    BriefcaseIcon,
-    ChatBubbleLeftRightIcon,
-    CreditCardIcon,
-    EnvelopeIcon,
-    Squares2X2Icon
-} from "@heroicons/react/24/outline";
+
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useSystemStore } from "@/stores/useSystem";
 
+export interface SidebarProps {
+    className?: string;
+    navItems: {
+        path: string;
+        label: string;
+        icon: React.ComponentType<{ className?: string }>;
+    }[];
+}
 
-export default function Sidebar({ className }: { className?: string }) {
+export default function Sidebar({ className, navItems }: SidebarProps) {
     const { mobileMenuOpen } = useSystemStore();
     const location = useLocation();
     const selectedProfile = useAuthStore((s) => s.selectedProfile);
@@ -27,19 +25,8 @@ export default function Sidebar({ className }: { className?: string }) {
         return location.pathname === path || location.pathname.startsWith(path + "/");
     };
 
-    const navItems = [
-        { path: `/dashboard/${selectedProfile?.role}s`, label: "Dashboard", icon: Squares2X2Icon },
-        { path: `/dashboard/${selectedProfile?.role}s/events`, label: "Meus Eventos", icon: CalendarIcon },
-        { path: `/dashboard/${selectedProfile?.role}s/events/create`, label: "Criar Evento", icon: PlusCircleIcon },
-        { path: `/dashboard/${selectedProfile?.role}s/marketplace`, label: "Marketplace", icon: ShoppingBagIcon },
-        { path: `/dashboard/${selectedProfile?.role}s/marketplace/requests`, label: "Oportunidades", icon: BriefcaseIcon },
-        { path: `/dashboard/${selectedProfile?.role}s/chat`, label: "Mensagens", icon: ChatBubbleLeftRightIcon },
-        { path: "/plans", label: "Planos", icon: CreditCardIcon },
-        { path: "/invitations", label: "Convites", icon: EnvelopeIcon },
-    ];
-
     return (
-        <aside className={`w-56 fixed  md:relative inset-y-0 left-0 top-[58px] md:top-0 z-50 transform transition-transform duration-300 ease-in-out md:translate-x-0 bg-surface-light dark:bg-surface border-r border-white/5 flex flex-col justify-between  ${className} ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"} `}>
+        <aside className={`w-56 fixed md:relative inset-y-0 left-0 top-[60px] md:top-0 z-50 transform transition-transform duration-300 ease-in-out md:translate-x-0  bg-surface border border-borderColor flex flex-col justify-between  ${className} ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"} `}>
             <nav className="flex-1 overflow-y-auto p-2 space-y-1">
                 {/* px-3 py-2 font-medium text-text-secondary hover:text-secondary hover:bg-white/5 rounded */}
                 {navItems.map((item) => (
