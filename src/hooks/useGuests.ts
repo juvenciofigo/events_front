@@ -1,12 +1,19 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { guestsApi } from "../services/guestApi";
 
-export function useGuests(eventId: string, limit: number = 10, pageNumber: number = 1, sort: string = "createdAt,desc") {
+export function useGuests(
+    eventId: string,
+    limit: number = 10,
+    pageNumber: number = 1,
+    sort: string = "createdAt",
+    search?: string,
+    status?: string,
+    ticketType?: string
+) {
     return useQuery({
-        queryKey: ['guests', eventId, limit, pageNumber, sort],
-        queryFn: () => guestsApi.getGuests(eventId, limit, pageNumber, sort),
+        queryKey: ['guests', eventId, limit, pageNumber, sort, search, status, ticketType],
+        queryFn: () => guestsApi.getGuests(eventId, limit, pageNumber, sort, search, status, ticketType),
         enabled: !!eventId,
-        // keepPreviousData: true, // Keep previous data while fetching new page
     });
 }
 

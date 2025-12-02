@@ -135,3 +135,14 @@ export const ticketTypeSchema = z.object({
 });
 
 export type TicketTypeForm = z.infer<typeof ticketTypeSchema>;
+
+// ============ Guest Schemas ============
+
+export const guestCreateSchema = z.object({
+    name: z.string().min(3, "Nome deve ter no mínimo 3 caracteres").max(100, "Nome muito longo"),
+    email: z.string().email("Email inválido").min(1, "Email é obrigatório"),
+    ticketType: z.string().min(1, "Tipo de ingresso é obrigatório"),
+    seat: z.string().optional(),
+});
+
+export type GuestCreateForm = z.infer<typeof guestCreateSchema>;

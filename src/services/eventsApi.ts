@@ -16,8 +16,6 @@ export const eventsApi = {
     fetchOrganizerEvents: async (organizerId: string, limit: number = 10, pageNumber: number = 1, sort: string = "createdAt"): Promise<PageEvent> => {
         try {
             const { data } = await api.get(`events/organizer/${organizerId}?limit=${limit}&pageNumber=${pageNumber}&sort=${sort}`);
-            console.log(data);
-
             return data;
         } catch (error) {
             console.error("Erro ao buscar eventos:", error);

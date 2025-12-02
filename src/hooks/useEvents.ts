@@ -32,7 +32,7 @@ export function useUpdateEvent() {
     });
 }
 
-export function useFetchOrganizerEvents(organizerId: string, limit: number = 10, pageNumber: number = 1, sort: string = "createdAt,desc") {
+export function useFetchOrganizerEvents(organizerId: string, limit: number = 10, pageNumber: number = 1, sort: string = "createdAt") {
     return useQuery({
         queryKey: ["events", "organizer", organizerId, limit, pageNumber, sort],
         enabled: !!organizerId,

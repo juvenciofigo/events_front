@@ -12,8 +12,26 @@ import {
     ClockIcon,
     XCircleIcon
 } from "@heroicons/react/24/outline";
+import { useParams } from "react-router-dom";
+import { useFinancialStats, useTransactions } from "@/hooks/useFinancial";
 
 export default function Financial() {
+    const { id } = useParams<{ id: string }>();
+    const { data: stats, isLoading: statsLoading } = useFinancialStats(id || "");
+    const { data: transactionsData, isLoading: transactionsLoading } = useTransactions(id || "");
+
+    const isLoading = statsLoading || transactionsLoading;
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
+
+    const formatCurrency = (value: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+
     return (
         <div className="space-y-6">
             {/* Financial Statistics */}
@@ -23,10 +41,10 @@ export default function Financial() {
                         <div className="text-muted text-sm">Receita Total</div>
                         <CurrencyDollarIcon className="w-5 h-5 text-green-400" />
                     </div>
-                    <div className="text-3xl font-black text-text">R$ 148.600</div>
+                    <div className="text-3xl font-black text-text">{formatCurrency(stats?.totalRevenue || 0)}</div>
                     <div className="text-xs text-green-400 mt-1 flex items-center gap-1">
                         <ArrowTrendingUpIcon className="w-3 h-3" />
-                        +18.5% vs mês anterior
+                        +18.5% vs mês anterior (Simulado)
                     </div>
                 </div>
                 <div className="border border-borderColor rounded p-4 bg-gradient-to-br from-blue-500/5 to-transparent">
@@ -34,7 +52,7 @@ export default function Financial() {
                         <div className="text-muted text-sm">Receita Líquida</div>
                         <BanknotesIcon className="w-5 h-5 text-blue-400" />
                     </div>
-                    <div className="text-3xl font-black text-text">R$ 125.000</div>
+                    <div className="text-3xl font-black text-text">{formatCurrency(stats?.netRevenue || 0)}</div>
                     <div className="text-xs text-text-muted mt-1">Após taxas e descontos</div>
                 </div>
                 <div className="border border-borderColor rounded p-4 bg-gradient-to-br from-purple-500/5 to-transparent">
@@ -42,16 +60,16 @@ export default function Financial() {
                         <div className="text-muted text-sm">Taxas Totais</div>
                         <ReceiptPercentIcon className="w-5 h-5 text-purple-400" />
                     </div>
-                    <div className="text-3xl font-black text-text">R$ 14.860</div>
-                    <div className="text-xs text-purple-400 mt-1">10% do total</div>
+                    <div className="text-3xl font-black text-text">{formatCurrency(stats?.totalFees || 0)}</div>
+                    <div className="text-xs text-purple-400 mt-1">Taxas de processamento</div>
                 </div>
                 <div className="border border-borderColor rounded p-4 bg-gradient-to-br from-yellow-500/5 to-transparent">
                     <div className="flex items-center justify-between mb-2">
                         <div className="text-muted text-sm">Descontos</div>
                         <ReceiptPercentIcon className="w-5 h-5 text-yellow-400" />
                     </div>
-                    <div className="text-3xl font-black text-text">R$ 8.740</div>
-                    <div className="text-xs text-yellow-400 mt-1">5.9% em promoções</div>
+                    <div className="text-3xl font-black text-text">{formatCurrency(stats?.totalDiscounts || 0)}</div>
+                    <div className="text-xs text-yellow-400 mt-1">Cupons e promoções</div>
                 </div>
             </div>
 
@@ -64,70 +82,33 @@ export default function Financial() {
                         Receita por Tipo de Ingresso
                     </h3>
                     <div className="space-y-4">
-                        <div className="p-4 bg-white/5 rounded border border-borderColor">
-                            <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-purple-500"></div>
-                                    <span className="font-semibold text-text">VIP</span>
+                        {stats?.revenueByTicketType.map((item, index) => {
+                            const percentage = stats.totalRevenue > 0 ? (item.revenue / stats.totalRevenue) * 100 : 0;
+                            const colors = ['bg-purple-500', 'bg-blue-500', 'bg-yellow-500', 'bg-green-500'];
+                            const color = colors[index % colors.length];
+
+                            return (
+                                <div key={item.ticketType} className="p-4 bg-white/5 rounded border border-borderColor">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <div className="flex items-center gap-2">
+                                            <div className={`w-3 h-3 rounded-full ${color}`}></div>
+                                            <span className="font-semibold text-text">{item.ticketType}</span>
+                                        </div>
+                                        <span className="font-bold text-green-400">{formatCurrency(item.revenue)}</span>
+                                    </div>
+                                    <div className="flex justify-between text-xs text-text-muted mb-2">
+                                        <span>{item.quantity} vendidos</span>
+                                        <span>{percentage.toFixed(1)}% do total</span>
+                                    </div>
+                                    <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                                        <div className={`h-full ${color}`} style={{ width: `${percentage}%` }}></div>
+                                    </div>
                                 </div>
-                                <span className="font-bold text-green-400">R$ 70.000</span>
-                            </div>
-                            <div className="flex justify-between text-xs text-text-muted mb-2">
-                                <span>280 vendidos × R$ 250</span>
-                                <span>47.1% do total</span>
-                            </div>
-                            <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                                <div className="h-full bg-purple-500" style={{ width: '47.1%' }}></div>
-                            </div>
-                        </div>
-                        <div className="p-4 bg-white/5 rounded border border-borderColor">
-                            <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                                    <span className="font-semibold text-text">Pista</span>
-                                </div>
-                                <span className="font-bold text-green-400">R$ 64.000</span>
-                            </div>
-                            <div className="flex justify-between text-xs text-text-muted mb-2">
-                                <span>800 vendidos × R$ 80</span>
-                                <span>43.1% do total</span>
-                            </div>
-                            <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                                <div className="h-full bg-blue-500" style={{ width: '43.1%' }}></div>
-                            </div>
-                        </div>
-                        <div className="p-4 bg-white/5 rounded border border-borderColor">
-                            <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                                    <span className="font-semibold text-text">Early Bird</span>
-                                </div>
-                                <span className="font-bold text-green-400">R$ 9.000</span>
-                            </div>
-                            <div className="flex justify-between text-xs text-text-muted mb-2">
-                                <span>150 vendidos × R$ 60</span>
-                                <span>6.1% do total</span>
-                            </div>
-                            <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                                <div className="h-full bg-yellow-500" style={{ width: '6.1%' }}></div>
-                            </div>
-                        </div>
-                        <div className="p-4 bg-white/5 rounded border border-borderColor">
-                            <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                                    <span className="font-semibold text-text">Lote Grupo</span>
-                                </div>
-                                <span className="font-bold text-green-400">R$ 5.600</span>
-                            </div>
-                            <div className="flex justify-between text-xs text-text-muted mb-2">
-                                <span>20 vendidos × R$ 280</span>
-                                <span>3.7% do total</span>
-                            </div>
-                            <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                                <div className="h-full bg-green-500" style={{ width: '3.7%' }}></div>
-                            </div>
-                        </div>
+                            );
+                        })}
+                        {(!stats?.revenueByTicketType || stats.revenueByTicketType.length === 0) && (
+                            <div className="text-center text-text-muted py-8">Nenhuma venda registrada ainda.</div>
+                        )}
                     </div>
                 </div>
 
@@ -138,54 +119,39 @@ export default function Financial() {
                         Métodos de Pagamento
                     </h3>
                     <div className="space-y-4">
-                        <div className="p-4 bg-white/5 rounded border border-borderColor">
-                            <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-3">
-                                    <CreditCardIcon className="w-5 h-5 text-blue-400" />
-                                    <span className="font-semibold text-text">Cartão de Crédito</span>
+                        {stats?.revenueByPaymentMethod.map((item, index) => {
+                            const percentage = stats.totalRevenue > 0 ? (item.revenue / stats.totalRevenue) * 100 : 0;
+                            const colors = ['bg-blue-500', 'bg-green-500', 'bg-purple-500'];
+                            const color = colors[index % colors.length];
+                            const icons = {
+                                'credit_card': CreditCardIcon,
+                                'pix': BanknotesIcon,
+                                'boleto': ReceiptPercentIcon
+                            };
+                            const Icon = icons[item.method as keyof typeof icons] || CreditCardIcon;
+
+                            return (
+                                <div key={item.method} className="p-4 bg-white/5 rounded border border-borderColor">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <div className="flex items-center gap-3">
+                                            <Icon className={`w-5 h-5 ${index === 0 ? 'text-blue-400' : index === 1 ? 'text-green-400' : 'text-purple-400'}`} />
+                                            <span className="font-semibold text-text capitalize">{item.method.replace('_', ' ')}</span>
+                                        </div>
+                                        <span className="font-bold text-text">{formatCurrency(item.revenue)}</span>
+                                    </div>
+                                    <div className="flex justify-between text-xs text-text-muted mb-2">
+                                        <span>{item.count} transações</span>
+                                        <span>{percentage.toFixed(1)}% do total</span>
+                                    </div>
+                                    <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                                        <div className={`h-full ${color}`} style={{ width: `${percentage}%` }}></div>
+                                    </div>
                                 </div>
-                                <span className="font-bold text-text">R$ 104.020</span>
-                            </div>
-                            <div className="flex justify-between text-xs text-text-muted mb-2">
-                                <span>890 transações</span>
-                                <span>70% do total</span>
-                            </div>
-                            <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                                <div className="h-full bg-blue-500" style={{ width: '70%' }}></div>
-                            </div>
-                        </div>
-                        <div className="p-4 bg-white/5 rounded border border-borderColor">
-                            <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-3">
-                                    <BanknotesIcon className="w-5 h-5 text-green-400" />
-                                    <span className="font-semibold text-text">PIX</span>
-                                </div>
-                                <span className="font-bold text-text">R$ 37.150</span>
-                            </div>
-                            <div className="flex justify-between text-xs text-text-muted mb-2">
-                                <span>280 transações</span>
-                                <span>25% do total</span>
-                            </div>
-                            <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                                <div className="h-full bg-green-500" style={{ width: '25%' }}></div>
-                            </div>
-                        </div>
-                        <div className="p-4 bg-white/5 rounded border border-borderColor">
-                            <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-3">
-                                    <ReceiptPercentIcon className="w-5 h-5 text-purple-400" />
-                                    <span className="font-semibold text-text">Boleto</span>
-                                </div>
-                                <span className="font-bold text-text">R$ 7.430</span>
-                            </div>
-                            <div className="flex justify-between text-xs text-text-muted mb-2">
-                                <span>80 transações</span>
-                                <span>5% do total</span>
-                            </div>
-                            <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                                <div className="h-full bg-purple-500" style={{ width: '5%' }}></div>
-                            </div>
-                        </div>
+                            );
+                        })}
+                        {(!stats?.revenueByPaymentMethod || stats.revenueByPaymentMethod.length === 0) && (
+                            <div className="text-center text-text-muted py-8">Nenhum pagamento registrado ainda.</div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -215,96 +181,49 @@ export default function Financial() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-borderColor">
-                            <tr className="hover:bg-white/5 transition-colors">
-                                <td className="px-4 py-3 text-text-muted text-sm">01/12/2024 14:32</td>
-                                <td className="px-4 py-3 text-text font-medium">João Silva</td>
-                                <td className="px-4 py-3">
-                                    <span className="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs font-semibold rounded">VIP</span>
-                                </td>
-                                <td className="px-4 py-3 text-text-muted text-sm">Cartão de Crédito</td>
-                                <td className="px-4 py-3 text-green-400 font-bold">R$ 250,00</td>
-                                <td className="px-4 py-3">
-                                    <span className="flex items-center text-green-400 text-sm">
-                                        <CheckCircleIcon className="w-4 h-4 mr-1" /> Aprovado
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr className="hover:bg-white/5 transition-colors">
-                                <td className="px-4 py-3 text-text-muted text-sm">01/12/2024 13:18</td>
-                                <td className="px-4 py-3 text-text font-medium">Maria Santos</td>
-                                <td className="px-4 py-3">
-                                    <span className="px-2 py-1 bg-blue-500/20 text-blue-400 text-xs font-semibold rounded">Pista</span>
-                                </td>
-                                <td className="px-4 py-3 text-text-muted text-sm">PIX</td>
-                                <td className="px-4 py-3 text-green-400 font-bold">R$ 80,00</td>
-                                <td className="px-4 py-3">
-                                    <span className="flex items-center text-green-400 text-sm">
-                                        <CheckCircleIcon className="w-4 h-4 mr-1" /> Aprovado
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr className="hover:bg-white/5 transition-colors">
-                                <td className="px-4 py-3 text-text-muted text-sm">01/12/2024 12:45</td>
-                                <td className="px-4 py-3 text-text font-medium">Pedro Costa</td>
-                                <td className="px-4 py-3">
-                                    <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs font-semibold rounded">Lote Grupo</span>
-                                </td>
-                                <td className="px-4 py-3 text-text-muted text-sm">Boleto</td>
-                                <td className="px-4 py-3 text-yellow-400 font-bold">R$ 280,00</td>
-                                <td className="px-4 py-3">
-                                    <span className="flex items-center text-yellow-400 text-sm">
-                                        <ClockIcon className="w-4 h-4 mr-1" /> Pendente
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr className="hover:bg-white/5 transition-colors">
-                                <td className="px-4 py-3 text-text-muted text-sm">01/12/2024 11:22</td>
-                                <td className="px-4 py-3 text-text font-medium">Ana Oliveira</td>
-                                <td className="px-4 py-3">
-                                    <span className="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs font-semibold rounded">VIP</span>
-                                </td>
-                                <td className="px-4 py-3 text-text-muted text-sm">Cartão de Crédito</td>
-                                <td className="px-4 py-3 text-green-400 font-bold">R$ 250,00</td>
-                                <td className="px-4 py-3">
-                                    <span className="flex items-center text-green-400 text-sm">
-                                        <CheckCircleIcon className="w-4 h-4 mr-1" /> Aprovado
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr className="hover:bg-white/5 transition-colors">
-                                <td className="px-4 py-3 text-text-muted text-sm">30/11/2024 18:55</td>
-                                <td className="px-4 py-3 text-text font-medium">Carlos Mendes</td>
-                                <td className="px-4 py-3">
-                                    <span className="px-2 py-1 bg-yellow-500/20 text-yellow-400 text-xs font-semibold rounded">Early Bird</span>
-                                </td>
-                                <td className="px-4 py-3 text-text-muted text-sm">PIX</td>
-                                <td className="px-4 py-3 text-green-400 font-bold">R$ 60,00</td>
-                                <td className="px-4 py-3">
-                                    <span className="flex items-center text-green-400 text-sm">
-                                        <CheckCircleIcon className="w-4 h-4 mr-1" /> Aprovado
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr className="hover:bg-white/5 transition-colors">
-                                <td className="px-4 py-3 text-text-muted text-sm">30/11/2024 16:30</td>
-                                <td className="px-4 py-3 text-text font-medium">Juliana Lima</td>
-                                <td className="px-4 py-3">
-                                    <span className="px-2 py-1 bg-blue-500/20 text-blue-400 text-xs font-semibold rounded">Pista</span>
-                                </td>
-                                <td className="px-4 py-3 text-text-muted text-sm">Cartão de Crédito</td>
-                                <td className="px-4 py-3 text-red-400 font-bold">R$ 80,00</td>
-                                <td className="px-4 py-3">
-                                    <span className="flex items-center text-red-400 text-sm">
-                                        <XCircleIcon className="w-4 h-4 mr-1" /> Recusado
-                                    </span>
-                                </td>
-                            </tr>
+                            {transactionsData?.transactions.map((transaction: any) => (
+                                <tr key={transaction.id} className="hover:bg-white/5 transition-colors">
+                                    <td className="px-4 py-3 text-text-muted text-sm">
+                                        {new Date(transaction.date).toLocaleString('pt-BR')}
+                                    </td>
+                                    <td className="px-4 py-3 text-text font-medium">{transaction.customerName}</td>
+                                    <td className="px-4 py-3">
+                                        <span className="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs font-semibold rounded">
+                                            {transaction.ticketType}
+                                        </span>
+                                    </td>
+                                    <td className="px-4 py-3 text-text-muted text-sm capitalize">
+                                        {transaction.method.replace('_', ' ')}
+                                    </td>
+                                    <td className={`px-4 py-3 font-bold ${transaction.status === 'failed' ? 'text-red-400' : 'text-green-400'}`}>
+                                        {formatCurrency(transaction.amount)}
+                                    </td>
+                                    <td className="px-4 py-3">
+                                        <span className={`flex items-center text-sm ${transaction.status === 'approved' ? 'text-green-400' :
+                                                transaction.status === 'pending' ? 'text-yellow-400' : 'text-red-400'
+                                            }`}>
+                                            {transaction.status === 'approved' && <CheckCircleIcon className="w-4 h-4 mr-1" />}
+                                            {transaction.status === 'pending' && <ClockIcon className="w-4 h-4 mr-1" />}
+                                            {transaction.status === 'failed' && <XCircleIcon className="w-4 h-4 mr-1" />}
+                                            {transaction.status === 'approved' ? 'Aprovado' :
+                                                transaction.status === 'pending' ? 'Pendente' : 'Recusado'}
+                                        </span>
+                                    </td>
+                                </tr>
+                            ))}
+                            {(!transactionsData?.transactions || transactionsData.transactions.length === 0) && (
+                                <tr>
+                                    <td colSpan={6} className="px-4 py-8 text-center text-text-muted">
+                                        Nenhuma transação encontrada.
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            {/* Revenue Timeline Chart */}
+            {/* Revenue Timeline Chart (Simulated for now as API doesn't provide this yet) */}
             <div className="border border-borderColor rounded p-6">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-xl font-bold text-text flex items-center gap-2">
@@ -332,7 +251,7 @@ export default function Financial() {
                             </div>
                         ))}
                     </div>
-                    <div className="text-center text-xs text-text-muted mt-4">Últimos 7 dias</div>
+                    <div className="text-center text-xs text-text-muted mt-4">Últimos 7 dias (Simulado)</div>
                 </div>
             </div>
 

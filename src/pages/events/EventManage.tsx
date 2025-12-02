@@ -51,9 +51,9 @@ import Operations from "./manage/Operations";
 
 export default function EventManage() {
     const navigate = useNavigate();
-    const { id } = useParams();
+    const { eventId } = useParams();
     const [activeTab, setActiveTab] = useState("overview");
-    const { data: eventData, isLoading, error } = useEvent(id);
+    const { data: eventData, isLoading, error } = useEvent(eventId);
 
     // Mock stats for now as they are not in the API yet
     const event = eventData ? {
@@ -125,7 +125,7 @@ export default function EventManage() {
                             </div>
                             <Button
                                 fullWidth
-                                onClick={() => navigate(`/dashboard/organizers/events/${id}/edit`)}>
+                                onClick={() => navigate(`/dashboard/organizers/events/${eventId}/edit`)}>
                                 <div className="flex flex-row items-center gap-1">
                                     <PlusIcon className="md:w-5 md:h-5 w-4 h-4" />
                                     <span className="text-sm font-semibold text-nowrap">Editar Evento</span>

@@ -106,6 +106,7 @@ Base URL: `/api/guests`
 | Método    | Rota                | Descrição              | Body                           | Response                          |
 |-----------|---------------------|------------------------|--------------------------------|-----------------------------------|
 | `GET`     | `/event/:eventId`   | Listar convidados      | `?status=confirmed`            | `{ guests: [] }`                  |
+| `GET`     | `/event/:eventId`   | Listar convidados      | `?limit=10&pageNumber=1...`    | `{ guests: [] }`                  |
 | `POST`    | `/event/:eventId`   | Adicionar convidado    | `{ name, email, phone, ... }`  | `{ guest }`                       |
 | `DELETE`  | `/:id`              | Remover convidado      | -                              | `{ success: true }`               |
 | `PUT`     | `/:id`              | Atualizar convidado    | `{ name, status, ... }`        | `{ guest }`                       |
@@ -397,3 +398,226 @@ STRIPE_PUBLIC_KEY=pk_test_...
 GOOGLE_MAPS_API_KEY=...
 ```
 
+##############################################################
+
+# 📡 API Backend - Documentação de Rotas
+(Atualizado conforme implementação em `src/services`)
+
+## 🔐 Autenticação (`authApi.ts`)
+
+Base URL: `/api/auth`
+
+| Método | Rota                 | Descrição                | Body                       | Response                  |
+|--------|----------------------|--------------------------|----------------------------|---------------------------|
+| `POST` | `/login`             | Login de usuário         | `{ email, password }`      | `{ token, user, roles }`  |
+| `POST` | `/logout`            | Logout (invalidar token) | -                          | `{ success: true }`       |
+| `POST` | `/refresh`           | Renovar token            | -                          | `{ token }`               |
+
+## 👤 Perfis (`profileApi.ts`)
+
+Base URL: `/api`
+
+| Método | Rota                 | Descrição                     | Body                              | Response              |
+|--------|----------------------|-------------------------------|-----------------------------------|-----------------------|
+| `POST` | `/organizers`        | Criar perfil de organizador   | `{ companyName, cnpj, ... }`      | `{ profile }`         |
+| `POST` | `/suppliers`         | Criar perfil de fornecedor    | `{ companyName, services, ... }`  | `{ profile }`         |
+| `GET`  | `/organizers/:id/me` | Obter perfil de organizador   | -                                 | `{ profile }`         |
+| `GET`  | `/suppliers/:id/me`  | Obter perfil de fornecedor    | -                                 | `{ profile }`         |
+
+## 🎫 Eventos (`eventsApi.ts`)
+
+Base URL: `/api/events`
+
+| Método | Rota                               | Descrição                      | Body                                       | Response                            |
+|--------|------------------------------------|------------------------------  |--------------------------------------------|-------------------------------------|
+| `GET`  | `/organizer/:organizerId`          | Listar eventos do organizador  | `?limit=10&pageNumber=1&sort=createdAt`    | `{ content: [], totalElements, ... }`|
+| `GET`  | `/:id`                             | Obter detalhes do evento       | -                                          | `{ event }`                         |
+| `POST` | `/`                                | Criar novo evento              | `FormData` (com imagem) ou JSON            | `{ event }`                         |
+
+## 💸 Despesas (`expensesApi.ts`)
+
+Base URL: `/api/expenses`
+
+| Método   | Rota                         | Descrição              | Body                           | Response                          |
+|----------|------------------------------|------------------------|--------------------------------|-----------------------------------|
+| `GET`    | `/event/:eventId`            | Listar despesas        | -                              | `{ expenses: [] }`                |
+| `GET`    | `/event/:eventId/summary`    | Resumo financeiro      | -                              | `{ total, paid, pending }`        |
+| `POST`   | `/event/:eventId`            | Criar despesa          | `{ description, amount, ... }` | `{ expense }`                     |
+| `PUT`    | `/:id`                       | Atualizar despesa      | `{ description, ... }`         | `{ expense }`                     |
+| `DELETE` | `/:id`                       | Deletar despesa        | -                              | `{ success: true }`               |
+| `POST`   | `/:id/pay`                   | Pagar despesa          | `{ paymentDate, method }`      | `{ expense }`                     |
+
+## 🚚 Fornecedores do Evento (`suppliersApi.ts`)
+
+Base URL: `/api/suppliers`
+
+| Método   | Rota                         | Descrição              | Body                           | Response                          |
+|----------|------------------------------|------------------------|--------------------------------|-----------------------------------|
+| `GET`    | `/event/:eventId`            | Listar fornecedores    | -                              | `{ suppliers: [] }`               |
+| `POST`   | `/event/:eventId`            | Adicionar fornecedor   | `{ name, category, ... }`      | `{ supplier }`                    |
+| `PUT`    | `/:id`                       | Atualizar fornecedor   | `{ name, ... }`                | `{ supplier }`                    |
+| `DELETE` | `/:id`                       | Remover fornecedor     | -                              | `{ success: true }`               |
+
+## 📋 Tarefas (`tasksApi.ts`)
+
+Base URL: `/api/tasks`
+
+| Método   | Rota                         | Descrição              | Body                           | Response                          |
+|----------|------------------------------|------------------------|--------------------------------|-----------------------------------|
+| `GET`    | `/event/:eventId`            | Listar tarefas         | -                              | `{ tasks: [] }`                   |
+| `POST`   | `/event/:eventId`            | Criar tarefa           | `{ title, priority, ... }`     | `{ task }`                        |
+| `PUT`    | `/:id`                       | Atualizar tarefa       | `{ status, ... }`              | `{ task }`                        |
+| `DELETE` | `/:id`                       | Deletar tarefa         | -                              | `{ success: true }`               |
+| `POST`   | `/:taskId/assign`            | Atribuir tarefa        | `{ userId }`                   | `{ task }`                        |
+
+## 👥 Equipe (`teamApi.ts`)
+
+Base URL: `/api/team`
+
+| Método   | Rota                         | Descrição              | Body                           | Response                          |
+|----------|------------------------------|------------------------|--------------------------------|-----------------------------------|
+| `GET`    | `/event/:eventId`            | Listar equipe          | -                              | `{ members: [] }`                 |
+| `POST`   | `/event/:eventId`            | Adicionar membro       | `{ name, role, email, ... }`   | `{ member }`                      |
+| `PUT`    | `/:id`                       | Atualizar membro       | `{ role, ... }`                | `{ member }`                      |
+| `DELETE` | `/:id`                       | Remover membro         | -                              | `{ success: true }`               |
+| `POST`   | `/:memberId/assign-task`     | Atribuir tarefa        | `{ taskId }`                   | `{ success: true }`               |
+
+## 💰 Financeiro (`financialApi.ts`)
+
+Base URL: `/api/financial`
+
+| Método   | Rota                                     | Descrição              | Body                           | Response                          |
+|----------|------------------------------------------|------------------------|--------------------------------|-----------------------------------|
+| `GET`    | `/event/:eventId/stats`                  | Estatísticas           | -                              | `{ revenue, ticketsSold... }`     |
+| `GET`    | `/event/:eventId/transactions`           | Transações             | `?limit=10&page=1`             | `{ transactions: [] }`            |
+
+## 📊 Dashboard (`dashboardApi.ts`)
+
+Base URL: `/api`
+
+| Método   | Rota                                     | Descrição              | Body                           | Response                          |
+|----------|------------------------------------------|------------------------|--------------------------------|-----------------------------------|
+| `GET`    | `/organizers/:organizerId/stats`         | Stats do Dashboard     | -                              | `{ totalEvents, revenue... }`     |
+| `GET`    | `/organizers/:organizerId/sales`         | Gráfico de vendas      | -                              | `{ data: [] }`                    |
+| `GET`    | `/organizers/:organizerId/tasks`         | Tarefas pendentes      | -                              | `{ tasks: [] }`                   |
+| `GET`    | `/events/organizer/:id?upcoming=true`    | Eventos futuros        | -                              | `{ events: [] }`                  |
+| `GET`    | `/chats/messages/:organizerId`           | Mensagens recentes     | `?limit=10`                    | `{ messages: [] }`                |
+| `GET`    | `/reviews`                               | Feedback               | `?target=...&targetId=...`     | `{ items: [] }`                   |
+
+---
+
+# 🔌 WebSocket Events
+
+Base URL: `ws://api.example.com/ws`
+
+## Conexão
+```javascript
+const socket = io('ws://api.example.com', {
+  auth: { token: 'JWT_TOKEN' }
+});
+```
+
+## Eventos do Cliente → Servidor
+
+| Evento            | Payload                       | Descrição                 |
+|-------------------|-------------------------------|---------------------------|
+| `join_event`      | `{ eventId }`                 | Entrar no room do evento  |
+| `leave_event`     | `{ eventId }`                 | Sair do room do evento    |
+| `send_message`    | `{ conversationId, message }` | Enviar mensagem           |
+| `typing`          | `{ conversationId }`          | Indicar digitação         |
+
+## Eventos do Servidor → Cliente
+
+| Evento            | Payload                       | Descrição                     |
+|-------------------|-------------------------------|---------------------------    |
+| `new_sale`        | `{ eventId, sale }`           | Nova venda realizada          |
+| `new_confirmation`| `{ eventId, guest }`          | Nova confirmação de presença  |
+| `ticket_sold_out` | `{ eventId, ticketType }`     | Ingresso esgotado             |
+| `new_message`     | `{ conversationId, message }` | Nova mensagem recebida        |
+| `user_typing`     | `{ conversationId, userId }`  | Usuário digitando             |
+| `event_updated`   | `{ eventId, changes }`        | Evento atualizado             |
+| `notification`    | `{ notification }`            | Nova notificação              |
+| `stats_updated`   | `{ stats }`                   | Estatísticas atualizadas      |
+
+---
+
+# 🪝 Webhooks
+
+Webhooks para integrações externas (pagamentos, email, etc.)
+
+Base URL: `/api/webhooks`
+
+| Método | Rota             | Descrição             | Provider      |
+|--------|------------------|-----------------------|---------------|
+| `POST` | `/stripe`        | Eventos do Stripe     | Stripe        |
+| `POST` | `/mercadopago`   | Eventos do MercadoPago| MercadoPago   |
+| `POST` | `/sendgrid`      | Eventos de email      | SendGrid      |
+| `POST` | `/twilio`        | Eventos de SMS        | Twilio        |
+
+---
+
+# 🔒 Autenticação
+
+Todas as rotas (exceto `/auth/login`, `/auth/register`, `/auth/forgot-password`) requerem autenticação via **JWT Token**.
+
+**Header:**
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+## Roles e Permissões
+
+- **User**: Acesso básico (comprar ingressos, ver eventos)
+- **Organizer**: Criar eventos, gerenciar vendas, convidados
+- **Supplier**: Oferecer serviços, responder orçamentos
+- **Admin**: Acesso total ao sistema
+
+---
+
+# 📦 Formato de Resposta Padrão
+
+## Sucesso
+```json
+{
+  "success": true,
+  "data": { ... },
+  "message": "Operação realizada com sucesso"
+}
+```
+
+## Erro
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Email já cadastrado",
+    "details": { ... }
+  }
+}
+```
+
+## Paginação
+```json
+{
+  "success": true,
+  "data": [...],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 100,
+    "totalPages": 10
+  }
+}
+```
+
+---
+
+# 🌐 Variáveis de Ambiente
+
+```env
+API_BASE_URL=http://localhost:3000/api
+WS_URL=ws://localhost:3000
+STRIPE_PUBLIC_KEY=pk_test_...
+GOOGLE_MAPS_API_KEY=...
+```

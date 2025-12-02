@@ -160,11 +160,11 @@ export default function App() {
                             element={<EventCreate />}
                         />
                         <Route
-                            path="events/:id/edit"
+                            path="events/:eventId/edit"
                             element={<EventEdit />}
                         />
                         <Route
-                            path="events/:id/manage"
+                            path="events/:eventId/manage"
                             element={<EventManage />}
                         />
                     </Route>

@@ -8,87 +8,61 @@ import {
     EyeIcon,
 } from "@heroicons/react/24/outline";
 import { useEvent } from "@/hooks/useEvents";
+import { useFinancialStats } from "@/hooks/useFinancial";
 import { useParams } from "react-router-dom";
 
 export default function Overview() {
     const { id } = useParams<{ id: string }>();
-    const { data: event, isLoading: eventLoading, error: eventError } = useEvent(id);
+    const { data: event, isLoading: eventLoading } = useEvent(id || "");
+    const { data: financialStats, isLoading: financialLoading } = useFinancialStats(id || "");
 
-    console.log(eventLoading);
-    console.log(eventError);
-    console.log(event);
+    const isLoading = eventLoading || financialLoading;
 
-    const eventStats = {
-        stats: {
-            ticketsSold: 1250,
-            totalTickets: 2000,
-            revenue: "R$ 125k",
-            views: 3245,
-        },
-    };
+    // Calculate derived stats
+    const ticketsSold = financialStats?.revenueByTicketType.reduce((acc, curr) => acc + curr.quantity, 0) || 0;
+    const totalRevenue = financialStats?.totalRevenue || 0;
+    const totalCapacity = event?.estimatedGuest || 0;
+    const occupancyRate = totalCapacity > 0 ? (ticketsSold / totalCapacity) * 100 : 0;
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-8">
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                <div className="border border-borderColor rounded p-2">
-                    <div className="text-muted text-sm mb-1">Ingressos Enviados</div>
-                    <div className="text-3xl font-black text-text">{eventStats.stats.ticketsSold}</div>
+                <div className="border border-borderColor rounded p-4 bg-surface/50">
+                    <div className="text-muted text-sm mb-1">Ingressos Vendidos</div>
+                    <div className="text-3xl font-black text-text">{ticketsSold}</div>
                     <div className="text-xs text-text-muted mt-2">
-                        de {eventStats.stats.totalTickets} disponíveis
+                        de {totalCapacity} disponíveis
                         <div className="w-full h-1.5 bg-slate-800 rounded-full mt-1 overflow-hidden">
-                            <div className="h-full bg-primary" style={{ width: `${(eventStats.stats.ticketsSold / eventStats.stats.totalTickets) * 100}%` }}></div>
+                            <div className="h-full bg-primary" style={{ width: `${Math.min(occupancyRate, 100)}%` }}></div>
                         </div>
                     </div>
                 </div>
-                <div className="border border-borderColor rounded p-2">
+                <div className="border border-borderColor rounded p-4 bg-surface/50">
                     <div className="text-muted text-sm mb-1">Receita Total</div>
-                    <div className="text-3xl font-black text-text">{eventStats.stats.revenue}</div>
+                    <div className="text-3xl font-black text-text">
+                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalRevenue)}
+                    </div>
                     <div className="text-xs text-green-400 mt-2 flex items-center">
-                        +12% essa semana
+                        Receita bruta
                     </div>
                 </div>
-                <div className="border border-borderColor rounded p-2">
+                <div className="border border-borderColor rounded p-4 bg-surface/50">
                     <div className="text-muted text-sm mb-1">Visualizações da Página</div>
-                    <div className="text-3xl font-black text-text">{eventStats.stats.views}</div>
+                    <div className="text-3xl font-black text-text">3,245</div>
                     <div className="text-xs text-text-muted mt-2">
-                        Últimos 30 dias
+                        (Simulado) Últimos 30 dias
                     </div>
                 </div>
             </div>
-
-            {/* Performance Metrics */}
-            {/* <div>
-                <h3 className="text-xl font-bold text-text mb-4 flex items-center gap-2">
-                    <ChartPieIcon className="w-6 h-6 text-primary" />
-                    Métricas de Performance
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="border border-borderColor rounded p-4 bg-gradient-to-br from-purple-500/5 to-transparent">
-                        <div className="flex items-center justify-between mb-3">
-                            <div className="text-muted text-sm">Taxa de Conversão</div>
-                            <ChartBarIcon className="w-5 h-5 text-purple-400" />
-                        </div>
-                        <div className="text-3xl font-black text-text">23.5%</div>
-                        <div className="text-xs text-purple-400 mt-2">+5.2% vs mês anterior</div>
-                    </div>
-                    <div className="border border-borderColor rounded p-4 bg-gradient-to-br from-blue-500/5 to-transparent">
-                        <div className="flex items-center justify-between mb-3">
-                            <div className="text-muted text-sm">Preço Médio Ingresso</div>
-                            <CurrencyDollarIcon className="w-5 h-5 text-blue-400" />
-                        </div>
-                        <div className="text-3xl font-black text-text">R$ 100</div>
-                        <div className="text-xs text-text-muted mt-2">Baseado em vendas</div>
-                    </div>
-                    <div className="border border-borderColor rounded p-4 bg-gradient-to-br from-green-500/5 to-transparent">
-                        <div className="flex items-center justify-between mb-3">
-                            <div className="text-muted text-sm">Ocupação</div>
-                            <UserGroupIcon className="w-5 h-5 text-green-400" />
-                        </div>
-                        <div className="text-3xl font-black text-text">62.5%</div>
-                        <div className="text-xs text-green-400 mt-2">Boa taxa de ocupação</div>
-                    </div>
-                </div>
-            </div> */}
 
             {/* Quick Actions */}
             <div>
@@ -132,7 +106,7 @@ export default function Overview() {
 
             {/* Engagement Stats */}
             <div>
-                <h3 className="text-xl font-bold text-text mb-4">Engajamento</h3>
+                <h3 className="text-xl font-bold text-text mb-4">Engajamento (Simulado)</h3>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div className="border border-borderColor rounded p-4">
                         <div className="flex items-center gap-3 mb-2">
@@ -167,7 +141,7 @@ export default function Overview() {
 
             {/* Recent Activity Placeholder */}
             <div className="border border-borderColor rounded p-2">
-                <h3 className="text-xl font-bold text-text mb-4">Atividade Recente</h3>
+                <h3 className="text-xl font-bold text-text mb-4">Atividade Recente (Simulado)</h3>
                 <div className="space-y-4">
                     {[1, 2, 3].map((i) => (
                         <div key={i} className="flex items-center justify-between py-3 border-b border-borderColor last:border-0">

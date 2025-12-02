@@ -12,96 +12,83 @@ import {
     QrCodeIcon,
     UserGroupIcon,
     ClockIcon,
-    CheckBadgeIcon
+    CheckBadgeIcon,
+    ChevronLeftIcon,
+    ChevronRightIcon
 } from "@heroicons/react/24/outline";
 import Modal from "../../../components/Modal";
+import { useParams } from "react-router-dom";
+import { useGuests, useCreateGuest, useUpdateGuest, useDeleteGuest } from "@/hooks/useGuests";
+import { useToast } from "@/contexts/ToastContext";
+import CreateGuest from "./CreateGuest";
 
-// Mock Data
-const MOCK_GUESTS = [
-    { id: 1, name: "João Silva", email: "joao@email.com", seat: "A1", status: "confirmed", ticketType: "VIP", checkedIn: true, purchaseDate: "2024-11-15" },
-    { id: 2, name: "Maria Souza", email: "maria@email.com", seat: "A2", status: "pending", ticketType: "Pista", checkedIn: false, purchaseDate: "2024-11-20" },
-    { id: 3, name: "Pedro Santos", email: "pedro@email.com", seat: "B1", status: "confirmed", ticketType: "Pista Premium", checkedIn: true, purchaseDate: "2024-11-18" },
-    { id: 4, name: "Ana Oliveira", email: "ana@email.com", seat: "B2", status: "declined", ticketType: "VIP", checkedIn: false, purchaseDate: "2024-11-10" },
-    { id: 5, name: "Carlos Mendes", email: "carlos@email.com", seat: "C1", status: "confirmed", ticketType: "Early Bird", checkedIn: false, purchaseDate: "2024-10-25" },
-    { id: 6, name: "Juliana Costa", email: "juliana@email.com", seat: "C2", status: "confirmed", ticketType: "VIP", checkedIn: true, purchaseDate: "2024-11-22" },
-    { id: 7, name: "Roberto Lima", email: "roberto@email.com", seat: null, status: "pending", ticketType: "Pista", checkedIn: false, purchaseDate: "2024-11-28" },
-    { id: 8, name: "Fernanda Alves", email: "fernanda@email.com", seat: "D1", status: "confirmed", ticketType: "Pista Premium", checkedIn: false, purchaseDate: "2024-11-12" },
-];
-
-const MOCK_SEATS = [
-    { id: "1", name: "A1" },
-    { id: "2", name: "A2" },
-    { id: "3", name: "B1" },
-    { id: "4", name: "B2" },
-    { id: "5", name: "C1" },
-    { id: "6", name: "C2" },
-    { id: "7", name: "D1" },
-];
+// Mock Data for Seats (keep for now as we don't have a seats hook ready/integrated here yet)
 
 export default function GuestList() {
-    const [guests, setGuests] = useState(MOCK_GUESTS);
+    const { eventId } = useParams();
+    const { showToast, success, error: errorToast } = useToast();
+
+    // Pagination & Filters State
+    const [page, setPage] = useState(1);
+    const [limit] = useState(10);
     const [searchQuery, setSearchQuery] = useState("");
-    const [modalOpen, setModalOpen] = useState(false);
-    const [newGuest, setNewGuest] = useState({ name: "", email: "", seat: "", ticketType: "Pista" });
     const [filterStatus, setFilterStatus] = useState("all");
     const [filterTicketType, setFilterTicketType] = useState("all");
     const [filterCheckedIn, setFilterCheckedIn] = useState("all");
-    const [selectedGuests, setSelectedGuests] = useState<number[]>([]);
 
-    // Calculate statistics
-    const totalGuests = guests.length;
-    const confirmedGuests = guests.filter(g => g.status === "confirmed").length;
-    const pendingGuests = guests.filter(g => g.status === "pending").length;
-    const checkedInGuests = guests.filter(g => g.checkedIn).length;
+    // Data Fetching
+    const { data, isLoading, error } = useGuests(eventId || "", limit, page);
 
-    // Filter guests
-    const filteredGuests = guests.filter(guest => {
-        const matchesSearch = guest.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            guest.email.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesStatus = filterStatus === "all" || guest.status === filterStatus;
-        const matchesTicketType = filterTicketType === "all" || guest.ticketType === filterTicketType;
-        const matchesCheckedIn = filterCheckedIn === "all" ||
-            (filterCheckedIn === "yes" && guest.checkedIn) ||
-            (filterCheckedIn === "no" && !guest.checkedIn);
-        return matchesSearch && matchesStatus && matchesTicketType && matchesCheckedIn;
-    });
+  
+    const updateGuest = useUpdateGuest();
+    const deleteGuest = useDeleteGuest();
 
-    const handleAddGuest = (e: React.FormEvent) => {
-        e.preventDefault();
-        const guest = {
-            id: Date.now(),
-            name: newGuest.name,
-            email: newGuest.email,
-            seat: newGuest.seat || null,
-            status: "pending" as const,
-            ticketType: newGuest.ticketType,
-            checkedIn: false,
-            purchaseDate: new Date().toISOString().split('T')[0]
-        };
-        setGuests([...guests, guest]);
-        setModalOpen(false);
-        setNewGuest({ name: "", email: "", seat: "", ticketType: "Pista" });
-    };
+    // UI State
+    const [modalOpen, setModalOpen] = useState(false);
 
-    const toggleSelectGuest = (id: number) => {
+    const [selectedGuests, setSelectedGuests] = useState<string[]>([]);
+
+    // Derived Data
+    const guests = data?.items || [];
+    const totalGuests = data?.totalItems || 0;
+    const totalPages = data?.totalPages || 1;
+
+    // Statistics (Mocked for now based on current page, ideally should come from a stats endpoint)
+    const confirmedGuests = guests.filter((g) => g.ticket.ticketStatus === "CONFIRMED").length;
+    const pendingGuests = guests.filter((g) => g.ticket.ticketStatus === "PENDING").length;
+    const checkedInGuests = guests.filter((g) => g.ticket.ticketStatus === "VALIDATED").length;
+
+  
+    const toggleSelectGuest = (id: string) => {
         setSelectedGuests(prev =>
             prev.includes(id) ? prev.filter(gid => gid !== id) : [...prev, id]
         );
     };
 
     const toggleSelectAll = () => {
-        if (selectedGuests.length === filteredGuests.length) {
+        if (selectedGuests.length === guests.length) {
             setSelectedGuests([]);
         } else {
-            setSelectedGuests(filteredGuests.map(g => g.id));
+            setSelectedGuests(guests.map((g) => g.id));
         }
     };
 
-    const handleBulkCheckIn = () => {
-        setGuests(guests.map(g =>
-            selectedGuests.includes(g.id) ? { ...g, checkedIn: true } : g
-        ));
+    const handleBulkCheckIn = async () => {
+        if (!eventId) return;
+        // Implement bulk check-in logic here (e.g., loop through selectedGuests and call updateGuest)
+        // For now, just a placeholder toast
+        success("Check-in em massa iniciado (implementação pendente)");
         setSelectedGuests([]);
+    };
+
+    const handleDeleteGuest = async (guestId: string) => {
+        if (!eventId || !confirm("Tem certeza que deseja remover este participante?")) return;
+        try {
+            await deleteGuest.mutateAsync({ eventId, guestId });
+            success("Participante removido.");
+        } catch (err) {
+            errorToast("Erro ao remover participante.");
+        }
     };
 
     const getTicketTypeColor = (type: string) => {
@@ -112,6 +99,22 @@ export default function GuestList() {
             default: return "bg-green-500/20 text-green-400 border-green-500/30";
         }
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="text-center py-20">
+                <p className="text-red-400">Erro ao carregar lista de participantes.</p>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
@@ -131,7 +134,7 @@ export default function GuestList() {
                         <CheckCircleIcon className="w-5 h-5 text-green-400" />
                     </div>
                     <div className="text-3xl font-black text-text">{confirmedGuests}</div>
-                    <div className="text-xs text-green-400 mt-1">{Math.round((confirmedGuests / totalGuests) * 100)}% do total</div>
+                    <div className="text-xs text-green-400 mt-1">Na página atual</div>
                 </div>
                 <div className="border border-borderColor rounded p-4 bg-gradient-to-br from-yellow-500/5 to-transparent">
                     <div className="flex items-center justify-between mb-2">
@@ -139,7 +142,7 @@ export default function GuestList() {
                         <ClockIcon className="w-5 h-5 text-yellow-400" />
                     </div>
                     <div className="text-3xl font-black text-text">{pendingGuests}</div>
-                    <div className="text-xs text-yellow-400 mt-1">Aguardando confirmação</div>
+                    <div className="text-xs text-yellow-400 mt-1">Na página atual</div>
                 </div>
                 <div className="border border-borderColor rounded p-4 bg-gradient-to-br from-purple-500/5 to-transparent">
                     <div className="flex items-center justify-between mb-2">
@@ -147,7 +150,7 @@ export default function GuestList() {
                         <CheckBadgeIcon className="w-5 h-5 text-purple-400" />
                     </div>
                     <div className="text-3xl font-black text-text">{checkedInGuests}</div>
-                    <div className="text-xs text-purple-400 mt-1">{Math.round((checkedInGuests / totalGuests) * 100)}% presentes</div>
+                    <div className="text-xs text-purple-400 mt-1">Na página atual</div>
                 </div>
             </div>
 
@@ -246,31 +249,30 @@ export default function GuestList() {
             {/* Guest List Table */}
             <div className="border border-borderColor rounded overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left">
+                    <table className="w-full text-center">
                         <thead>
                             <tr className="border-b border-borderColor bg-white/5">
-                                <th className="px-4 py-4">
+                                <th className="p-2 border-r border-borderColor">
                                     <input
                                         type="checkbox"
-                                        checked={selectedGuests.length === filteredGuests.length && filteredGuests.length > 0}
+                                        checked={selectedGuests.length === guests.length && guests.length > 0}
                                         onChange={toggleSelectAll}
                                         className="w-4 h-4 rounded border-borderColor bg-surface"
                                     />
                                 </th>
-                                <th className="px-6 py-4 text-sm font-bold text-muted">Nome</th>
-                                <th className="px-6 py-4 text-sm font-bold text-muted">Email</th>
-                                <th className="px-6 py-4 text-sm font-bold text-muted">Tipo</th>
-                                <th className="px-6 py-4 text-sm font-bold text-muted">Assento</th>
-                                <th className="px-6 py-4 text-sm font-bold text-muted">Status</th>
-                                <th className="px-6 py-4 text-sm font-bold text-muted">Check-in</th>
-                                <th className="px-6 py-4 text-sm font-bold text-muted">Compra</th>
-                                <th className="px-6 py-4 text-sm font-bold text-muted text-right">Ações</th>
+                                <th className="p-2 text-sm font-bold text-muted border-r border-borderColor">Nome</th>
+                                <th className="p-2 text-sm font-bold text-muted border-r border-borderColor">Assento</th>
+                                <th className="p-2 text-sm font-bold text-muted border-r border-borderColor">Status</th>
+                                <th className="p-2 text-sm font-bold text-muted border-r border-borderColor">Check-in</th>
+                                <th className="p-2 text-sm font-bold text-muted border-r border-borderColor">Emitido</th>
+                                <th className="p-2 text-sm font-bold text-muted border-r border-borderColor">Respondido</th>
+                                <th className="p-2 text-sm font-bold text-muted w-0">Ações</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-borderColor">
-                            {filteredGuests.map((guest) => (
+                            {guests.map((guest) => (
                                 <tr key={guest.id} className="hover:bg-white/5 transition-colors">
-                                    <td className="px-4 py-4">
+                                    <td className="p-2 border-r border-borderColor">
                                         <input
                                             type="checkbox"
                                             checked={selectedGuests.includes(guest.id)}
@@ -278,43 +280,37 @@ export default function GuestList() {
                                             className="w-4 h-4 rounded border-borderColor bg-surface"
                                         />
                                     </td>
-                                    <td className="px-6 py-4">
+                                    <td className="p-2 border-r border-borderColor">
                                         <div className="font-bold text-text">{guest.name}</div>
                                     </td>
-                                    <td className="px-6 py-4 text-muted text-sm">{guest.email}</td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-3 py-1 rounded-full border text-xs font-bold ${getTicketTypeColor(guest.ticketType)}`}>
-                                            {guest.ticketType}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        {guest.seat ? (
-                                            <span className="px-3 py-1 rounded-full bg-primary/20 text-primary-light border border-primary/30 text-xs font-bold">
-                                                {guest.seat}
+                                    <td className="p-2 border-r border-borderColor">
+                                        {guest.ticket.seat ? (
+                                            <span className="px-3 whitespace-nowrap py-1 bg-primary/20 text-primary-light text-sm font-bold">
+                                                {guest.ticket.seat.name}
                                             </span>
                                         ) : (
                                             <span className="text-muted text-sm italic">Não atribuído</span>
                                         )}
                                     </td>
-                                    <td className="px-6 py-4">
-                                        {guest.status === 'confirmed' && (
-                                            <span className="flex items-center text-green-400 text-sm font-medium">
+                                    <td className="p-2 border-r border-borderColor">
+                                        {guest.ticket.ticketStatus === 'CONFIRMED' && (
+                                            <span className="flex justify-center items-center text-green-400 text-sm font-medium">
                                                 <CheckCircleIcon className="w-4 h-4 mr-1" /> Confirmado
                                             </span>
                                         )}
-                                        {guest.status === 'pending' && (
-                                            <span className="flex items-center text-yellow-400 text-sm font-medium">
+                                        {guest.ticket.ticketStatus === 'PENDING' && (
+                                            <span className="flex  justify-center items-center text-yellow-400 text-sm font-medium">
                                                 <span className="w-2 h-2 rounded-full bg-yellow-400 mr-2 animate-pulse"></span> Pendente
                                             </span>
                                         )}
-                                        {guest.status === 'declined' && (
-                                            <span className="flex items-center text-red-400 text-sm font-medium">
+                                        {guest.ticket.ticketStatus === 'DECLINED' && (
+                                            <span className="flex justify-center items-center text-red-400 text-sm font-medium">
                                                 <XCircleIcon className="w-4 h-4 mr-1" /> Recusado
                                             </span>
                                         )}
                                     </td>
-                                    <td className="px-6 py-4">
-                                        {guest.checkedIn ? (
+                                    <td className="p-2 border-r border-borderColor">
+                                        {guest.ticket.ticketStatus === "VALIDATED" ? (
                                             <span className="flex items-center text-green-400 text-sm font-medium">
                                                 <CheckBadgeIcon className="w-4 h-4 mr-1" /> Feito
                                             </span>
@@ -322,15 +318,20 @@ export default function GuestList() {
                                             <span className="text-muted text-sm">Pendente</span>
                                         )}
                                     </td>
-                                    <td className="px-6 py-4 text-text-muted text-sm">
-                                        {new Date(guest.purchaseDate).toLocaleDateString('pt-BR')}
+                                    <td className="p-2 text-text-muted text-sm border-r border-borderColor">
+                                        {new Date(guest.ticket.createdAt).toLocaleDateString('pt-BR')}
                                     </td>
-                                    <td className="px-6 py-4 text-right">
+                                    <td className="p-2 text-text-muted text-sm border-r border-borderColor">
+                                        {guest.ticket.respondedAt ? new Date(guest.ticket.respondedAt).toLocaleDateString('pt-BR') : "-"}
+                                    </td>
+                                    <td className="p-2">
                                         <div className="flex justify-end gap-2">
                                             <button className="p-2 hover:bg-white/10 rounded text-muted hover:text-text transition-colors">
                                                 <PencilSquareIcon className="w-4 h-4" />
                                             </button>
-                                            <button className="p-2 hover:bg-red-500/20 rounded text-muted hover:text-red-400 transition-colors">
+                                            <button
+                                                onClick={() => handleDeleteGuest(guest.id)}
+                                                className="p-2 hover:bg-red-500/20 rounded text-muted hover:text-red-400 transition-colors">
                                                 <TrashIcon className="w-4 h-4" />
                                             </button>
                                         </div>
@@ -342,7 +343,7 @@ export default function GuestList() {
                 </div>
 
                 {/* Empty State */}
-                {filteredGuests.length === 0 && (
+                {guests.length === 0 && (
                     <div className="flex flex-col items-center justify-center py-16 text-center">
                         <UserGroupIcon className="w-16 h-16 text-text-muted mb-4" />
                         <h4 className="text-lg font-bold text-text mb-2">Nenhum participante encontrado</h4>
@@ -355,11 +356,36 @@ export default function GuestList() {
                 )}
             </div>
 
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-4 mt-8">
+                    <button
+                        onClick={() => setPage(p => Math.max(1, p - 1))}
+                        disabled={page === 1}
+                        className="flex items-center px-4 py-2 border border-borderColor rounded text-sm font-medium text-text hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                        <ChevronLeftIcon className="w-4 h-4 mr-2" />
+                        Anterior
+                    </button>
+                    <span className="text-text-muted text-sm">
+                        Página <span className="text-text font-bold">{page}</span> de <span className="text-text font-bold">{totalPages}</span>
+                    </span>
+                    <button
+                        onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                        disabled={page === totalPages}
+                        className="flex items-center px-4 py-2 border border-borderColor rounded text-sm font-medium text-text hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                        Próximo
+                        <ChevronRightIcon className="w-4 h-4 ml-2" />
+                    </button>
+                </div>
+            )}
+
             {/* Results Summary */}
-            {filteredGuests.length > 0 && (
+            {guests.length > 0 && (
                 <div className="flex justify-between items-center text-sm text-text-muted">
                     <div>
-                        Mostrando <span className="font-bold text-text">{filteredGuests.length}</span> de <span className="font-bold text-text">{totalGuests}</span> participantes
+                        Mostrando <span className="font-bold text-text">{guests.length}</span> participantes
                     </div>
                     {selectedGuests.length > 0 && (
                         <div className="text-primary font-semibold">
@@ -374,67 +400,7 @@ export default function GuestList() {
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
                 title="Adicionar Novo Participante">
-                <form onSubmit={handleAddGuest} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-muted mb-2">Nome Completo</label>
-                        <input
-                            type="text"
-                            required
-                            className="w-full bg-surface border border-borderColor rounded px-4 py-3 text-text placeholder-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                            placeholder="Ex: João Silva"
-                            value={newGuest.name}
-                            onChange={(e) => setNewGuest({ ...newGuest, name: e.target.value })}
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-muted mb-2">Email</label>
-                        <input
-                            type="email"
-                            required
-                            className="w-full bg-surface border border-borderColor rounded px-4 py-3 text-text placeholder-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                            placeholder="Ex: joao@email.com"
-                            value={newGuest.email}
-                            onChange={(e) => setNewGuest({ ...newGuest, email: e.target.value })}
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-muted mb-2">Tipo de Ingresso</label>
-                        <select
-                            className="w-full bg-surface border border-borderColor rounded px-4 py-3 text-text focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                            value={newGuest.ticketType}
-                            onChange={(e) => setNewGuest({ ...newGuest, ticketType: e.target.value })}>
-                            <option value="Pista">Pista</option>
-                            <option value="Pista Premium">Pista Premium</option>
-                            <option value="VIP">VIP</option>
-                            <option value="Early Bird">Early Bird</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-muted mb-2">Assento (Opcional)</label>
-                        <select
-                            className="w-full bg-surface border border-borderColor rounded px-4 py-3 text-text focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                            value={newGuest.seat}
-                            onChange={(e) => setNewGuest({ ...newGuest, seat: e.target.value })}>
-                            <option value="">Selecione um assento</option>
-                            {MOCK_SEATS.map(seat => (
-                                <option key={seat.id} value={seat.name}>{seat.name}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className="pt-4 flex justify-end gap-3">
-                        <button
-                            type="button"
-                            onClick={() => setModalOpen(false)}
-                            className="px-6 py-3 border border-borderColor hover:bg-white/5 text-text rounded font-semibold transition-all">
-                            Cancelar
-                        </button>
-                        <button
-                            type="submit"
-                            className="px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded shadow-lg shadow-primary/20 transition-all font-bold">
-                            Salvar Participante
-                        </button>
-                    </div>
-                </form>
+                <CreateGuest eventId={eventId} setModalOpen={setModalOpen}/>
             </Modal>
         </div>
     );
