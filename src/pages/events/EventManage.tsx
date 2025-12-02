@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import {
     ChartBarIcon,
     UserGroupIcon,
@@ -9,10 +9,11 @@ import {
     ArrowLeftIcon,
     CalendarIcon,
     MapPinIcon,
-    PencilSquareIcon
+    PlusIcon,
+    ClipboardDocumentListIcon
 } from "@heroicons/react/24/outline";
-import GuestList from "./GuestList";
-import EventSeats from "./EventSeats";
+import GuestList from "./manage/GuestList";
+import EventSeats from "./manage/EventSeats";
 
 // Mock Data
 const EVENT_DATA = {
@@ -33,78 +34,121 @@ const EVENT_DATA = {
 const TABS = [
     { id: "overview", label: "Visão Geral", icon: ChartBarIcon },
     { id: "guests", label: "Participantes", icon: UserGroupIcon },
+    { id: "seats", label: "Assentos", icon: UserGroupIcon },
     { id: "tickets", label: "Ingressos", icon: TicketIcon },
     { id: "financial", label: "Financeiro", icon: CurrencyDollarIcon },
+    { id: "operations", label: "Operações", icon: ClipboardDocumentListIcon },
     { id: "settings", label: "Configurações", icon: Cog6ToothIcon },
 ];
 
+import { useEvent } from "@/hooks/useEvents";
+import Button from "@/components/Form/Button";
+import Settings from "./manage/Settings";
+import Tickets from "./manage/Tickets";
+import Overview from "./manage/Overview";
+import Financial from "./manage/Financial";
+import Operations from "./manage/Operations";
+
 export default function EventManage() {
+    const navigate = useNavigate();
     const { id } = useParams();
     const [activeTab, setActiveTab] = useState("overview");
-    const event = EVENT_DATA; // In real app, fetch by ID
+    const { data: eventData, isLoading, error } = useEvent(id);
+
+    // Mock stats for now as they are not in the API yet
+    const event = eventData ? {
+        ...eventData,
+        date: new Date(eventData.dateStart).toLocaleDateString(),
+        image: eventData.coverImage,
+        stats: {
+            ticketsSold: 1250,
+            totalTickets: eventData.estimatedGuest || 2000,
+            revenue: "R$ 125.000",
+            views: 5430
+        }
+    } : null;
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
+
+    if (error || !event) {
+        return (
+            <div className="min-h-screen bg-background flex items-center justify-center text-text">
+                <div className="text-center">
+                    <h2 className="text-2xl font-bold mb-2">Erro ao carregar evento</h2>
+                    <Link to="/dashboard/organizers/events" className="text-primary hover:underline">Voltar para lista</Link>
+                </div>
+            </div>
+        );
+    }
+
+
+
 
     return (
         <div className="min-h-screen bg-background text-text font-sans selection:bg-primary selection:text-white pb-20">
             {/* Header */}
-            <div className="bg-surface border-b border-white/5">
-                <div className="max-w-7xl mx-auto px-6 py-8">
-                    <Link to="/events" className="inline-flex items-center text-muted hover:text-text transition-colors mb-6">
+            <div className="">
+                <div className="p-2 md:p-4">
+                    <Link
+                        to="/dashboard/organizers/events"
+                        className="flex items-center text-muted hover:text-text transition-colors mb-4"
+                    >
                         <ArrowLeftIcon className="w-4 h-4 mr-2" />
-                        Voltar para Meus Eventos
+                        Voltar Para Eventos
                     </Link>
 
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                        <div className="flex items-center gap-6">
+                    <div className="flex flex-col md:flex-row md:gap-7">
+                        <div>
                             <img
                                 src={event.image}
                                 alt={event.title}
-                                className="w-20 h-20 rounded-2xl object-cover border-2 border-white/10"
+                                className="md:w-[650px] md:h-[400px] rounded object-cover border-2 border-borderColor"
                             />
-                            <div>
-                                <h1 className="text-3xl font-black text-text mb-2">{event.title}</h1>
-                                <div className="flex items-center gap-4 text-muted text-sm">
-                                    <span className="flex items-center">
-                                        <CalendarIcon className="w-4 h-4 mr-1" />
-                                        {event.date}
-                                    </span>
-                                    <span className="flex items-center">
-                                        <MapPinIcon className="w-4 h-4 mr-1" />
-                                        {event.location}
-                                    </span>
-                                    <span className={`px-2 py-0.5 rounded-full text-xs font-bold uppercase ${event.status === 'active'
-                                        ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                                        : "bg-slate-500/20 text-muted border border-slate-500/30"
-                                        }`}>
-                                        {event.status === 'active' ? 'Ativo' : 'Rascunho'}
-                                    </span>
-                                </div>
-                            </div>
                         </div>
-
-                        <div className="flex gap-3">
-                            <Link
-                                to={`/events/edit/${id}`}
-                                className="px-4 py-2 bg-white/5 hover:bg-white/10 text-text rounded-lg font-bold flex items-center transition-colors"
-                            >
-                                <PencilSquareIcon className="w-5 h-5 mr-2" />
-                                Editar Evento
-                            </Link>
-                            <button className="px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg font-bold shadow-lg shadow-primary/20 transition-colors">
-                                Divulgar Evento
-                            </button>
+                        <div className="flex-1">
+                            <div className="p-4 space-y-2">
+                                <div>
+                                    <h1 className="md:text-4xl text-2xl font-bold">{event.title}</h1>
+                                    <p className="md:text-xl text-lg font-bold">{event.category}</p>
+                                </div>
+                                <div className="">
+                                    <p className="md:text-xl text-lg font-bold flex items-center gap-1"> <CalendarIcon className="w-5 h-5 mr-1" /> {event.date}</p>
+                                    <p className="md:text-xl text-lg font-bold flex items-center gap-1"> <MapPinIcon className="w-5 h-5 mr-1" /> {event.location}</p>
+                                </div>
+                                <p className="md:text-xl text-lg font-bold">{event.description}</p>
+                            </div>
+                            <Button
+                                fullWidth
+                                onClick={() => navigate(`/dashboard/organizers/events/${id}/edit`)}>
+                                <div className="flex flex-row items-center gap-1">
+                                    <PlusIcon className="md:w-5 md:h-5 w-4 h-4" />
+                                    <span className="text-sm font-semibold text-nowrap">Editar Evento</span>
+                                </div>
+                            </Button>
                         </div>
                     </div>
                 </div>
+                <hr className="border-t border-borderColor" />
 
+            </div>
+
+            {/* Content Area */}
+            <div className="px-3 bg-surface mt-4 py-2">
                 {/* Tabs */}
-                <div className="max-w-7xl mx-auto px-6 flex overflow-x-auto no-scrollbar">
+                <div className="w-full flex justify-around overflow-x-auto no-scrollbar mb-3 pb-3 border-b border-borderColor">
                     {TABS.map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`flex items-center px-6 py-4 border-b-2 transition-colors whitespace-nowrap font-medium ${activeTab === tab.id
+                            className={`flex items-center px-6 justify-center p-2 border-b-2 transition-colors whitespace-nowrap font-medium ${activeTab === tab.id
                                 ? "border-primary text-text"
-                                : "border-transparent text-muted hover:text-text hover:border-white/10"
+                                : "border-transparent text-muted hover:text-text hover:border-text-muted"
                                 }`}
                         >
                             <tab.icon className={`w-5 h-5 mr-2 ${activeTab === tab.id ? "text-primary" : "text-text-muted"}`} />
@@ -112,74 +156,21 @@ export default function EventManage() {
                         </button>
                     ))}
                 </div>
-            </div>
-
-            {/* Content Area */}
-            <div className="max-w-7xl mx-auto px-6 py-8">
-                {activeTab === "overview" && (
-                    <div className="space-y-8">
-                        {/* Quick Stats */}
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                            <div className="bg-surface/50 border border-white/10 rounded-2xl p-6">
-                                <div className="text-muted text-sm mb-1">Ingressos Vendidos</div>
-                                <div className="text-3xl font-black text-text">{event.stats.ticketsSold}</div>
-                                <div className="text-xs text-text-muted mt-2">
-                                    de {event.stats.totalTickets} disponíveis
-                                    <div className="w-full h-1.5 bg-slate-800 rounded-full mt-1 overflow-hidden">
-                                        <div className="h-full bg-primary" style={{ width: `${(event.stats.ticketsSold / event.stats.totalTickets) * 100}%` }}></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="bg-surface/50 border border-white/10 rounded-2xl p-6">
-                                <div className="text-muted text-sm mb-1">Receita Total</div>
-                                <div className="text-3xl font-black text-text">{event.stats.revenue}</div>
-                                <div className="text-xs text-green-400 mt-2 flex items-center">
-                                    +12% essa semana
-                                </div>
-                            </div>
-                            <div className="bg-surface/50 border border-white/10 rounded-2xl p-6">
-                                <div className="text-muted text-sm mb-1">Visualizações da Página</div>
-                                <div className="text-3xl font-black text-text">{event.stats.views}</div>
-                                <div className="text-xs text-text-muted mt-2">
-                                    Últimos 30 dias
-                                </div>
-                            </div>
-                            <div className="bg-surface/50 border border-white/10 rounded-2xl p-6 flex flex-col justify-center items-center text-center cursor-pointer hover:bg-white/5 transition-colors group">
-                                <div className="w-10 h-10 rounded-full bg-primary/20 text-primary-light flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                                    <TicketIcon className="w-6 h-6" />
-                                </div>
-                                <div className="font-bold text-text">Configurar Ingressos</div>
-                            </div>
-                        </div>
-
-                        {/* Recent Activity Placeholder */}
-                        <div className="bg-surface/50 border border-white/10 rounded-2xl p-8">
-                            <h3 className="text-xl font-bold text-text mb-4">Atividade Recente</h3>
-                            <div className="space-y-4">
-                                {[1, 2, 3].map((i) => (
-                                    <div key={i} className="flex items-center justify-between py-3 border-b border-white/5 last:border-0">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-muted">
-                                                <UserGroupIcon className="w-5 h-5" />
-                                            </div>
-                                            <div>
-                                                <div className="text-text font-medium">Novo ingresso vendido</div>
-                                                <div className="text-xs text-text-muted">João Silva comprou 2x Pista Premium</div>
-                                            </div>
-                                        </div>
-                                        <div className="text-xs text-text-muted">Há 2 horas</div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                )}
+                {activeTab === "overview" && (<Overview />)}
 
                 {activeTab === "guests" && <GuestList />}
 
                 {activeTab === "seats" && <EventSeats />}
 
-                {activeTab !== "overview" && activeTab !== "guests" && activeTab !== "seats" && (
+                {activeTab === "settings" && (<Settings />)}
+
+                {activeTab === "tickets" && (<Tickets />)}
+
+                {activeTab === "financial" && (<Financial />)}
+
+                {activeTab === "operations" && (<Operations />)}
+
+                {activeTab !== "overview" && activeTab !== "guests" && activeTab !== "seats" && activeTab !== "settings" && activeTab !== "tickets" && activeTab !== "financial" && activeTab !== "operations" && (
                     <div className="flex flex-col items-center justify-center py-20 text-center">
                         <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-6">
                             <Cog6ToothIcon className="w-10 h-10 text-text-muted" />

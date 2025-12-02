@@ -3,9 +3,21 @@ import api from "./axiosClient";
 import { EventCreateForm } from "@/schemas/validation";
 
 export const eventsApi = {
-    getOrganizerEvents: async (organizerId: string, limit: number = 10, pageNumber: number = 1, sort: string = "createdAt,desc"): Promise<Event[]> => {
+    getEvent: async (eventId: string) => {
+        try {
+            const { data } = await api.get(`events/${eventId}`);
+            return data;
+        } catch (error) {
+            console.error("Erro ao buscar evento:", error);
+            throw error;
+        }
+    },
+
+    fetchOrganizerEvents: async (organizerId: string, limit: number = 10, pageNumber: number = 1, sort: string = "createdAt"): Promise<PageEvent> => {
         try {
             const { data } = await api.get(`events/organizer/${organizerId}?limit=${limit}&pageNumber=${pageNumber}&sort=${sort}`);
+            console.log(data);
+
             return data;
         } catch (error) {
             console.error("Erro ao buscar eventos:", error);
@@ -13,8 +25,6 @@ export const eventsApi = {
         }
     },
     createEvent: async (event: EventCreateForm): Promise<Event> => {
-        console.log(event);
-
         try {
             if (event.image && event.image.length > 0) {
                 const formData = new FormData();

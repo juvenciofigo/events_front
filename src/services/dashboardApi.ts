@@ -99,6 +99,7 @@ export const dashboardApi = {
     getFeedback: async (target: string, targetId: string, limit: number = 10): Promise<Feedback[]> => {
         try {
             const { data } = await api.get(`/reviews?target=${target}&targetId=${targetId}&limit=${limit}`);
+            console.log(data);
             
 
             return data?.items;

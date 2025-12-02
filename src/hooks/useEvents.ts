@@ -8,14 +8,17 @@ export function useEvents() {
 }
 
 export function useEvent(id?: string) {
-    return useQuery({ queryKey: ["event", id], queryFn: () => (id ? api.getEvent(id) : null), enabled: !!id });
-}
+    return useQuery({ queryKey: ["event", id], 
+        queryFn: () => (id ? eventsApi.getEvent(id) : null), 
+        enabled: !!id });
+}   
 
 export function useCreateEvent() {
     const qc = useQueryClient();
-    return useMutation({ 
-        mutationFn: (data: EventCreateForm) => eventsApi.createEvent(data), 
-        onSuccess: () => qc.invalidateQueries({ queryKey: ["events"] }) });
+    return useMutation({
+        mutationFn: (data: EventCreateForm) => eventsApi.createEvent(data),
+        onSuccess: () => qc.invalidateQueries({ queryKey: ["events"] })
+    });
 }
 
 export function useUpdateEvent() {
@@ -29,11 +32,11 @@ export function useUpdateEvent() {
     });
 }
 
-export function useGetOrganizerEvents(organizerId: string, limit: number = 10, pageNumber: number = 1, sort: string = "createdAt,desc") {
+export function useFetchOrganizerEvents(organizerId: string, limit: number = 10, pageNumber: number = 1, sort: string = "createdAt,desc") {
     return useQuery({
-        queryKey: ["events", "organizer", organizerId],
+        queryKey: ["events", "organizer", organizerId, limit, pageNumber, sort],
         enabled: !!organizerId,
-        queryFn: () => eventsApi.getOrganizerEvents(organizerId, limit, pageNumber, sort),
+        queryFn: () => eventsApi.fetchOrganizerEvents(organizerId, limit, pageNumber, sort),
         staleTime: 1000 * 60 * 1,
     });
 }

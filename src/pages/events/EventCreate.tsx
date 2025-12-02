@@ -50,7 +50,7 @@ export default function EventCreate() {
         createEventMutation.mutate(data, {
             onSuccess: () => {
                 toast.success("Evento criado com sucesso!");
-                // navigate("/dashboard/organizers/events");
+                navigate("/dashboard/organizers/events");
             },
             onError: (error: any) => {
                 toast.error(error?.response?.data?.message || "Erro ao criar evento.");
