@@ -3,7 +3,7 @@ import api from "./axiosClient";
 import { EventCreateForm } from "@/schemas/validation";
 
 export const eventsApi = {
-    getEvent: async (eventId: string) => {
+    getEvent: async (eventId: string, page: number, limit: number, searchQuery: string) => {
         try {
             const { data } = await api.get(`events/${eventId}`);
             return data;
@@ -13,9 +13,9 @@ export const eventsApi = {
         }
     },
 
-    fetchOrganizerEvents: async (organizerId: string, limit: number = 10, pageNumber: number = 1, sort: string = "createdAt"): Promise<PageEvent> => {
+    fetchOrganizerEvents: async (organizerId: string, limit: number = 10, page: number = 1, sort: string = "createdAt"): Promise<PageEvent> => {
         try {
-            const { data } = await api.get(`events/organizer/${organizerId}?limit=${limit}&pageNumber=${pageNumber}&sort=${sort}`);
+            const { data } = await api.get(`events/organizer/${organizerId}?limit=${limit}&page=${page}&sort=${sort}`);
             return data;
         } catch (error) {
             console.error("Erro ao buscar eventos:", error);

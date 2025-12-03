@@ -106,7 +106,7 @@ Base URL: `/api/guests`
 | Método    | Rota                | Descrição              | Body                           | Response                          |
 |-----------|---------------------|------------------------|--------------------------------|-----------------------------------|
 | `GET`     | `/event/:eventId`   | Listar convidados      | `?status=confirmed`            | `{ guests: [] }`                  |
-| `GET`     | `/event/:eventId`   | Listar convidados      | `?limit=10&pageNumber=1...`    | `{ guests: [] }`                  |
+| `GET`     | `/event/:eventId`   | Listar convidados      | `?limit=10&page=1...`    | `{ guests: [] }`                  |
 | `POST`    | `/event/:eventId`   | Adicionar convidado    | `{ name, email, phone, ... }`  | `{ guest }`                       |
 | `DELETE`  | `/:id`              | Remover convidado      | -                              | `{ success: true }`               |
 | `PUT`     | `/:id`              | Atualizar convidado    | `{ name, status, ... }`        | `{ guest }`                       |
@@ -430,7 +430,7 @@ Base URL: `/api/events`
 
 | Método | Rota                               | Descrição                      | Body                                       | Response                            |
 |--------|------------------------------------|------------------------------  |--------------------------------------------|-------------------------------------|
-| `GET`  | `/organizer/:organizerId`          | Listar eventos do organizador  | `?limit=10&pageNumber=1&sort=createdAt`    | `{ content: [], totalElements, ... }`|
+| `GET`  | `/organizer/:organizerId`          | Listar eventos do organizador  | `?limit=10&page=1&sort=createdAt`    | `{ content: [], totalElements, ... }`|
 | `GET`  | `/:id`                             | Obter detalhes do evento       | -                                          | `{ event }`                         |
 | `POST` | `/`                                | Criar novo evento              | `FormData` (com imagem) ou JSON            | `{ event }`                         |
 

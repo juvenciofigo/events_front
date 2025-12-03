@@ -1,3 +1,4 @@
+import { PaymentMethod } from "@/types/system";
 import * as z from "zod";
 
 // ============ Auth Schemas ============
@@ -5,7 +6,6 @@ import * as z from "zod";
 export const loginSchema = z.object({
     email: z.string().email("Email inválido").min(1, "Email é obrigatório"),
     password: z.string().min(5, "Senha deve ter no mínimo 5 caracteres"),
-    // role: z.enum(["organizers", "suppliers", "guest"]).optional().nullable(),
 });
 
 export type LoginForm = z.infer<typeof loginSchema>;
@@ -118,7 +118,11 @@ export type SeatFormData = z.infer<typeof seatSchema>;
 export const profileSchema = z.object({
     name: z.string().min(3, "Nome deve ter no mínimo 3 caracteres").max(100, "Nome muito longo"),
     email: z.string().email("Email inválido"),
-    phone: z.string().max(20, "Telefone inválido").optional(),
+    phone: z
+        .string()
+        .regex(/^8[2-7]\d{7}$/, "Telefone deve ser um número móvel válido (82-87 + 7 dígitos)")
+        .optional()
+        .or(z.literal("")),
     bio: z.string().max(500, "Bio muito longa").optional(),
     avatar: z.string().url("URL do avatar inválida").optional(),
 });
@@ -141,8 +145,25 @@ export type TicketTypeForm = z.infer<typeof ticketTypeSchema>;
 export const guestCreateSchema = z.object({
     name: z.string().min(3, "Nome deve ter no mínimo 3 caracteres").max(100, "Nome muito longo"),
     email: z.string().email("Email inválido").min(1, "Email é obrigatório"),
-    ticketType: z.string().min(1, "Tipo de ingresso é obrigatório"),
-    seat: z.string().optional(),
+    phone: z
+        .string()
+        .regex(/^8[2-7]\d{7}$/, "Telefone deve ser um número móvel válido (82-87 + 7 dígitos)")
+        .optional()
+        .or(z.literal("")),
+    eventId: z.string().min(1, "Event ID é obrigatório"),
+    totalPeople: z.coerce.number().int("Deve ser número inteiro").positive("Quantidade deve ser positiva").optional(),
+    notes: z.string().max(500, "Notas muito longas").optional(),
+    seatId: z.string().optional(),
+    payerNum: z
+        .string()
+        .regex(/^8[2-7]\d{7}$/, "Telefone deve ser um número móvel válido (82-87 + 7 dígitos)")
+        .optional()
+        .or(z.literal("")),
+    paymentMethod: z.nativeEnum(PaymentMethod).optional(),
 });
 
 export type GuestCreateForm = z.infer<typeof guestCreateSchema>;
+
+export const guestEditSchema = guestCreateSchema;
+
+export type GuestEditForm = z.infer<typeof guestEditSchema>;

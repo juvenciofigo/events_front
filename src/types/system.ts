@@ -4,3 +4,26 @@ export interface Page<T> {
     totalPages: number;
     currentPage: number;
 }
+
+export interface query {
+    page: number,
+    limit: number,
+    sort: string,
+    searchQuery?: string,
+}
+
+export enum PaymentMethod {
+    MPESA = "MPESA",
+    // MKESH = "MKESH",
+    // EMOLA = "EMOLA",
+    // CARD = "CARD",
+    // PAYPAL = "PAYPAL",
+}
+
+export const PaymentMethods = [
+    { label: "MPESA", value: PaymentMethod.MPESA },
+    // { label: "MKESH", value: PaymentMethod.MKESH },
+    // { label: "EMOLA", value: PaymentMethod.EMOLA },
+    // { label: "CARD", value: PaymentMethod.CARD },
+    // { label: "PAYPAL", value: PaymentMethod.PAYPAL },
+]

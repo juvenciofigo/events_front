@@ -52,7 +52,7 @@ export default function Navbar() {
         <header className="w-full bg-surface/50 backdrop-blur-md border-b border-borderColor transition-colors p-2 flex items-center justify-between sticky top-0 z-40">
 
             <div className="flex gap-2">
-                <PathMorphing aria-label="Toggle menu" onClick={() => setMobileMenuOpen()} paths={MENU_PATHS} className="flex md:hidden" />
+                <PathMorphing aria-label="Toggle menu" onClick={() => setMobileMenuOpen()} paths={MENU_PATHS} className="flex lg:hidden" />
                 <Logo />
             </div>
 

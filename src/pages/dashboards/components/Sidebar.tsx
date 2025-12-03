@@ -26,7 +26,7 @@ export default function Sidebar({ className, navItems }: SidebarProps) {
     };
 
     return (
-        <aside className={`w-56 fixed md:relative inset-y-0 left-0 top-[60px] md:top-0 z-50 transform transition-transform duration-300 ease-in-out md:translate-x-0  bg-surface border border-borderColor flex flex-col justify-between  ${className} ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"} `}>
+        <aside className={`w-56 fixed lg:relative inset-y-0 left-0 top-[60px] lg:top-0 z-50 transform transition-transform duration-300 ease-in-out lg:translate-x-0  bg-surface border border-borderColor flex flex-col justify-between  ${className} ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"} `}>
             <nav className="flex-1 overflow-y-auto p-2 space-y-1">
                 {/* px-3 py-2 font-medium text-text-secondary hover:text-secondary hover:bg-white/5 rounded */}
                 {navItems.map((item) => (

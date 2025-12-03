@@ -21,6 +21,9 @@ import { useParams } from "react-router-dom";
 import { useGuests, useCreateGuest, useUpdateGuest, useDeleteGuest } from "@/hooks/useGuests";
 import { useToast } from "@/contexts/ToastContext";
 import CreateGuest from "./CreateGuest";
+import Select from "@/components/Form/Select";
+import Button from "@/components/Form/Button";
+import Input from "@/components/Form/Input";
 
 // Mock Data for Seats (keep for now as we don't have a seats hook ready/integrated here yet)
 
@@ -31,15 +34,15 @@ export default function GuestList() {
     // Pagination & Filters State
     const [page, setPage] = useState(1);
     const [limit] = useState(10);
+    const [sort, setSort] = useState("createdAt")
     const [searchQuery, setSearchQuery] = useState("");
     const [filterStatus, setFilterStatus] = useState("all");
     const [filterTicketType, setFilterTicketType] = useState("all");
     const [filterCheckedIn, setFilterCheckedIn] = useState("all");
 
     // Data Fetching
-    const { data, isLoading, error } = useGuests(eventId || "", limit, page);
+    const { data, isLoading, error } = useGuests(eventId || "", { limit, page, sort, searchQuery });
 
-  
     const updateGuest = useUpdateGuest();
     const deleteGuest = useDeleteGuest();
 
@@ -58,7 +61,7 @@ export default function GuestList() {
     const pendingGuests = guests.filter((g) => g.ticket.ticketStatus === "PENDING").length;
     const checkedInGuests = guests.filter((g) => g.ticket.ticketStatus === "VALIDATED").length;
 
-  
+
     const toggleSelectGuest = (id: string) => {
         setSelectedGuests(prev =>
             prev.includes(id) ? prev.filter(gid => gid !== id) : [...prev, id]
@@ -119,130 +122,146 @@ export default function GuestList() {
     return (
         <div className="space-y-6">
             {/* Statistics Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="border border-borderColor rounded p-4 bg-gradient-to-br from-blue-500/5 to-transparent">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="border border-borderColor rounded p-2 bg-gradient-to-br from-blue-500/5 to-transparent">
                     <div className="flex items-center justify-between mb-2">
                         <div className="text-muted text-sm">Total Participantes</div>
                         <UserGroupIcon className="w-5 h-5 text-blue-400" />
                     </div>
-                    <div className="text-3xl font-black text-text">{totalGuests}</div>
+                    <div className="text-xl font-black text-text">{totalGuests}</div>
                     <div className="text-xs text-text-muted mt-1">Registrados no evento</div>
                 </div>
-                <div className="border border-borderColor rounded p-4 bg-gradient-to-br from-green-500/5 to-transparent">
+                <div className="border border-borderColor rounded p-2 bg-gradient-to-br from-green-500/5 to-transparent">
                     <div className="flex items-center justify-between mb-2">
                         <div className="text-muted text-sm">Confirmados</div>
                         <CheckCircleIcon className="w-5 h-5 text-green-400" />
                     </div>
-                    <div className="text-3xl font-black text-text">{confirmedGuests}</div>
+                    <div className="text-xl font-black text-text">{confirmedGuests}</div>
                     <div className="text-xs text-green-400 mt-1">Na página atual</div>
                 </div>
-                <div className="border border-borderColor rounded p-4 bg-gradient-to-br from-yellow-500/5 to-transparent">
+                <div className="border border-borderColor rounded p-2 bg-gradient-to-br from-yellow-500/5 to-transparent">
                     <div className="flex items-center justify-between mb-2">
                         <div className="text-muted text-sm">Pendentes</div>
                         <ClockIcon className="w-5 h-5 text-yellow-400" />
                     </div>
-                    <div className="text-3xl font-black text-text">{pendingGuests}</div>
+                    <div className="text-xl font-black text-text">{pendingGuests}</div>
                     <div className="text-xs text-yellow-400 mt-1">Na página atual</div>
                 </div>
-                <div className="border border-borderColor rounded p-4 bg-gradient-to-br from-purple-500/5 to-transparent">
+                <div className="border border-borderColor rounded p-2 bg-gradient-to-br from-purple-500/5 to-transparent">
                     <div className="flex items-center justify-between mb-2">
                         <div className="text-muted text-sm">Check-in Feito</div>
                         <CheckBadgeIcon className="w-5 h-5 text-purple-400" />
                     </div>
-                    <div className="text-3xl font-black text-text">{checkedInGuests}</div>
+                    <div className="text-xl font-black text-text">{checkedInGuests}</div>
                     <div className="text-xs text-purple-400 mt-1">Na página atual</div>
                 </div>
             </div>
 
             {/* Filters & Actions */}
-            <div className="border border-borderColor rounded p-6">
+            <div>
                 <div className="flex items-center gap-3 mb-4">
                     <FunnelIcon className="w-5 h-5 text-primary" />
                     <h3 className="text-lg font-bold text-text">Filtros e Ações</h3>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div>
-                        <label className="text-sm text-muted mb-2 block">Status</label>
-                        <select
+                <div className="grid grid-cols-1 lg:flex gap-4">
+                    <div className="grid grid-cols-3 flex-1 md:grid-cols-3 gap-2">
+
+                        <Select
+                            selectClassName="p-1"
+                            label="Status"
                             value={filterStatus}
-                            onChange={(e) => setFilterStatus(e.target.value)}
-                            className="w-full bg-surface border border-borderColor rounded p-2 text-text">
-                            <option value="all">Todos</option>
-                            <option value="confirmed">Confirmados</option>
-                            <option value="pending">Pendentes</option>
-                            <option value="declined">Recusados</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label className="text-sm text-muted mb-2 block">Tipo de Ingresso</label>
-                        <select
+                            onChange={(e) => setFilterStatus(e.target.value)} options={[
+                                { value: "all", label: "Todos" },
+                                { value: "confirmed", label: "Confirmados" },
+                                { value: "pending", label: "Pendentes" },
+                                { value: "declined", label: "Recusados" }
+                            ]} />
+
+                        <Select
+                            selectClassName="p-1"
+                            label="Tipo de Ingresso"
                             value={filterTicketType}
-                            onChange={(e) => setFilterTicketType(e.target.value)}
-                            className="w-full bg-surface border border-borderColor rounded p-2 text-text">
-                            <option value="all">Todos</option>
-                            <option value="VIP">VIP</option>
-                            <option value="Pista Premium">Pista Premium</option>
-                            <option value="Pista">Pista</option>
-                            <option value="Early Bird">Early Bird</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label className="text-sm text-muted mb-2 block">Check-in</label>
-                        <select
+                            onChange={(e) => setFilterTicketType(e.target.value)} options={[
+                                { value: "all", label: "Todos" },
+                                { value: "VIP", label: "VIP" },
+                                { value: "Pista Premium", label: "Pista Premium" },
+                                { value: "Pista", label: "Pista" },
+                                { value: "Early Bird", label: "Early Bird" }
+                            ]} />
+
+                        <Select
+                            selectClassName="p-1"
+                            label="Check-in"
                             value={filterCheckedIn}
-                            onChange={(e) => setFilterCheckedIn(e.target.value)}
-                            className="w-full bg-surface border border-borderColor rounded p-2 text-text">
-                            <option value="all">Todos</option>
-                            <option value="yes">Feito</option>
-                            <option value="no">Pendente</option>
-                        </select>
+                            onChange={(e) => setFilterCheckedIn(e.target.value)} options={[
+                                { value: "all", label: "Todos" },
+                                { value: "yes", label: "Feito" },
+                                { value: "no", label: "Pendente" }
+                            ]} />
+
                     </div>
-                    <div>
-                        <label className="text-sm text-muted mb-2 block">Ações em Massa</label>
-                        <div className="flex gap-2">
-                            <button
-                                disabled={selectedGuests.length === 0}
-                                onClick={handleBulkCheckIn}
-                                className="flex-1 px-3 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded text-sm font-semibold transition-colors">
-                                Check-in
-                            </button>
-                            <button
-                                disabled={selectedGuests.length === 0}
-                                className="px-3 py-2 border border-borderColor hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed text-text rounded text-sm transition-colors">
-                                <EnvelopeIcon className="w-4 h-4" />
-                            </button>
-                        </div>
+                    <div className="flex md:w-72 gap-2 items-end">
+                        <Button
+                            size="sm"
+                            fullWidth
+                            onClick={handleBulkCheckIn}
+                            disabled={selectedGuests.length === 0}
+                            className="whitespace-nowrap bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded text-sm font-semibold transition-colors">
+                            Check-in
+                        </Button>
+
+                        <Button
+                            size="sm"
+                            fullWidth
+                            disabled={selectedGuests.length === 0}
+                            className=" self-end bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded text-sm font-semibold transition-colors">
+                            <EnvelopeIcon className="w-4 h-4" />
+                        </Button>
+
                     </div>
                 </div>
             </div>
 
+            <div className="border-b border-borderColor"></div>
+
             {/* Header Actions */}
             <div className="flex flex-col md:flex-row justify-between gap-4">
-                <div className="relative flex-1">
-                    <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
-                    <input
-                        type="text"
-                        placeholder="Buscar por nome ou email..."
-                        className="w-full bg-surface border border-borderColor rounded pl-12 pr-4 py-3 text-text placeholder-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                </div>
-                <div className="flex gap-2">
-                    <button className="px-4 py-3 border border-borderColor hover:bg-white/5 text-text rounded font-semibold transition-all flex items-center gap-2">
-                        <ArrowDownTrayIcon className="w-5 h-5" />
+                <Input
+                    className="flex-1"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    InputClassName="pl-10 md:py-2 py-1 flex justify-center items-center"
+                    icon={<MagnifyingGlassIcon className="w-4 h-4 text-text-muted" />}
+                    placeholder="Buscar por nome ou email..."
+                // errors={errors.dateStart}
+                />
+
+                <div className="flex gap-2 items-center">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        fullWidth
+                        className="font-semibold border border-borderColor rounded">
+                        <ArrowDownTrayIcon className="w-4 h-4" />
                         Exportar
-                    </button>
-                    <button className="px-4 py-3 border border-borderColor hover:bg-white/5 text-text rounded font-semibold transition-all flex items-center gap-2">
-                        <QrCodeIcon className="w-5 h-5" />
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        fullWidth
+                        className=" border border-borderColor rounded font-semibold"
+                    >
+                        <QrCodeIcon className="w-4 h-4" />
                         Scanner
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         onClick={() => setModalOpen(true)}
-                        className="px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded shadow-lg shadow-primary/20 transition-all flex items-center justify-center font-bold">
-                        <UserPlusIcon className="w-5 h-5 mr-2" />
+                        size="sm"
+                        fullWidth
+                        className="font-semibold">
+                        <UserPlusIcon className="w-4 h-4 mr-2" />
                         Adicionar
-                    </button>
+                    </Button>
                 </div>
             </div>
 
@@ -400,7 +419,7 @@ export default function GuestList() {
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
                 title="Adicionar Novo Participante">
-                <CreateGuest eventId={eventId} setModalOpen={setModalOpen}/>
+                {eventId && <CreateGuest eventId={eventId} setModalOpen={setModalOpen} />}
             </Modal>
         </div>
     );

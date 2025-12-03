@@ -1,18 +1,17 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { guestsApi } from "../services/guestApi";
+import { query } from "@/types/system";
+import { GuestCreateForm } from "@/schemas/validation";
 
 export function useGuests(
     eventId: string,
-    limit: number = 10,
-    pageNumber: number = 1,
-    sort: string = "createdAt",
-    search?: string,
-    status?: string,
-    ticketType?: string
+    { limit, page, sort, searchQuery }: query
+
+
 ) {
     return useQuery({
-        queryKey: ['guests', eventId, limit, pageNumber, sort, search, status, ticketType],
-        queryFn: () => guestsApi.getGuests(eventId, limit, pageNumber, sort, search, status, ticketType),
+        queryKey: ['guests', eventId, limit, page, sort, searchQuery],
+        queryFn: () => guestsApi.getGuests(eventId, { page, limit, sort, searchQuery }),
         enabled: !!eventId,
     });
 }
@@ -21,7 +20,7 @@ export function useCreateGuest() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ eventId, guest }: { eventId: string, guest: any }) => guestsApi.createGuest(eventId, guest),
+        mutationFn: (data: GuestCreateForm) => guestsApi.createGuest(data),
         onSuccess: (_, { eventId }) => {
             queryClient.invalidateQueries({ queryKey: ['guests', eventId] });
         },

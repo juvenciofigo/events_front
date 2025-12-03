@@ -15,22 +15,6 @@ import {
 import GuestList from "./manage/GuestList";
 import EventSeats from "./manage/EventSeats";
 
-// Mock Data
-const EVENT_DATA = {
-    id: 1,
-    title: "Festival de Verão 2025",
-    date: "15 Jan, 2025",
-    location: "Parque da Cidade, SP",
-    status: "active",
-    image: "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=800&q=80",
-    stats: {
-        ticketsSold: 1250,
-        totalTickets: 2000,
-        revenue: "R$ 125.000",
-        views: 5430
-    }
-};
-
 const TABS = [
     { id: "overview", label: "Visão Geral", icon: ChartBarIcon },
     { id: "guests", label: "Participantes", icon: UserGroupIcon },
@@ -55,19 +39,6 @@ export default function EventManage() {
     const [activeTab, setActiveTab] = useState("overview");
     const { data: eventData, isLoading, error } = useEvent(eventId);
 
-    // Mock stats for now as they are not in the API yet
-    const event = eventData ? {
-        ...eventData,
-        date: new Date(eventData.dateStart).toLocaleDateString(),
-        image: eventData.coverImage,
-        stats: {
-            ticketsSold: 1250,
-            totalTickets: eventData.estimatedGuest || 2000,
-            revenue: "R$ 125.000",
-            views: 5430
-        }
-    } : null;
-
     if (isLoading) {
         return (
             <div className="min-h-screen bg-background flex items-center justify-center">
@@ -76,7 +47,7 @@ export default function EventManage() {
         );
     }
 
-    if (error || !event) {
+    if (error || !eventData) {
         return (
             <div className="min-h-screen bg-background flex items-center justify-center text-text">
                 <div className="text-center">
@@ -104,24 +75,24 @@ export default function EventManage() {
                     </Link>
 
                     <div className="flex flex-col md:flex-row md:gap-7">
-                        <div>
+                        <div className="flex-1">
                             <img
-                                src={event.image}
-                                alt={event.title}
-                                className="md:w-[650px] md:h-[400px] rounded object-cover border-2 border-borderColor"
+                                src={eventData.coverImage}
+                                alt={eventData.title}
+                                className="max-h-[400px] lg:w-full rounded object-cover"
                             />
                         </div>
-                        <div className="flex-1">
+                        <div className="flex-1 lg:flex-none">
                             <div className="p-4 space-y-2">
                                 <div>
-                                    <h1 className="md:text-4xl text-2xl font-bold">{event.title}</h1>
-                                    <p className="md:text-xl text-lg font-bold">{event.category}</p>
+                                    <h1 className="md:text-4xl text-2xl font-bold">{eventData.title}</h1>
+                                    <p className="md:text-xl text-lg font-bold">{eventData.category}</p>
                                 </div>
                                 <div className="">
-                                    <p className="md:text-xl text-lg font-bold flex items-center gap-1"> <CalendarIcon className="w-5 h-5 mr-1" /> {event.date}</p>
-                                    <p className="md:text-xl text-lg font-bold flex items-center gap-1"> <MapPinIcon className="w-5 h-5 mr-1" /> {event.location}</p>
+                                    <p className="md:text-xl text-lg font-bold flex items-center gap-1"> <CalendarIcon className="w-5 h-5 mr-1" /> {new Date(eventData.dateStart).toLocaleDateString()}</p>
+                                    <p className="md:text-xl text-lg font-bold flex items-center gap-1"> <MapPinIcon className="w-5 h-5 mr-1" /> {eventData.location}</p>
                                 </div>
-                                <p className="md:text-xl text-lg font-bold">{event.description}</p>
+                                <p className="md:text-xl text-lg font-bold">{eventData.description}</p>
                             </div>
                             <Button
                                 fullWidth

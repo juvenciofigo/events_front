@@ -8,10 +8,12 @@ export function useEvents() {
 }
 
 export function useEvent(id?: string) {
-    return useQuery({ queryKey: ["event", id], 
-        queryFn: () => (id ? eventsApi.getEvent(id) : null), 
-        enabled: !!id });
-}   
+    return useQuery({
+        queryKey: ["event", id],
+        queryFn: () => (id ? eventsApi.getEvent(id) : null),
+        enabled: !!id
+    });
+}
 
 export function useCreateEvent() {
     const qc = useQueryClient();
@@ -32,11 +34,11 @@ export function useUpdateEvent() {
     });
 }
 
-export function useFetchOrganizerEvents(organizerId: string, limit: number = 10, pageNumber: number = 1, sort: string = "createdAt") {
+export function useFetchOrganizerEvents(organizerId: string, limit: number = 10, page: number = 1, sort: string = "createdAt") {
     return useQuery({
-        queryKey: ["events", "organizer", organizerId, limit, pageNumber, sort],
+        queryKey: ["events", "organizer", organizerId, limit, page, sort],
         enabled: !!organizerId,
-        queryFn: () => eventsApi.fetchOrganizerEvents(organizerId, limit, pageNumber, sort),
+        queryFn: () => eventsApi.fetchOrganizerEvents(organizerId, limit, page, sort),
         staleTime: 1000 * 60 * 1,
     });
 }

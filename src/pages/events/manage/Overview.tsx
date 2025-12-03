@@ -35,29 +35,30 @@ export default function Overview() {
     return (
         <div className="space-y-8">
             {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                <div className="border border-borderColor rounded p-4 bg-surface/50">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <div className="border flex justify-center items-center flex-col border-borderColor rounded p-2 lg:p-4 bg-surface/50">
                     <div className="text-muted text-sm mb-1">Ingressos Vendidos</div>
-                    <div className="text-3xl font-black text-text">{ticketsSold}</div>
-                    <div className="text-xs text-text-muted mt-2">
+                    <div className="text-xl lg:text-3xl font-black text-text">{ticketsSold}</div>
+                    <div className="text-xs text-text-muted mt-2 w-full">
                         de {totalCapacity} disponíveis
                         <div className="w-full h-1.5 bg-slate-800 rounded-full mt-1 overflow-hidden">
                             <div className="h-full bg-primary" style={{ width: `${Math.min(occupancyRate, 100)}%` }}></div>
                         </div>
                     </div>
                 </div>
-                <div className="border border-borderColor rounded p-4 bg-surface/50">
+                <div className="border flex justify-center items-center flex-col border-borderColor rounded p-2 lg:p-4 bg-surface/50">
                     <div className="text-muted text-sm mb-1">Receita Total</div>
-                    <div className="text-3xl font-black text-text">
+                    <div className="text-xl lg:text-3xl font-black text-text">
                         {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalRevenue)}
                     </div>
                     <div className="text-xs text-green-400 mt-2 flex items-center">
                         Receita bruta
                     </div>
                 </div>
-                <div className="border border-borderColor rounded p-4 bg-surface/50">
+                <div className="b
+                order flex justify-center items-center flex-col border-borderColor rounded p-2 lg:p-4 bg-surface/50">
                     <div className="text-muted text-sm mb-1">Visualizações da Página</div>
-                    <div className="text-3xl font-black text-text">3,245</div>
+                    <div className="text-xl lg:text-3xl font-black text-text">3,245</div>
                     <div className="text-xs text-text-muted mt-2">
                         (Simulado) Últimos 30 dias
                     </div>
@@ -67,40 +68,10 @@ export default function Overview() {
             {/* Quick Actions */}
             <div>
                 <h3 className="text-xl font-bold text-text mb-4">Ações Rápidas</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <button className="border border-borderColor rounded p-4 hover:bg-white/5 transition-all hover:border-primary group text-left">
-                        <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <ShareIcon className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <div className="font-bold text-text">Compartilhar Evento</div>
-                                <div className="text-xs text-text-muted">Redes sociais e link</div>
-                            </div>
-                        </div>
-                    </button>
-                    <button className="border border-borderColor rounded p-4 hover:bg-white/5 transition-all hover:border-primary group text-left">
-                        <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <ArrowDownTrayIcon className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <div className="font-bold text-text">Baixar Relatório</div>
-                                <div className="text-xs text-text-muted">PDF ou Excel</div>
-                            </div>
-                        </div>
-                    </button>
-                    <button className="border border-borderColor rounded p-4 hover:bg-white/5 transition-all hover:border-primary group text-left">
-                        <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <BellIcon className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <div className="font-bold text-text">Enviar Notificação</div>
-                                <div className="text-xs text-text-muted">Para participantes</div>
-                            </div>
-                        </div>
-                    </button>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <QuickActions icon={<ShareIcon className="w-6 h-6" />} title="Compartilhar Evento" description="Redes sociais e link" />
+                    <QuickActions icon={<ArrowDownTrayIcon className="w-6 h-6" />} title="Baixar Relatório" description="PDF ou Excel" />
+                    <QuickActions icon={<BellIcon className="w-6 h-6" />} title="Notificar Participantes" description="Envio de e-mail" />
                 </div>
             </div>
 
@@ -108,34 +79,10 @@ export default function Overview() {
             <div>
                 <h3 className="text-xl font-bold text-text mb-4">Engajamento (Simulado)</h3>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="border border-borderColor rounded p-4">
-                        <div className="flex items-center gap-3 mb-2">
-                            <EyeIcon className="w-5 h-5 text-cyan-400" />
-                            <div className="text-muted text-sm">Visualizações Únicas</div>
-                        </div>
-                        <div className="text-2xl font-black text-text">3,245</div>
-                    </div>
-                    <div className="border border-borderColor rounded p-4">
-                        <div className="flex items-center gap-3 mb-2">
-                            <HeartIcon className="w-5 h-5 text-pink-400" />
-                            <div className="text-muted text-sm">Favoritado</div>
-                        </div>
-                        <div className="text-2xl font-black text-text">892</div>
-                    </div>
-                    <div className="border border-borderColor rounded p-4">
-                        <div className="flex items-center gap-3 mb-2">
-                            <ShareIcon className="w-5 h-5 text-blue-400" />
-                            <div className="text-muted text-sm">Compartilhamentos</div>
-                        </div>
-                        <div className="text-2xl font-black text-text">456</div>
-                    </div>
-                    <div className="border border-borderColor rounded p-4">
-                        <div className="flex items-center gap-3 mb-2">
-                            <UserGroupIcon className="w-5 h-5 text-green-400" />
-                            <div className="text-muted text-sm">Interessados</div>
-                        </div>
-                        <div className="text-2xl font-black text-text">1,567</div>
-                    </div>
+                    <EngagementStats icon={<EyeIcon className="w-5 h-5 text-cyan-400" />} title="Visualizações Únicas" description="3,245" />
+                    <EngagementStats icon={<HeartIcon className="w-5 h-5 text-pink-400" />} title="Favoritado" description="892" />
+                    <EngagementStats icon={<ShareIcon className="w-5 h-5 text-blue-400" />} title="Compartilhamentos" description="456" />
+                    <EngagementStats icon={<UserGroupIcon className="w-5 h-5 text-green-400" />} title="Interessados" description="1,567" />
                 </div>
             </div>
 
@@ -159,6 +106,45 @@ export default function Overview() {
                     ))}
                 </div>
             </div>
+        </div>
+    )
+}
+
+interface QuickAction {
+    icon: React.ReactNode;
+    title: string;
+    description: string;
+}
+
+function QuickActions({ icon, title, description }: QuickAction) {
+    return (
+        <button className="border border-borderColor rounded p-2 lg:p-4 hover:bg-white/5 transition-all hover:border-primary group text-left">
+            <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    {icon}
+                </div>
+                <div>
+                    <div className="font-bold text-text">{title}</div>
+                    <div className="text-xs text-text-muted">{description}</div>
+                </div>
+            </div>
+        </button>
+    )
+}
+
+interface EngagementStats {
+    icon: React.ReactNode;
+    title: string;
+    description: string;
+}
+function EngagementStats({ icon, title, description }: EngagementStats) {
+    return (
+        <div className="border border-borderColor rounded p-2 lg:p-4">
+            <div className="flex justify-center items-center gap-3 mb-2 text-center">
+                {icon}
+                <div className="text-muted text-sm whitespace-nowrap">{title}</div>
+            </div>
+            <div className="text-xl md:text-2xl font-black text-text text-center">{description}</div>
         </div>
     )
 }
