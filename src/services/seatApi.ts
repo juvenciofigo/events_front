@@ -1,6 +1,7 @@
 import { PageSeat, Seat } from "@/types/seat";
 import api from "./axiosClient";
 import { query } from "@/types/system";
+import { SeatFormData } from "@/schemas/validation";
 
 
 
@@ -16,9 +17,10 @@ export const seatsApi = {
         }
     },
 
-    createSeat: async (eventId: string, seat: Omit<Seat, "id">): Promise<Seat> => {
+    createSeat: async (eventId: string, seat: Omit<SeatFormData, "id">): Promise<Seat> => {
         try {
-            const { data } = await api.put(`/seats/event/${eventId}`, seat);
+            const { data } = await api.post(`/seats/event/${eventId}`, seat);
+            
             return data;
         } catch (error) {
             console.error("Erro ao criar assento:", error);

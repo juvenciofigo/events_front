@@ -3,7 +3,7 @@ import api from "./axiosClient";
 import { EventCreateForm } from "@/schemas/validation";
 
 export const eventsApi = {
-    getEvent: async (eventId: string, page: number, limit: number, searchQuery: string) => {
+    getEvent: async (eventId: string) => {
         try {
             const { data } = await api.get(`events/${eventId}`);
             return data;

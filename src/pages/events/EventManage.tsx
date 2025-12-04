@@ -13,7 +13,7 @@ import {
     ClipboardDocumentListIcon
 } from "@heroicons/react/24/outline";
 import GuestList from "./manage/GuestList";
-import EventSeats from "./manage/EventSeats";
+import Seats from "./manage/Seats";
 
 const TABS = [
     { id: "overview", label: "Visão Geral", icon: ChartBarIcon },
@@ -131,7 +131,7 @@ export default function EventManage() {
 
                 {activeTab === "guests" && <GuestList />}
 
-                {activeTab === "seats" && <EventSeats />}
+                {activeTab === "seats" && <Seats />}
 
                 {activeTab === "settings" && (<Settings />)}
 
@@ -140,18 +140,6 @@ export default function EventManage() {
                 {activeTab === "financial" && (<Financial />)}
 
                 {activeTab === "operations" && (<Operations />)}
-
-                {activeTab !== "overview" && activeTab !== "guests" && activeTab !== "seats" && activeTab !== "settings" && activeTab !== "tickets" && activeTab !== "financial" && activeTab !== "operations" && (
-                    <div className="flex flex-col items-center justify-center py-20 text-center">
-                        <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-6">
-                            <Cog6ToothIcon className="w-10 h-10 text-text-muted" />
-                        </div>
-                        <h3 className="text-2xl font-bold text-text mb-2">Em Desenvolvimento</h3>
-                        <p className="text-muted max-w-md">
-                            A aba <strong>{TABS.find(t => t.id === activeTab)?.label}</strong> estará disponível em breve com funcionalidades avançadas de gestão.
-                        </p>
-                    </div>
-                )}
             </div>
         </div>
     );

@@ -106,7 +106,7 @@ export default function EventCreate() {
                                     type="text"
                                     isRequired
                                     placeholder="Ex: Festival de Verão 2025"
-                                    InputClassName="pl-2 md:py-2 py-1"
+                                    InputClassName="pl-2"
                                     errors={errors.title}
                                 />
 
@@ -115,7 +115,7 @@ export default function EventCreate() {
                                         {...register("category")}
                                         label="Categoria"
                                         isRequired
-                                        selectClassName="pl-2 md:py-2 py-1"
+                                        selectClassName="pl-2"
                                         options={categories}
                                         errors={errors.category}
                                     />
@@ -125,7 +125,7 @@ export default function EventCreate() {
                                         })}
                                         label="O evento é publico?"
                                         isRequired
-                                        selectClassName="pl-2 md:py-2 py-1"
+                                        selectClassName="pl-2"
                                         options={[
                                             { value: "true", label: "Evento Público" },
                                             { value: "false", label: "Evento Privado" },
@@ -137,7 +137,7 @@ export default function EventCreate() {
                                         label="Capacidade Estimada"
                                         type="number"
                                         placeholder="Ex: 500"
-                                        InputClassName="pl-2 md:py-2 py-1"
+                                        InputClassName="pl-2"
                                         errors={errors.estimatedGuest}
                                     />
                                     <Input
@@ -145,7 +145,7 @@ export default function EventCreate() {
                                         label="Orçamento Estimado"
                                         type="number"
                                         placeholder="Ex: 500"
-                                        InputClassName="pl-2 md:py-2 py-1"
+                                        InputClassName="pl-2"
                                         errors={errors.budgetEstimated}
                                     />
                                     <Input
@@ -153,7 +153,7 @@ export default function EventCreate() {
                                         label="Orçamento Gasto"
                                         type="number"
                                         placeholder="Ex: 500"
-                                        InputClassName="pl-2 md:py-2 py-1"
+                                        InputClassName="pl-2"
                                         errors={errors.budgetSpent}
                                     />
                                 </div>
@@ -186,7 +186,7 @@ export default function EventCreate() {
                                         label="Data de Início"
                                         type="datetime-local"
                                         isRequired
-                                        InputClassName="pl-10 md:py-2 py-1"
+                                        InputClassName="pl-10"
                                         icon={<CalendarIcon className="w-4 h-4 text-text-muted" />}
                                         errors={errors.dateStart}
                                     />
@@ -194,7 +194,7 @@ export default function EventCreate() {
                                         {...register("dateEnd")}
                                         label="Data de Término"
                                         type="datetime-local"
-                                        InputClassName="pl-10 md:py-2 py-1"
+                                        InputClassName="pl-10"
                                         icon={<CalendarIcon className="w-4 h-4 text-text-muted" />}
                                         errors={errors.dateEnd}
                                     />

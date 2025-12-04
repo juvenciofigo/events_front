@@ -1,132 +1,159 @@
-import React, { useEffect } from "react";
+import React, { useEffect, } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { seatSchema, type SeatFormData } from "../../schemas/validation";
+import Input from "@/components/Form/Input";
+import Button from "@/components/Form/Button";
+import { useCreateSeat } from "@/hooks/useSeats";
+import { useParams } from "react-router-dom";
+import { useToast } from "@/contexts/ToastContext";
+import { Seat } from "@/types/seat";
 
-export default function SeatForm({ onSave }: { onSave?: (data: SeatFormData) => void }) {
+export default function SeatForm({ onSave }: { onSave?: (data: Seat) => void }) {
+    const { eventId } = useParams();
+    const toast = useToast();
+
     const {
         register,
         handleSubmit,
         watch,
-        setValue,
-        formState: { errors },
+        formState: { errors, isSubmitting },
     } = useForm<SeatFormData>({
         resolver: zodResolver(seatSchema),
         defaultValues: {
             name: "",
-            paid: false,
+            isPaid: false,
             price: 0,
+            description: "",
             totalSeats: 0,
-            availableSeats: 0,
-            posX: 0,
-            posY: 0,
+            layoutPositionX: 0,
+            layoutPositionY: 0,
         },
     });
 
-    const total = watch("totalSeats");
+    const isPaid = watch("isPaid");
+    const showPrice = String(isPaid) === "true";
 
-    useEffect(() => {
-        if (typeof total === "number" && total > 0) {
-            setValue("availableSeats", total);
-        }
-    }, [total, setValue]);
+    const createSeat = useCreateSeat();
 
     function onSubmit(data: SeatFormData) {
-        console.log("Salvar assento", data);
-        onSave?.(data);
+        if (!eventId) {
+            toast.error("Erro ao criar assento.")
+            return
+        };
+
+        createSeat.mutate({ eventId: eventId, data: data }, {
+            onSuccess: (data: Seat) => {
+                toast.success("Assento criado com sucesso.")
+                onSave?.(data)
+            },
+            onError: (error: any) => {
+                toast.error(error?.response?.data?.message || "Erro ao criar assento.")
+            },
+        })
     }
 
     return (
-        <div className="bg-surface border border-white/10 rounded-2xl p-6">
-            <h3 className="text-xl font-bold text-text mb-6">Formulário de Assento</h3>
-            <form
-                onSubmit={handleSubmit(onSubmit)}
-                className="grid grid-cols-1 gap-6">
+        <div className="w-full">
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+                <Input
+                    {...register("name")}
+                    label="Nome do assento"
+                    placeholder="Ex: A1, VIP-001"
+                    errors={errors.name}
+                    InputClassName="pl-4"
+                />
+
                 <div>
-                    <label className="block text-sm font-medium text-muted mb-2">Nome do assento</label>
-                    <input
-                        {...register("name")}
-                        placeholder="Ex: A1, VIP-001"
-                        className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-text placeholder-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                    />
-                    {errors.name && <div className="text-sm text-red-400 mt-1">{errors.name.message}</div>}
+                    <label className="mb-2 text-xs font-medium text-text block">Requer pagamento?</label>
+                    <div className="flex items-center gap-4">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                                {...register("isPaid")}
+                                type="radio"
+                                value="true"
+                                className="w-4 h-4 text-primary bg-surface border-borderColor focus:ring-primary"
+                            />
+                            <span className="text-sm text-text">Sim</span>
+                        </label>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                                {...register("isPaid")}
+                                type="radio"
+                                value="false"
+                                className="w-4 h-4 text-primary bg-surface border-borderColor focus:ring-primary"
+                            />
+                            <span className="text-sm text-text">Não</span>
+                        </label>
+                    </div>
                 </div>
 
-                <label className="flex items-center gap-3 p-4 rounded-xl bg-white/5 cursor-pointer hover:bg-white/10 transition-colors border border-white/5">
-                    <input
-                        {...register("paid")}
-                        type="checkbox"
-                        className="w-5 h-5 rounded border-white/20 bg-surface text-primary focus:ring-primary"
-                    />
-                    <span className="text-text font-medium">Requer pagamento?</span>
-                </label>
-
-                <div>
-                    <label className="block text-sm font-medium text-muted mb-2">Preço</label>
-                    <input
+                {showPrice && (
+                    <Input
                         {...register("price", { valueAsNumber: true })}
+                        label="Preço"
                         placeholder="0.00"
                         type="number"
                         step="0.01"
                         min="0"
-                        className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-text placeholder-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                        errors={errors.price}
+                        InputClassName="pl-4"
                     />
-                    {errors.price && <div className="text-sm text-red-400 mt-1">{errors.price.message}</div>}
-                </div>
+                )}
 
-                <div>
-                    <label className="block text-sm font-medium text-muted mb-2">Total de assentos</label>
-                    <input
-                        {...register("totalSeats", { valueAsNumber: true })}
-                        placeholder="0"
-                        type="number"
-                        min="0"
-                        className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-text placeholder-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                    />
-                    {errors.totalSeats && <div className="text-sm text-red-400 mt-1">{errors.totalSeats.message}</div>}
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-muted mb-2">Assentos disponíveis</label>
-                    <input
-                        {...register("availableSeats", { valueAsNumber: true })}
-                        type="number"
-                        min="0"
-                        readOnly
-                        className="w-full bg-surface/50 border border-white/5 rounded-xl px-4 py-3 text-text-disabled cursor-not-allowed"
-                    />
-                </div>
+                <Input
+                    {...register("totalSeats", { valueAsNumber: true })}
+                    label="Total de assentos"
+                    placeholder="0"
+                    type="number"
+                    min="0"
+                    errors={errors.totalSeats}
+                    InputClassName="pl-4"
+                />
 
                 <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-muted mb-2">Posição X</label>
-                        <input
-                            {...register("posX", { valueAsNumber: true })}
-                            placeholder="0"
-                            type="number"
-                            className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-text placeholder-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                        />
-                        {errors.posX && <div className="text-sm text-red-400 mt-1">{errors.posX.message}</div>}
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-muted mb-2">Posição Y</label>
-                        <input
-                            {...register("posY", { valueAsNumber: true })}
-                            placeholder="0"
-                            type="number"
-                            className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-text placeholder-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                        />
-                        {errors.posY && <div className="text-sm text-red-400 mt-1">{errors.posY.message}</div>}
-                    </div>
+                    <Input
+                        {...register("layoutPositionX", { valueAsNumber: true })}
+                        label="Posição X"
+                        placeholder="0"
+                        type="number"
+                        errors={errors.layoutPositionX}
+                        InputClassName="pl-4"
+                    />
+                    <Input
+                        {...register("layoutPositionY", { valueAsNumber: true })}
+                        label="Posição Y"
+                        placeholder="0"
+                        type="number"
+                        errors={errors.layoutPositionY}
+                        InputClassName="pl-4"
+                    />
                 </div>
 
-                <div className="flex justify-end pt-4 border-t border-white/10">
-                    <button
-                        type="submit"
-                        className="px-6 py-3 bg-primary hover:bg-primary-hover text-white rounded-xl shadow-lg shadow-primary/20 transition-all font-bold transform hover:-translate-y-1">
-                        Salvar Assento
-                    </button>
+                <div>
+                    <label className="mb-2 text-xs font-medium text-text dark:text-slate-300 block">
+                        Descrição (Opcional)
+                    </label>
+                    <textarea
+                        {...register("description")}
+                        placeholder="Descrição do assento"
+                        rows={4}
+                        className="w-full px-3 py-2 bg-slate-900/10 border-black/20 dark:bg-slate-950/80 border dark:border-white/10 rounded text-xs md:text-sm dark:text-white dark:placeholder-slate-500 focus:outline-none focus:border-fuchsia-500 focus:ring-1 focus:ring-fuchsia-500 transition-all resize-none"
+                    />
+                    {errors.description && (
+                        <div className="text-xs text-red-400 mt-1">{errors.description.message}</div>
+                    )}
                 </div>
+
+                <Button
+                    type="submit"
+                    isLoading={isSubmitting}
+                    fullWidth
+                    size="lg"
+                    className="mt-4"
+                >
+                    Salvar Assento
+                </Button>
             </form>
         </div>
     );

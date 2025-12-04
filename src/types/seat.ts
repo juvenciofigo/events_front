@@ -4,11 +4,11 @@ import { Page } from "./system";
 export interface Seat {
     id: string;
     name: string;
-    description: string;
-    totalSeats: number;
+    description?: string;
+    totalSeats?: number;
     isPaid: boolean;
     price?: number | null;
-    availableSeats: number;
+    availableSeats?: number;
     layoutPositionX: number;
     layoutPositionY: number;
     createdAt: string;

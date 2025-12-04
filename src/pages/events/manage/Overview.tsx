@@ -36,33 +36,21 @@ export default function Overview() {
         <div className="space-y-8">
             {/* Quick Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                <div className="border flex justify-center items-center flex-col border-borderColor rounded p-2 lg:p-4 bg-surface/50">
-                    <div className="text-muted text-sm mb-1">Ingressos Vendidos</div>
-                    <div className="text-xl lg:text-3xl font-black text-text">{ticketsSold}</div>
-                    <div className="text-xs text-text-muted mt-2 w-full">
-                        de {totalCapacity} disponíveis
-                        <div className="w-full h-1.5 bg-slate-800 rounded-full mt-1 overflow-hidden">
-                            <div className="h-full bg-primary" style={{ width: `${Math.min(occupancyRate, 100)}%` }}></div>
+                <StatisticsCards
+                    data={ticketsSold} title="Ingressos Vendidos"
+                    description={
+                        <div className="text-xs text-text-muted mt-2 w-full">
+                            de {totalCapacity} disponíveis
+                            <div className="w-full h-1.5 bg-slate-800 rounded-full mt-1 overflow-hidden">
+                                <div className="h-full bg-primary" style={{ width: `${Math.min(occupancyRate, 100)}%` }}></div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div className="border flex justify-center items-center flex-col border-borderColor rounded p-2 lg:p-4 bg-surface/50">
-                    <div className="text-muted text-sm mb-1">Receita Total</div>
-                    <div className="text-xl lg:text-3xl font-black text-text">
-                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalRevenue)}
-                    </div>
-                    <div className="text-xs text-green-400 mt-2 flex items-center">
-                        Receita bruta
-                    </div>
-                </div>
-                <div className="b
-                order flex justify-center items-center flex-col border-borderColor rounded p-2 lg:p-4 bg-surface/50">
-                    <div className="text-muted text-sm mb-1">Visualizações da Página</div>
-                    <div className="text-xl lg:text-3xl font-black text-text">3,245</div>
-                    <div className="text-xs text-text-muted mt-2">
-                        (Simulado) Últimos 30 dias
-                    </div>
-                </div>
+                    } />
+                <StatisticsCards
+                    data={new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalRevenue)}
+                    title="Receita Total" description="Receita bruta"
+                />
+                <StatisticsCards data={3245} description="(Simulado) Últimos 30 dias" title='Visualizações da Página' />
             </div>
 
             {/* Quick Actions */}
@@ -79,10 +67,10 @@ export default function Overview() {
             <div>
                 <h3 className="text-xl font-bold text-text mb-4">Engajamento (Simulado)</h3>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <EngagementStats icon={<EyeIcon className="w-5 h-5 text-cyan-400" />} title="Visualizações Únicas" description="3,245" />
-                    <EngagementStats icon={<HeartIcon className="w-5 h-5 text-pink-400" />} title="Favoritado" description="892" />
-                    <EngagementStats icon={<ShareIcon className="w-5 h-5 text-blue-400" />} title="Compartilhamentos" description="456" />
-                    <EngagementStats icon={<UserGroupIcon className="w-5 h-5 text-green-400" />} title="Interessados" description="1,567" />
+                    <StatisticsCards icon={<EyeIcon className="w-4 h-4 text-cyan-400 ml-5" />} title="Visualizações Únicas" data="3,245" />
+                    <StatisticsCards icon={<HeartIcon className="w-4 h-4 text-pink-400 ml-5" />} title="Favoritado" data="892" />
+                    <StatisticsCards icon={<ShareIcon className="w-4 h-4 text-blue-400 ml-5" />} title="Compartilhamentos" data="456" />
+                    <StatisticsCards icon={<UserGroupIcon className="w-4 h-4 text-green-400 ml-5" />} title="Interessados" data="1,567" />
                 </div>
             </div>
 
@@ -132,19 +120,22 @@ function QuickActions({ icon, title, description }: QuickAction) {
     )
 }
 
-interface EngagementStats {
-    icon: React.ReactNode;
-    title: string;
-    description: string;
+interface StatisticsCards {
+    data: any;
+    title?: any;
+    icon?: any;
+    color?: string;
+    description?: any;
 }
-function EngagementStats({ icon, title, description }: EngagementStats) {
+export function StatisticsCards({ data, title, icon, color, description }: StatisticsCards) {
     return (
-        <div className="border border-borderColor rounded p-2 lg:p-4">
-            <div className="flex justify-center items-center gap-3 mb-2 text-center">
-                {icon}
+        <div className={`border flex justify-center items-center flex-col border-borderColor rounded p-1 gap-1 bg-surface/50 bg-gradient-to-br from-${color} to-transparent`}>
+            <div className="flex items-center justify-between">
                 <div className="text-muted text-sm whitespace-nowrap">{title}</div>
+                {icon}
             </div>
-            <div className="text-xl md:text-2xl font-black text-text text-center">{description}</div>
+            <div className="text-xl lg:text-2xl font-black text-text">{data}</div>
+            <div className="text-xs text-text-muted whitespace-nowrap">{description}</div>
         </div>
     )
 }

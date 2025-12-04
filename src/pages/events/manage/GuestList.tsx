@@ -24,6 +24,7 @@ import CreateGuest from "./CreateGuest";
 import Select from "@/components/Form/Select";
 import Button from "@/components/Form/Button";
 import Input from "@/components/Form/Input";
+import { StatisticsCards } from "./Overview";
 
 // Mock Data for Seats (keep for now as we don't have a seats hook ready/integrated here yet)
 
@@ -123,38 +124,30 @@ export default function GuestList() {
         <div className="space-y-6">
             {/* Statistics Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="border border-borderColor rounded p-2 bg-gradient-to-br from-blue-500/5 to-transparent">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="text-muted text-sm">Total Participantes</div>
-                        <UserGroupIcon className="w-5 h-5 text-blue-400" />
-                    </div>
-                    <div className="text-xl font-black text-text">{totalGuests}</div>
-                    <div className="text-xs text-text-muted mt-1">Registrados no evento</div>
-                </div>
-                <div className="border border-borderColor rounded p-2 bg-gradient-to-br from-green-500/5 to-transparent">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="text-muted text-sm">Confirmados</div>
-                        <CheckCircleIcon className="w-5 h-5 text-green-400" />
-                    </div>
-                    <div className="text-xl font-black text-text">{confirmedGuests}</div>
-                    <div className="text-xs text-green-400 mt-1">Na página atual</div>
-                </div>
-                <div className="border border-borderColor rounded p-2 bg-gradient-to-br from-yellow-500/5 to-transparent">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="text-muted text-sm">Pendentes</div>
-                        <ClockIcon className="w-5 h-5 text-yellow-400" />
-                    </div>
-                    <div className="text-xl font-black text-text">{pendingGuests}</div>
-                    <div className="text-xs text-yellow-400 mt-1">Na página atual</div>
-                </div>
-                <div className="border border-borderColor rounded p-2 bg-gradient-to-br from-purple-500/5 to-transparent">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="text-muted text-sm">Check-in Feito</div>
-                        <CheckBadgeIcon className="w-5 h-5 text-purple-400" />
-                    </div>
-                    <div className="text-xl font-black text-text">{checkedInGuests}</div>
-                    <div className="text-xs text-purple-400 mt-1">Na página atual</div>
-                </div>
+                <StatisticsCards
+                    data={guests.length}
+                    title="Total Participantes"
+                    icon={<UserGroupIcon className="w-4 h-4 ml-5 text-blue-400" />}
+                    color="blue-500"
+                    description="Registados no evento" />
+                <StatisticsCards
+                    description="No evento atual"
+                    data={confirmedGuests}
+                    title="Confirmados"
+                    icon={<CheckCircleIcon className="w-4 h-4 ml-5 text-green-400" />}
+                    color="green-500" />
+                <StatisticsCards
+                    description="No evento atual"
+                    data={pendingGuests}
+                    title="Pendentes"
+                    icon={<ClockIcon className="w-4 h-4 ml-5 text-yellow-400" />}
+                    color="yellow-500" />
+                <StatisticsCards
+                    description="No evento atual"
+                    data={checkedInGuests}
+                    title="Check-in Feito"
+                    icon={<CheckBadgeIcon className="w-4 h-4 ml-5 text-purple-400" />}
+                    color="purple-500" />
             </div>
 
             {/* Filters & Actions */}

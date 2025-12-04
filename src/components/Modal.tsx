@@ -16,7 +16,7 @@ export default function Modal({ open, onClose, title, children }: Props) {
                 className="absolute inset-0 bg-background/80 backdrop-blur-sm"
                 onClick={onClose}
             />
-            <div className="bg-surface border border-white/10 rounded-2xl p-6 z-10 w-full max-w-2xl shadow-2xl shadow-primary/20">
+            <div className="bg-surface border border-white/10 rounded p-6 z-10 w-full max-w-2xl shadow-2xl shadow-primary/20">
                 {title && <h3 className="text-xl font-bold text-white mb-4">{title}</h3>}
                 <div className="text-text-secondary">{children}</div>
                 <div className="mt-6 text-right">

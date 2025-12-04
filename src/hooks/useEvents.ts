@@ -19,7 +19,7 @@ export function useCreateEvent() {
     const qc = useQueryClient();
     return useMutation({
         mutationFn: (data: EventCreateForm) => eventsApi.createEvent(data),
-        onSuccess: () => qc.invalidateQueries({ queryKey: ["events"] })
+        onSuccess: () => qc.invalidateQueries({ queryKey: ["events"] }),
     });
 }
 

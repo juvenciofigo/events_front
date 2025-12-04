@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import SeatMap from "../../../components/SeatMap";
+import SeatMap from "@/components/SeatMap";
 import SeatForm from "../../seats/SeatForm";
 import SeatList from "../../seats/SeatList";
-import Modal from "../../../components/Modal";
+import Modal from "@/components/Modal";
 import {
     PlusIcon,
     SquaresPlusIcon,
@@ -12,13 +12,23 @@ import {
     FunnelIcon,
     Squares2X2Icon
 } from "@heroicons/react/24/outline";
+import { StatisticsCards } from "./Overview";
+import Button from "@/components/Form/Button";
+import SeatGridGenerator from "./SeatGridGenerator";
+import { Seat } from "@/types/seat";
 
-type Seat = { id: string; name: string; x: number; y: number; sector?: string; status?: 'available' | 'sold' | 'reserved'; price?: number };
-type Sector = { id: string; name: string; color: string; price: number; totalSeats: number };
+type Sector = {
+    id: string;
+    name: string;
+    color: string;
+    price: number;
+    totalSeats: number;
+};
 
-export default function EventSeats() {
+export default function Seats() {
     const [seats, setSeats] = useState<Seat[]>([]);
     const [modalOpen, setModalOpen] = useState(false);
+    const [gridModalOpen, setGridModalOpen] = useState(false);
     const [sectorModalOpen, setSectorModalOpen] = useState(false);
     const [selectedSector, setSelectedSector] = useState<string | null>(null);
     const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -41,53 +51,24 @@ export default function EventSeats() {
         <div className="space-y-6">
             {/* Statistics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="border border-borderColor rounded p-4 bg-gradient-to-br from-blue-500/5 to-transparent">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="text-muted text-sm">Total de Assentos</div>
-                        <Squares2X2Icon className="w-5 h-5 text-blue-400" />
-                    </div>
-                    <div className="text-3xl font-black text-text">{totalSeats}</div>
-                    <div className="text-xs text-text-muted mt-1">Em {sectors.length} setores</div>
-                </div>
-                <div className="border border-borderColor rounded p-4 bg-gradient-to-br from-green-500/5 to-transparent">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="text-muted text-sm">Disponíveis</div>
-                        <CheckCircleIcon className="w-5 h-5 text-green-400" />
-                    </div>
-                    <div className="text-3xl font-black text-text">{availableSeats}</div>
-                    <div className="text-xs text-green-400 mt-1">{Math.round((availableSeats / totalSeats) * 100)}% disponível</div>
-                </div>
-                <div className="border border-borderColor rounded p-4 bg-gradient-to-br from-purple-500/5 to-transparent">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="text-muted text-sm">Vendidos</div>
-                        <ChartBarIcon className="w-5 h-5 text-purple-400" />
-                    </div>
-                    <div className="text-3xl font-black text-text">{soldSeats}</div>
-                    <div className="text-xs text-purple-400 mt-1">{Math.round((soldSeats / totalSeats) * 100)}% ocupação</div>
-                </div>
-                <div className="border border-borderColor rounded p-4 bg-gradient-to-br from-yellow-500/5 to-transparent">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="text-muted text-sm">Reservados</div>
-                        <ClockIcon className="w-5 h-5 text-yellow-400" />
-                    </div>
-                    <div className="text-3xl font-black text-text">{reservedSeats}</div>
-                    <div className="text-xs text-yellow-400 mt-1">{Math.round((reservedSeats / totalSeats) * 100)}% reservado</div>
-                </div>
+                <StatisticsCards data={totalSeats} title="Total de Assentos" icon={<Squares2X2Icon className="w-4 h-4 ml-5 flex-1 text-blue-400" />} color="blue-500/5" description={`Em ${sectors.length} setores`} />
+                <StatisticsCards data={availableSeats} title="Disponíveis" icon={<CheckCircleIcon className="w-4 h-4 ml-5 text-green-400" />} color="green-500/5" description={`${Math.round((availableSeats / totalSeats) * 100)}% disponível`} />
+                <StatisticsCards data={soldSeats} title="Vendidos" icon={<ChartBarIcon className="w-4 h-4 ml-5 text-purple-400" />} color="purple-500/5" description={`${Math.round((soldSeats / totalSeats) * 100)}% vendidos`} />
+                <StatisticsCards data={reservedSeats} title="Reservados" icon={<ClockIcon className="w-4 h-4 ml-5 text-yellow-400" />} color="yellow-500/5" description={`${Math.round((reservedSeats / totalSeats) * 100)}% reservados`} />
             </div>
 
             {/* Sectors Management */}
-            <div className="border border-borderColor rounded p-6">
+            <div className="border-t border-borderColor py-2">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
                         <SquaresPlusIcon className="w-6 h-6 text-primary" />
                         <h3 className="text-xl font-bold text-text">Setores do Evento</h3>
                     </div>
-                    <button
+                    <Button
                         onClick={() => setSectorModalOpen(true)}
-                        className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded font-semibold transition-colors flex items-center gap-2">
+                        label="Novo Setor">
                         <PlusIcon className="w-4 h-4" />
-                        Novo Setor
-                    </button>
+                    </Button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {sectors.map((sector) => {
@@ -138,9 +119,9 @@ export default function EventSeats() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Left Column: Controls & Filters */}
                 <div className="space-y-6">
-                    <div className="border border-borderColor rounded p-6">
+                    <div className="border-y py-4 border-borderColor rounded">
                         <h3 className="text-lg font-bold text-text mb-4 flex items-center gap-2">
-                            <FunnelIcon className="w-5 h-5 text-primary" />
+                            <FunnelIcon className="w-4 h-4 text-primary" />
                             Filtros
                         </h3>
                         <div className="space-y-3">
@@ -171,36 +152,34 @@ export default function EventSeats() {
                         </div>
                     </div>
 
-                    <div className="border border-borderColor rounded p-6">
+                    <div className="border-b border-borderColor pb-4">
                         <h3 className="text-lg font-bold text-text mb-4">Ações Rápidas</h3>
                         <div className="space-y-2">
-                            <button
-                                className="w-full px-4 py-3 bg-primary hover:bg-primary-dark text-white rounded font-semibold transition-all flex items-center justify-center gap-2"
+                            <Button
+                                variant="primary"
+                                fullWidth
                                 onClick={() => setModalOpen(true)}>
-                                <PlusIcon className="w-5 h-5" />
+                                <PlusIcon className="w-4 h-4" />
                                 Adicionar Assento
-                            </button>
-                            <button className="w-full px-4 py-3 border border-borderColor hover:bg-white/5 text-text rounded font-semibold transition-all">
+                            </Button>
+                            <Button
+                                variant="secondary"
+                                fullWidth
+                                onClick={() => setGridModalOpen(true)}>
+                                <Squares2X2Icon className="w-4 h-4" />
+                                Gerar Grade
+                            </Button>
+                            <Button
+                                variant="secondary"
+                                fullWidth
+                                onClick={() => setModalOpen(true)}>
                                 Importar Layout
-                            </button>
-                            <button className="w-full px-4 py-3 border border-borderColor hover:bg-white/5 text-text rounded font-semibold transition-all">
+                            </Button>
+                            <Button
+                                variant="secondary"
+                                fullWidth>
                                 Exportar Mapa
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="border border-borderColor rounded p-6">
-                        <h3 className="text-lg font-bold text-text mb-4">Ações em Massa</h3>
-                        <div className="space-y-2">
-                            <button className="w-full px-4 py-2 border border-green-500 text-green-400 hover:bg-green-500/10 rounded transition-all text-sm">
-                                Liberar Selecionados
-                            </button>
-                            <button className="w-full px-4 py-2 border border-yellow-500 text-yellow-400 hover:bg-yellow-500/10 rounded transition-all text-sm">
-                                Reservar Selecionados
-                            </button>
-                            <button className="w-full px-4 py-2 border border-red-500 text-red-400 hover:bg-red-500/10 rounded transition-all text-sm">
-                                Bloquear Selecionados
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </div>
@@ -230,7 +209,7 @@ export default function EventSeats() {
                             </div>
                         </div>
 
-                        <div className="bg-slate-900/50 rounded-lg p-4 min-h-[400px] border border-borderColor">
+                        <div className="rounded min-h-[400px]">
                             <SeatMap
                                 initial={seats}
                                 onChange={(next: Seat[]) => setSeats(next)}
@@ -242,32 +221,16 @@ export default function EventSeats() {
                                     <p className="text-text-muted text-sm max-w-md">
                                         Comece adicionando assentos ao mapa ou importe um layout existente.
                                     </p>
-                                    <button
-                                        onClick={() => setModalOpen(true)}
-                                        className="mt-4 px-6 py-2 bg-primary hover:bg-primary-dark text-white rounded font-semibold transition-colors">
+                                    <Button
+                                        size="lg"
+                                        onClick={() => setModalOpen(true)}>
+                                        <PlusIcon className="w-4 h-4" />
                                         Adicionar Primeiro Assento
-                                    </button>
+                                    </Button>
                                 </div>
                             )}
                         </div>
 
-                        {/* Seat Legend by Sector */}
-                        {sectors.length > 0 && (
-                            <div className="mt-4 p-4 bg-white/5 rounded border border-borderColor">
-                                <div className="text-sm font-semibold text-text mb-3">Legenda de Setores:</div>
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                    {sectors.map(sector => (
-                                        <div key={sector.id} className="flex items-center gap-2">
-                                            <div
-                                                className="w-4 h-4 rounded"
-                                                style={{ backgroundColor: sector.color }}
-                                            ></div>
-                                            <span className="text-xs text-text-muted">{sector.name}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
                     </div>
                 </div>
             </div>
@@ -279,21 +242,43 @@ export default function EventSeats() {
                 title="Criar Novo Assento">
                 <SeatForm
                     onSave={(data) => {
-                        const s = {
-                            id: String(Date.now()),
-                            name: data.name || `S${seats.length + 1}`,
-                            x: data.posX || 50,
-                            y: data.posY || 50,
-                            sector: selectedSector || undefined,
-                            status: 'available' as const,
-                            price: sectors.find(sec => sec.id === selectedSector)?.price || 0
-                        };
-                        const next = [...seats, s];
+                        console.log(data);
+
+                        // Converter do formato backend (layoutPositionX/Y) para formato local (x/y)
+                        // const seatForMap: Seat = {
+                        //     id: data.id,
+                        //     name: data.name,
+                        //     x: data.layoutPositionX || 50,
+                        //     y: data.layoutPositionY || 50,
+                        //     sector: selectedSector || undefined,
+                        //     status: 'available' as const,
+                        //     price: data.price || 0
+                        // };
+
+                        const next = [...seats, data];
                         setSeats(next);
                         setModalOpen(false);
                     }}
                 />
             </Modal>
+
+            {/* <Modal
+                open={gridModalOpen}
+                onClose={() => setGridModalOpen(false)}
+                title="Gerar Grade de Assentos">
+                <SeatGridGenerator
+                    sectors={sectors}
+                    onClose={() => setGridModalOpen(false)}
+                    onGenerate={(newSeats) => {
+                        const seatsWithIds = newSeats.map((s, i) => ({
+                            ...s,
+                            id: `gen-${Date.now()}-${i}`
+                        }));
+                        setSeats([...seats, ...seatsWithIds]);
+                        setGridModalOpen(false);
+                    }}
+                />
+            </Modal> */}
 
             <Modal
                 open={sectorModalOpen}

@@ -27,7 +27,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
                     )}
                     <select
                         ref={ref}
-                        className={`w-full border border-borderColor bg-background rounded text-xs md:text-sm  text-text placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all  ${selectClassName} bg-surface`}
+                        className={`w-full md:py-2 py-1 border bg-surface border-borderColor rounded text-xs md:text-sm  text-text placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all  ${selectClassName}`}
                         {...rest}
                     >
                         {options.map(opt => (

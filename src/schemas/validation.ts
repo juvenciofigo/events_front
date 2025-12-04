@@ -103,12 +103,20 @@ export type ServiceEditForm = z.infer<typeof serviceEditSchema>;
 
 export const seatSchema = z.object({
     name: z.string().min(1, "Nome é obrigatório").max(50, "Nome muito longo"),
-    paid: z.boolean().optional(),
-    price: z.coerce.number().nonnegative("Preço não pode ser negativo").optional(),
+    description: z.string().max(500, "Descrição muito longa").optional(),
     totalSeats: z.coerce.number().int("Deve ser número inteiro").nonnegative("Não pode ser negativo").optional(),
-    availableSeats: z.coerce.number().int("Deve ser número inteiro").nonnegative("Não pode ser negativo").optional(),
-    posX: z.coerce.number().optional(),
-    posY: z.coerce.number().optional(),
+    isPaid: z.union([z.boolean(), z.string()]).transform((val) => val === true || val === "true").optional(),
+    price: z.coerce.number().nonnegative("Preço não pode ser negativo").optional(),
+    layoutPositionX: z.coerce.number().optional(),
+    layoutPositionY: z.coerce.number().optional(),
+}).refine((data) => {
+    if (data.isPaid) {
+        return data.price !== undefined && data.price > 0;
+    }
+    return true;
+}, {
+    message: "Preço deve ser maior que zero se o assento for pago",
+    path: ["price"],
 });
 
 export type SeatFormData = z.infer<typeof seatSchema>;
