@@ -35,6 +35,7 @@ import ServiceRequestsList from "./pages/marketplace/ServiceRequestsList";
 import ServiceRequestDetails from "./pages/marketplace/ServiceRequestDetails";
 import ChatPage from "./pages/chat/ChatPage";
 import Ticket from "./pages/ticket";
+import TicketValidation from "./pages/TicketValidation";
 
 // Plans / Payments / Invitations
 import Plans from "./pages/plans/Plans";
@@ -129,6 +130,9 @@ export default function App() {
 
                 {/* Public Invitation View */}
                 <Route path="/invitation/:id" element={<InvitationEnvelope />} />
+
+                {/* Ticket Validation */}
+                <Route path="/validation" element={<TicketValidation />} />
 
                 <Route
                     path="/dashboard"

@@ -10,6 +10,7 @@ export const seatsApi = {
     fetchSeats: async (eventId: string, { page, limit, sort, searchQuery }: query): Promise<PageSeat> => {
         try {
             const { data } = await api.get(`/seats/event/${eventId}?limit=${limit}&page=${page}&sort=${sort}&search=${searchQuery}`);
+
             return data;
         } catch (error) {
             console.error("Erro ao buscar evento:", error);
@@ -20,7 +21,7 @@ export const seatsApi = {
     createSeat: async (eventId: string, seat: Omit<SeatFormData, "id">): Promise<Seat> => {
         try {
             const { data } = await api.post(`/seats/event/${eventId}`, seat);
-            
+
             return data;
         } catch (error) {
             console.error("Erro ao criar assento:", error);

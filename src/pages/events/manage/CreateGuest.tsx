@@ -7,7 +7,7 @@ import { guestCreateSchema, type GuestCreateForm } from "@/schemas/validation";
 import Input from "@/components/Form/Input";
 import Select, { SelectOption } from "@/components/Form/Select";
 import Button from "@/components/Form/Button";
-import { useGetSeats } from '@/hooks/useSeats';
+import { useFetchSeats } from '@/hooks/useSeats';
 import { PaymentMethod, PaymentMethods } from '@/types/system';
 
 interface CreateGuestProps {
@@ -23,7 +23,7 @@ export default function CreateGuest({ eventId, setModalOpen }: CreateGuestProps)
     const [searchQuery, setSearchQuery] = useState("");
 
 
-    const { data: dataSeats, error: errorSeat, isLoading: loadingSeat } = useGetSeats(eventId, { limit, page, sort, searchQuery })
+    const { data: dataSeats, error: errorSeat, isLoading: loadingSeat } = useFetchSeats(eventId, { limit, page, sort, searchQuery })
 
     const { success, error: errorToast } = useToast();
 

@@ -14,24 +14,21 @@ import {
 } from "@heroicons/react/24/outline";
 import GuestList from "./manage/GuestList";
 import Seats from "./manage/Seats";
+import { useEvent } from "@/hooks/useEvents";
+import Button from "@/components/Form/Button";
+import Settings from "./manage/Settings";
+import Overview from "./manage/Overview";
+import Financial from "./manage/Financial";
+import Operations from "./manage/Operations";
 
 const TABS = [
     { id: "overview", label: "Visão Geral", icon: ChartBarIcon },
     { id: "guests", label: "Participantes", icon: UserGroupIcon },
     { id: "seats", label: "Assentos", icon: UserGroupIcon },
-    { id: "tickets", label: "Ingressos", icon: TicketIcon },
     { id: "financial", label: "Financeiro", icon: CurrencyDollarIcon },
     { id: "operations", label: "Operações", icon: ClipboardDocumentListIcon },
     { id: "settings", label: "Configurações", icon: Cog6ToothIcon },
 ];
-
-import { useEvent } from "@/hooks/useEvents";
-import Button from "@/components/Form/Button";
-import Settings from "./manage/Settings";
-import Tickets from "./manage/Tickets";
-import Overview from "./manage/Overview";
-import Financial from "./manage/Financial";
-import Operations from "./manage/Operations";
 
 export default function EventManage() {
     const navigate = useNavigate();
@@ -134,8 +131,6 @@ export default function EventManage() {
                 {activeTab === "seats" && <Seats />}
 
                 {activeTab === "settings" && (<Settings />)}
-
-                {activeTab === "tickets" && (<Tickets />)}
 
                 {activeTab === "financial" && (<Financial />)}
 

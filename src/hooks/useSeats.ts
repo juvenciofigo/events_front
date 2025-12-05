@@ -4,7 +4,7 @@ import { Seat } from "@/types/seat";
 import { query } from "@/types/system";
 import { SeatFormData } from "@/schemas/validation";
 
-export function useGetSeats(
+export function useFetchSeats(
     eventId: string,
     { limit, sort, page, searchQuery }: query
 ) {
@@ -25,11 +25,11 @@ export function useCreateSeat() {
     });
 }
 
-export function useUpdateSeat(seatId: string, data: Partial<Seat>) {
+export function useUpdateSeat() {
     const qc = useQueryClient();
     return useMutation({
-        mutationFn: (data: Seat) => seatsApi.updateSeat(seatId, data),
-        onSuccess: () => qc.invalidateQueries({ queryKey: ["update seat", seatId] }),
+        mutationFn: ({ data }: { data: Partial<Seat> }) => seatsApi.updateSeat(data.id!, data),
+        onSuccess: (data: Seat) => qc.invalidateQueries({ queryKey: ["update seat", data.id] }),
     });
 }
 
