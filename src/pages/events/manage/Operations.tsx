@@ -26,6 +26,7 @@ import { useSuppliers } from "@/hooks/useSuppliers";
 import { useTasks } from "@/hooks/useTasks";
 import { useTeam } from "@/hooks/useTeam";
 import { useToast } from "@/contexts/ToastContext";
+import { StatisticsCards } from "@/components/StatisticsCards";
 
 export default function Operations() {
     const { id: eventId } = useParams<{ id: string }>();
@@ -172,38 +173,34 @@ export default function Operations() {
         <div className="space-y-6">
             {/* Operations Statistics */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="border border-borderColor rounded p-4 bg-gradient-to-br from-red-500/5 to-transparent">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="text-muted text-sm">Despesas Totais</div>
-                        <CurrencyDollarIcon className="w-5 h-5 text-red-400" />
-                    </div>
-                    <div className="text-3xl font-black text-text">{formatCurrency(totalExpenses)}</div>
-                    <div className="text-xs text-red-400 mt-1">{formatCurrency(pendingExpenses)} pendentes</div>
-                </div>
-                <div className="border border-borderColor rounded p-4 bg-gradient-to-br from-blue-500/5 to-transparent">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="text-muted text-sm">Fornecedores</div>
-                        <TruckIcon className="w-5 h-5 text-blue-400" />
-                    </div>
-                    <div className="text-3xl font-black text-text">{suppliers?.length || 0}</div>
-                    <div className="text-xs text-blue-400 mt-1">{activeSuppliers} contratos ativos</div>
-                </div>
-                <div className="border border-borderColor rounded p-4 bg-gradient-to-br from-purple-500/5 to-transparent">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="text-muted text-sm">Tarefas</div>
-                        <ClipboardDocumentListIcon className="w-5 h-5 text-purple-400" />
-                    </div>
-                    <div className="text-3xl font-black text-text">{tasks?.length || 0}</div>
-                    <div className="text-xs text-purple-400 mt-1">{completedTasks} concluídas, {pendingTasksCount} pendentes</div>
-                </div>
-                <div className="border border-borderColor rounded p-4 bg-gradient-to-br from-green-500/5 to-transparent">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="text-muted text-sm">Equipe</div>
-                        <UsersIcon className="w-5 h-5 text-green-400" />
-                    </div>
-                    <div className="text-3xl font-black text-text">{team?.length || 0}</div>
-                    <div className="text-xs text-green-400 mt-1">Membros ativos</div>
-                </div>
+                <StatisticsCards
+                    title="Despesas Totais"
+                    icon={<CurrencyDollarIcon className="w-5 h-5 text-red-400" />}
+                    data={formatCurrency(totalExpenses)}
+                    color="red-500/5"
+                    description={<div className="text-xs text-red-400 mt-1">{formatCurrency(pendingExpenses)} pendentes</div>}
+                />
+                <StatisticsCards
+                    title="Fornecedores"
+                    icon={<TruckIcon className="w-5 h-5 text-blue-400" />}
+                    data={suppliers?.length || 0}
+                    color="blue-500/5"
+                    description={<div className="text-xs text-blue-400 mt-1">{activeSuppliers} contratos ativos</div>}
+                />
+                <StatisticsCards
+                    title="Tarefas"
+                    icon={<ClipboardDocumentListIcon className="w-5 h-5 text-purple-400" />}
+                    data={tasks?.length || 0}
+                    color="purple-500/5"
+                    description={<div className="text-xs text-purple-400 mt-1">{completedTasks} concluídas, {pendingTasksCount} pendentes</div>}
+                />
+                <StatisticsCards
+                    title="Equipe"
+                    icon={<UsersIcon className="w-5 h-5 text-green-400" />}
+                    data={team?.length || 0}
+                    color="green-500/5"
+                    description={<div className="text-xs text-green-400 mt-1">Membros ativos</div>}
+                />
             </div>
 
             {/* Expenses Tracking */}

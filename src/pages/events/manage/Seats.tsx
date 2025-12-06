@@ -12,7 +12,7 @@ import {
     FunnelIcon,
     Squares2X2Icon
 } from "@heroicons/react/24/outline";
-import { StatisticsCards } from "./Overview";
+import { StatisticsCards } from "@/components/StatisticsCards";
 import Button from "@/components/Form/Button";
 import { Seat } from "@/types/seat";
 import { useFetchSeats } from "@/hooks/useSeats"

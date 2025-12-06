@@ -24,7 +24,7 @@ import CreateGuest from "./CreateGuest";
 import Select from "@/components/Form/Select";
 import Button from "@/components/Form/Button";
 import Input from "@/components/Form/Input";
-import { StatisticsCards } from "./Overview";
+import { StatisticsCards } from "@/components/StatisticsCards";
 
 // Mock Data for Seats (keep for now as we don't have a seats hook ready/integrated here yet)
 

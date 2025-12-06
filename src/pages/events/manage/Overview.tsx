@@ -10,6 +10,7 @@ import {
 import { useEvent } from "@/hooks/useEvents";
 import { useFinancialStats } from "@/hooks/useFinancial";
 import { useParams } from "react-router-dom";
+import { StatisticsCards } from "@/components/StatisticsCards";
 
 export default function Overview() {
     const { id } = useParams<{ id: string }>();
@@ -117,25 +118,5 @@ function QuickActions({ icon, title, description }: QuickAction) {
                 </div>
             </div>
         </button>
-    )
-}
-
-interface StatisticsCards {
-    data: any;
-    title?: any;
-    icon?: any;
-    color?: string;
-    description?: any;
-}
-export function StatisticsCards({ data, title, icon, color, description }: StatisticsCards) {
-    return (
-        <div className={`border flex justify-center items-center flex-col border-borderColor rounded p-1 gap-1 bg-surface/50 bg-gradient-to-br from-${color} to-transparent`}>
-            <div className="flex items-center justify-between">
-                <div className="text-muted text-sm whitespace-nowrap">{title}</div>
-                {icon}
-            </div>
-            <div className="text-xl lg:text-2xl font-black text-text">{data}</div>
-            <div className="text-xs text-text-muted whitespace-nowrap">{description}</div>
-        </div>
     )
 }
