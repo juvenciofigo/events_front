@@ -44,7 +44,7 @@ export default function EventManage() {
         );
     }
 
-    if (error || !eventData) {
+    if (error || !eventData || !eventId) {
         return (
             <div className="min-h-screen bg-background flex items-center justify-center text-text">
                 <div className="text-center">
@@ -124,17 +124,17 @@ export default function EventManage() {
                         </button>
                     ))}
                 </div>
-                {activeTab === "overview" && (<Overview />)}
+                {activeTab === "overview" && (<Overview eventId={eventId} />)}
 
-                {activeTab === "guests" && <GuestList />}
+                {activeTab === "guests" && <GuestList eventId={eventId} />}
 
-                {activeTab === "seats" && <Seats />}
+                {activeTab === "seats" && <Seats eventId={eventId} />}
 
-                {activeTab === "settings" && (<Settings />)}
+                {activeTab === "settings" && (<Settings eventId={eventId} />)}
 
-                {activeTab === "financial" && (<Financial />)}
+                {activeTab === "financial" && (<Financial eventId={eventId} />)}
 
-                {activeTab === "operations" && (<Operations />)}
+                {activeTab === "operations" && (<Operations eventId={eventId} />)}
             </div>
         </div>
     );

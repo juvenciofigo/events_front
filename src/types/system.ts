@@ -20,6 +20,11 @@ export enum PaymentMethod {
     // PAYPAL = "PAYPAL",
 }
 
+export enum PaymentStatus {
+    PAID = "PAID",
+    PENDING = "PENDING",
+}
+
 export const PaymentMethods = [
     { label: "MPESA", value: PaymentMethod.MPESA },
     // { label: "MKESH", value: PaymentMethod.MKESH },

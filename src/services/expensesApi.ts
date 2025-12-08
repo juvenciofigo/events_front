@@ -1,26 +1,18 @@
+import { ExpenseCreateForm, ExpenseStatus, Priority } from "@/schemas/validation";
 import api from "./axiosClient";
+import { Expense, PageExpense } from "@/types/expense";
+import { PaymentStatus } from "@/types/system";
 
-export interface Expense {
-    id: string;
-    eventId: string;
-    description: string;
-    amount: number;
-    category: string;
-    dueDate: string;
-    status: 'pending' | 'paid' | 'overdue';
-    paymentDate?: string;
-    paymentMethod?: string;
-    createdAt: string;
-    updatedAt: string;
-}
 
-export interface CreateExpenseDTO {
-    description: string;
-    amount: number;
-    category: string;
-    dueDate: string;
-    status?: 'pending' | 'paid';
-}
+
+// export interface CreateExpenseDTO {
+//     eventId: string;
+//     description: string;
+//     amount: number;
+//     category: string;
+//     dueDate: string;
+//     status?: 'pending' | 'paid';
+// }
 
 export interface PayExpenseDTO {
     paymentDate: string;
@@ -28,33 +20,66 @@ export interface PayExpenseDTO {
 }
 
 export const expensesApi = {
-    getExpenses: async (eventId: string) => {
-        const response = await api.get(`/expenses/event/${eventId}`);
-        return response.data;
+    getExpenses: async (eventId: string): Promise<PageExpense> => {
+        try {
+            const response = await api.get(`/expenses/event/${eventId}`);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
     },
 
     getExpensesSummary: async (eventId: string) => {
-        const response = await api.get(`/expenses/event/${eventId}/summary`);
-        return response.data;
+        try {
+            const response = await api.get(`/expenses/event/${eventId}/summary`);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
     },
 
-    createExpense: async (eventId: string, expense: CreateExpenseDTO) => {
-        const response = await api.post(`/expenses/event/${eventId}`, expense);
-        return response.data;
+    createExpense: async (expense: ExpenseCreateForm, eventId: string): Promise<Expense> => {
+        console.log(expense);
+
+        try {
+            const response = await api.post(`/expenses/event/${eventId}`, expense);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
     },
 
-    updateExpense: async (id: string, expense: Partial<CreateExpenseDTO>) => {
-        const response = await api.put(`/expenses/${id}`, expense);
-        return response.data;
+    updateExpense: async (id: string, expense: Partial<ExpenseCreateForm>) => {
+        expense.paymentStatus = expense.paymentStatus?.toString() as PaymentStatus;
+        expense.priority = expense.priority?.toString() as Priority;
+        expense.status = expense.status?.toString() as ExpenseStatus;
+        console.log(expense);
+        
+        try {
+            const response = await api.put(`/expenses/${id}`, expense);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
     },
 
     deleteExpense: async (id: string) => {
-        const response = await api.delete(`/expenses/${id}`);
-        return response.data;
+        try {
+            const response = await api.delete(`/expenses/${id}`);
+            return response.data;
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
+
     },
 
     payExpense: async (id: string, payment: PayExpenseDTO) => {
-        const response = await api.post(`/expenses/${id}/pay`, payment);
-        return response.data;
+        try {
+            const response = await api.post(`/expenses/${id}/pay`, payment);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
     }
 };

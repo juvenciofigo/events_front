@@ -26,7 +26,7 @@ type Sector = {
     totalSeats: number;
 };
 
-export default function Seats() {
+export default function Seats({ eventId }: { eventId: string }) {
     const [seats, setSeats] = useState<Seat[]>([]);
     const [modalOpen, setModalOpen] = useState(false);
 
@@ -35,8 +35,7 @@ export default function Seats() {
     const [searchQuery, setSearchQuery] = useState("");
     const [sort, setSorte] = useState("createdAt")
 
-    const { eventId } = useParams()
-    const { data: seatsData, isError, isLoading } = useFetchSeats(eventId!, {
+    const { data: seatsData, isError, isLoading } = useFetchSeats(eventId, {
         limit: limit,
         page: page,
         sort: sort,

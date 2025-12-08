@@ -28,8 +28,7 @@ import { StatisticsCards } from "@/components/StatisticsCards";
 
 // Mock Data for Seats (keep for now as we don't have a seats hook ready/integrated here yet)
 
-export default function GuestList() {
-    const { eventId } = useParams();
+export default function GuestList({ eventId }: { eventId: string }) {
     const { showToast, success, error: errorToast } = useToast();
 
     // Pagination & Filters State
@@ -42,7 +41,7 @@ export default function GuestList() {
     const [filterCheckedIn, setFilterCheckedIn] = useState("all");
 
     // Data Fetching
-    const { data, isLoading, error } = useGuests(eventId || "", { limit, page, sort, searchQuery });
+    const { data, isLoading, error } = useGuests(eventId, { limit, page, sort, searchQuery });
 
     const updateGuest = useUpdateGuest();
     const deleteGuest = useDeleteGuest();
@@ -78,7 +77,6 @@ export default function GuestList() {
     };
 
     const handleBulkCheckIn = async () => {
-        if (!eventId) return;
         // Implement bulk check-in logic here (e.g., loop through selectedGuests and call updateGuest)
         // For now, just a placeholder toast
         success("Check-in em massa iniciado (implementação pendente)");
@@ -263,7 +261,7 @@ export default function GuestList() {
                 <div className="overflow-x-auto">
                     <table className="w-full text-center">
                         <thead>
-                            <tr className="border-b border-borderColor bg-white/5">
+                            <tr className="border-b border-borderColor bg-surface-hover">
                                 <th className="p-2 border-r border-borderColor">
                                     <input
                                         type="checkbox"

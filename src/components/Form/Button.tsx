@@ -17,7 +17,7 @@ const Button = React.forwardRef<HTMLButtonElement, Props>(
             size = "md",
             isLoading = false,
             fullWidth = false,
-            label="",
+            label = "",
             children,
             className = "",
             disabled,
@@ -73,7 +73,7 @@ const Button = React.forwardRef<HTMLButtonElement, Props>(
                         />
                     </svg>
                 )}
-                {children} {label}
+                {children} <span className="whitespace-nowrap">{label}</span>
             </button>
         );
     }

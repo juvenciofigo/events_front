@@ -12,15 +12,15 @@ import { useFinancialStats } from "@/hooks/useFinancial";
 import { useParams } from "react-router-dom";
 import { StatisticsCards } from "@/components/StatisticsCards";
 
-export default function Overview() {
-    const { id } = useParams<{ id: string }>();
-    const { data: event, isLoading: eventLoading } = useEvent(id || "");
-    const { data: financialStats, isLoading: financialLoading } = useFinancialStats(id || "");
+export default function Overview({ eventId }: { eventId: string }) {
+    // const { id } = useParams<{ id: string }>();
+    const { data: event, isLoading: eventLoading } = useEvent(eventId);
+    const { data: financialStats, isLoading: financialLoading } = useFinancialStats(eventId);
 
     const isLoading = eventLoading || financialLoading;
 
     // Calculate derived stats
-    const ticketsSold = financialStats?.revenueByTicketType.reduce((acc, curr) => acc + curr.quantity, 0) || 0;
+    const ticketsSold = financialStats?.revenueBySeat.reduce((acc, curr) => acc + curr.quantity, 0) || 0;
     const totalRevenue = financialStats?.totalRevenue || 0;
     const totalCapacity = event?.estimatedGuest || 0;
     const occupancyRate = totalCapacity > 0 ? (ticketsSold / totalCapacity) * 100 : 0;

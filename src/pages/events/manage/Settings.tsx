@@ -12,27 +12,41 @@ import {
     ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 
-export default function Settings() {
+type StatusType = 'active' | 'paused' | 'canceled';
+
+interface StatusOptionProps {
+    type: StatusType;
+    label: string;
+    description: string;
+    isSelected: boolean;
+    onClick: () => void;
+}
+
+
+
+export default function Settings({ eventId }: { eventId: string }) {
+    const [eventStatus, setEventStatus] = React.useState<StatusType>('active');
+
     return (
-        <div className="space-y-8">
+        <div className="space-y-3">
             {/* Event Visibility */}
-            <div className="border border-borderColor rounded p-6">
-                <div className="flex items-center gap-3 mb-6">
+            <div className="">
+                <div className="flex items-center gap-3 mb-3">
                     <GlobeAltIcon className="w-6 h-6 text-primary" />
                     <h3 className="text-xl font-bold text-text">Visibilidade do Evento</h3>
                 </div>
-                <div className="space-y-4">
-                    <div className="flex items-center justify-between p-4 bg-white/5 rounded border border-borderColor">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div className="flex items-center justify-between p-2 bg-surface-hover rounded border border-borderColor">
                         <div className="flex items-center gap-3">
-                            <EyeIcon className="w-5 h-5 text-blue-400" />
+                            <EyeIcon className="w-4 h-4 text-blue-400" />
                             <div>
-                                <div className="font-semibold text-text">Evento Público</div>
+                                <div className="font-semibold text-text text-sm">Evento Público</div>
                                 <div className="text-xs text-text-muted">Visível para todos os usuários</div>
                             </div>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
                             <input type="checkbox" className="sr-only peer" defaultChecked />
-                            <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                            <div className="w-7 h-3 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute  after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-primary"></div>
                         </label>
                     </div>
                     <div className="flex items-center justify-between p-4 bg-white/5 rounded border border-borderColor">
@@ -65,33 +79,33 @@ export default function Settings() {
             </div>
 
             {/* Event Status */}
-            <div className="border border-borderColor rounded p-6">
+            <div className="border-t border-borderColor pt-3">
                 <div className="flex items-center gap-3 mb-6">
                     <ClockIcon className="w-6 h-6 text-primary" />
                     <h3 className="text-xl font-bold text-text">Status do Evento</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <button className="p-4 border-2 border-green-500 bg-green-500/10 rounded text-left">
-                        <div className="flex items-center gap-2 mb-2">
-                            <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                            <div className="font-bold text-text">Ativo</div>
-                        </div>
-                        <div className="text-xs text-text-muted">Vendas abertas e visível</div>
-                    </button>
-                    <button className="p-4 border border-borderColor hover:border-yellow-500 hover:bg-yellow-500/5 rounded text-left transition-all">
-                        <div className="flex items-center gap-2 mb-2">
-                            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                            <div className="font-bold text-text">Pausado</div>
-                        </div>
-                        <div className="text-xs text-text-muted">Vendas pausadas temporariamente</div>
-                    </button>
-                    <button className="p-4 border border-borderColor hover:border-red-500 hover:bg-red-500/5 rounded text-left transition-all">
-                        <div className="flex items-center gap-2 mb-2">
-                            <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                            <div className="font-bold text-text">Cancelado</div>
-                        </div>
-                        <div className="text-xs text-text-muted">Evento cancelado</div>
-                    </button>
+                    <StatusOption
+                        type="active"
+                        label="Ativo"
+                        description="Vendas abertas e visível"
+                        isSelected={eventStatus === 'active'}
+                        onClick={() => setEventStatus('active')}
+                    />
+                    <StatusOption
+                        type="paused"
+                        label="Pausado"
+                        description="Vendas pausadas temporariamente"
+                        isSelected={eventStatus === 'paused'}
+                        onClick={() => setEventStatus('paused')}
+                    />
+                    <StatusOption
+                        type="canceled"
+                        label="Cancelado"
+                        description="Evento cancelado"
+                        isSelected={eventStatus === 'canceled'}
+                        onClick={() => setEventStatus('canceled')}
+                    />
                 </div>
             </div>
 
@@ -232,3 +246,43 @@ export default function Settings() {
         </div>
     )
 }
+
+
+function StatusOption({ type, label, description, isSelected, onClick }: StatusOptionProps) {
+    const styles = {
+        active: {
+            dot: "bg-green-500",
+            selected: "border-green-500 bg-green-500/10",
+            hover: "hover:border-green-500 hover:bg-green-500/5",
+        },
+        paused: {
+            dot: "bg-yellow-500",
+            selected: "border-yellow-500 bg-yellow-500/10",
+            hover: "hover:border-yellow-500 hover:bg-yellow-500/5",
+        },
+        canceled: {
+            dot: "bg-red-500",
+            selected: "border-red-500 bg-red-500/10",
+            hover: "hover:border-red-500 hover:bg-red-500/5",
+        }
+    };
+
+    const style = styles[type];
+    const baseClass = "p-4 rounded text-left transition-all w-full";
+    const borderClass = isSelected
+        ? `border-2 ${style.selected}`
+        : `border border-borderColor ${style.hover}`;
+
+    return (
+        <button
+            onClick={onClick}
+            className={`${baseClass} ${borderClass}`}
+        >
+            <div className="flex items-center gap-2 mb-2">
+                <div className={`w-3 h-3 rounded-full ${style.dot}`}></div>
+                <div className="font-bold text-text">{label}</div>
+            </div>
+            <div className="text-xs text-text-muted">{description}</div>
+        </button>
+    );
+};

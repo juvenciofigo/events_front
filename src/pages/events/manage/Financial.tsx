@@ -20,9 +20,8 @@ import Loading from '@/components/Loading';
 import ErrorState from '@/components/ErrorState';
 import { FinancialBreakdown } from '@/components/FinancialBreakdown';
 
-export default function Financial() {
-    const { eventId } = useParams<{ eventId: string }>();
-    const { data: stats, isLoading: statsLoading, isError: statsError } = useFinancialStats(eventId || "");
+export default function Financial({ eventId }: { eventId: string }) {
+    const { data: stats, isLoading: statsLoading, isError: statsError } = useFinancialStats(eventId);
     // const { data: transactionsData, isLoading: transactionsLoading, isError: transactionsError } = useTransactions(eventId || "");
 
     const isLoading = statsLoading;

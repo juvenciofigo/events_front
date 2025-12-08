@@ -1,4 +1,4 @@
-import { PaymentMethod } from "@/types/system";
+import { PaymentMethod, PaymentStatus } from "@/types/system";
 import * as z from "zod";
 
 // ============ Auth Schemas ============
@@ -175,3 +175,66 @@ export type GuestCreateForm = z.infer<typeof guestCreateSchema>;
 export const guestEditSchema = guestCreateSchema;
 
 export type GuestEditForm = z.infer<typeof guestEditSchema>;
+
+// ============ Operations Schemas ============
+
+export enum Priority {
+    LOW = "LOW",
+    MEDIUM = "MEDIUM",
+    HIGH = "HIGH"
+}
+
+export enum ExpenseStatus {
+    PENDING = "PENDING",
+    IN_PROGRESS = "IN_PROGRESS",
+    DONE = "DONE"
+}
+
+
+export const expenseCreateSchema = z.object({
+    title: z.string().min(3, "Título deve ter no mínimo 3 caracteres").optional().or(z.literal("")),
+    category: z.string().min(1, "Categoria é obrigatória").optional().or(z.literal("")),
+    description: z.string().min(3, "Descrição deve ter no mínimo 3 caracteres").optional().or(z.literal("")),
+    priority: z.nativeEnum(Priority).optional().or(z.literal("")),
+    status: z.nativeEnum(ExpenseStatus).optional().or(z.literal("")),
+    amount: z.coerce.number().positive("Valor deve ser positivo").optional().or(z.literal(0)).or(z.literal(0)),
+    dueDate: z.string()
+        .refine((date) => !date || !isNaN(new Date(date).getTime()), "Data inválida")
+        .optional()
+        .or(z.literal("")),
+    paymentStatus: z.nativeEnum(PaymentStatus).optional().or(z.literal("")),
+});
+
+export type ExpenseCreateForm = z.infer<typeof expenseCreateSchema>;
+
+export const supplierCreateSchema = z.object({
+    name: z.string().min(3, "Nome deve ter no mínimo 3 caracteres"),
+    category: z.string().min(1, "Categoria é obrigatória"),
+    contactName: z.string().min(3, "Nome do contato deve ter no mínimo 3 caracteres"),
+    phone: z.string().regex(/^8[2-7]\d{7}$|^[1-9]{2}9?[0-9]{8}$/, "Telefone inválido").optional().or(z.literal("")),
+    email: z.string().email("Email inválido"),
+    contractValue: z.coerce.number().nonnegative("Valor deve ser positivo"),
+    status: z.enum(["active", "inactive"]).optional(),
+});
+
+export type SupplierCreateForm = z.infer<typeof supplierCreateSchema>;
+
+export const taskCreateSchema = z.object({
+    title: z.string().min(3, "Título deve ter no mínimo 3 caracteres"),
+    description: z.string().optional(),
+    priority: z.enum(["low", "medium", "high"]),
+    category: z.string().min(1, "Categoria é obrigatória"),
+    dueDate: z.string().refine((date) => !isNaN(new Date(date).getTime()), "Data inválida"),
+    status: z.enum(["pending", "completed"]).optional(),
+});
+
+export type TaskCreateForm = z.infer<typeof taskCreateSchema>;
+
+export const teamMemberCreateSchema = z.object({
+    name: z.string().min(3, "Nome deve ter no mínimo 3 caracteres"),
+    role: z.string().min(2, "Função deve ter no mínimo 2 caracteres"),
+    phone: z.string().regex(/^8[2-7]\d{7}$|^[1-9]{2}9?[0-9]{8}$/, "Telefone inválido").optional().or(z.literal("")),
+    email: z.string().email("Email inválido"),
+});
+
+export type TeamMemberCreateForm = z.infer<typeof teamMemberCreateSchema>;

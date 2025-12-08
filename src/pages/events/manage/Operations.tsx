@@ -1,65 +1,43 @@
 import React, { useState } from 'react'
 import {
-    CurrencyDollarIcon,
-    UserGroupIcon,
-    ClipboardDocumentListIcon,
-    CalendarDaysIcon,
-    TruckIcon,
-    PlusIcon,
-    PencilSquareIcon,
-    TrashIcon,
-    PhoneIcon,
-    EnvelopeIcon,
     CheckCircleIcon,
     ClockIcon,
-    BanknotesIcon,
-    BuildingOfficeIcon,
-    MusicalNoteIcon,
-    CakeIcon,
-    UsersIcon,
+    CurrencyDollarIcon,
+    PlusIcon,
+    TrashIcon,
     XCircleIcon,
 } from "@heroicons/react/24/outline";
 import Modal from "@/components/Modal";
 import { useParams } from "react-router-dom";
-import { useExpenses } from "@/hooks/useExpenses";
+import { } from "@/hooks/useExpenses";
 import { useSuppliers } from "@/hooks/useSuppliers";
 import { useTasks } from "@/hooks/useTasks";
 import { useTeam } from "@/hooks/useTeam";
 import { useToast } from "@/contexts/ToastContext";
 import { StatisticsCards } from "@/components/StatisticsCards";
+import CreateExpenseForm from "./components/CreateExpense";
+import CreateSupplierForm from "./components/CreateSupplierForm";
+import CreateTaskForm from "./components/CreateTaskForm";
+import CreateTeamMemberForm from "./components/CreateTeamMemberForm";
+import { SupplierCreateForm, TaskCreateForm, TeamMemberCreateForm } from "@/schemas/validation";
+import Button from '@/components/Form/Button';
+import { getExpenses, deleteExpense, updateExpense } from "@/hooks/useExpenses";
+import Loading from '@/components/Loading';
+import { Expense } from '@/types/expense';
+import { PaymentStatus } from '@/types/system';
+import TableExpense from './components/TableExpense';
 
-export default function Operations() {
-    const { id: eventId } = useParams<{ id: string }>();
-    const { success, error: showError } = useToast();
+export default function Operations({ eventId }: { eventId: string }) {
 
-    // Hooks
-    const {
-        expenses,
-        summary: expenseSummary,
-        createExpense,
-        updateExpense,
-        deleteExpense,
-        payExpense
-    } = useExpenses(eventId || "");
+    // const { success, error: showError } = useToast();
 
-    const {
-        data: suppliers,
-        createSupplier,
-        deleteSupplier
-    } = useSuppliers(eventId || "");
+    const { data: expenses, isLoading: expensesLoading, error: expensesError } = getExpenses(eventId);
+  
+    // const { data: suppliers, createSupplier, deleteSupplier } = useSuppliers(eventId);
 
-    const {
-        data: tasks,
-        createTask,
-        updateTask,
-        deleteTask
-    } = useTasks(eventId || "");
+    // const { data: tasks, createTask, updateTask, deleteTask } = useTasks(eventId);
 
-    const {
-        data: team,
-        addTeamMember,
-        removeTeamMember
-    } = useTeam(eventId || "");
+    // const { data: team, addTeamMember, removeTeamMember } = useTeam(eventId);
 
     // Modal States
     const [expenseModalOpen, setExpenseModalOpen] = useState(false);
@@ -67,120 +45,66 @@ export default function Operations() {
     const [taskModalOpen, setTaskModalOpen] = useState(false);
     const [teamModalOpen, setTeamModalOpen] = useState(false);
 
-    // Form Handlers
-    const handleCreateExpense = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget);
-        try {
-            await createExpense.mutateAsync({
-                description: formData.get('description') as string,
-                category: formData.get('category') as string,
-                amount: Number(formData.get('amount')),
-                dueDate: formData.get('dueDate') as string,
-                status: 'pending'
-            });
-            setExpenseModalOpen(false);
-            success("Despesa criada com sucesso!");
-        } catch (error) {
-            showError("Erro ao criar despesa.");
-        }
-    };
 
-    const handleCreateSupplier = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget);
-        try {
-            await createSupplier.mutateAsync({
-                name: formData.get('name') as string,
-                category: formData.get('category') as string,
-                contactName: formData.get('contactName') as string,
-                phone: formData.get('phone') as string,
-                email: formData.get('email') as string,
-                contractValue: Number(formData.get('contractValue')),
-                status: 'active'
-            });
-            setSupplierModalOpen(false);
-            success("Fornecedor adicionado com sucesso!");
-        } catch (err) {
-            showError("Erro ao adicionar fornecedor.");
-        }
-    };
 
-    const handleCreateTask = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget);
-        try {
-            await createTask.mutateAsync({
-                title: formData.get('title') as string,
-                description: formData.get('description') as string,
-                priority: formData.get('priority') as 'low' | 'medium' | 'high',
-                category: formData.get('category') as string,
-                dueDate: formData.get('dueDate') as string,
-            });
-            setTaskModalOpen(false);
-            success("Tarefa criada com sucesso!");
-        } catch (err) {
-            showError("Erro ao criar tarefa.");
-        }
-    };
+    // const handleCreateSupplier = async (data: SupplierCreateForm) => {
+    //     await createSupplier.mutateAsync({
+    //         ...data,
+    //         phone: data.phone || "",
+    //         status: 'active'
+    //     });
+    //     setSupplierModalOpen(false);
+    // };
 
-    const handleAddTeamMember = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget);
-        try {
-            await addTeamMember.mutateAsync({
-                name: formData.get('name') as string,
-                role: formData.get('role') as string,
-                phone: formData.get('phone') as string,
-                email: formData.get('email') as string,
-            });
-            setTeamModalOpen(false);
-            success("Membro adicionado com sucesso!");
-        } catch (err) {
-            showError("Erro ao adicionar membro.");
-        }
-    };
+    // const handleCreateTask = async (data: TaskCreateForm) => {
+    // await createTask.mutateAsync({
+    //     ...data,
+    //     // Ensure priority is correctly typed for the backend if needed,
+    //     // though zod schema should match what API expects
+    //     priority: data.priority as 'low' | 'medium' | 'high'
+    // });
+    //     setTaskModalOpen(false);
+    // };
 
-    const handlePayExpense = async (id: string) => {
-        try {
-            await payExpense.mutateAsync({ id, payment: { paymentDate: new Date().toISOString(), method: 'transfer' } });
-            success("Despesa marcada como paga!");
-        } catch (err) {
-            showError("Erro ao pagar despesa.");
-        }
-    };
+    // const handleAddTeamMember = async (data: TeamMemberCreateForm) => {
+    //     await addTeamMember.mutateAsync({
+    //         ...data,
+    //         phone: data.phone || ""
+    //     });
+    //     setTeamModalOpen(false);
+    // };
 
-    const handleToggleTaskStatus = async (task: any) => {
-        try {
-            const newStatus = task.status === 'completed' ? 'pending' : 'completed';
-            await updateTask.mutateAsync({ id: task.id, task: { status: newStatus } });
-            success(`Tarefa marcada como ${newStatus === 'completed' ? 'concluída' : 'pendente'}`);
-        } catch (err) {
-            showError("Erro ao atualizar tarefa.");
-        }
-    };
+    // const handleToggleTaskStatus = async (task: any) => {
+    //     try {
+    //         const newStatus = task.status === 'completed' ? 'pending' : 'completed';
+    //         await updateTask.mutateAsync({ id: task.id, task: { status: newStatus } });
+    //         success(`Tarefa marcada como ${newStatus === 'completed' ? 'concluída' : 'pendente'}`);
+    //     } catch (err) {
+    //         showError("Erro ao atualizar tarefa.");
+    //     }
+    // };
 
     // Derived Stats
-    const totalExpenses = expenseSummary?.total || 0;
-    const pendingExpenses = expenseSummary?.pending || 0;
-    const activeSuppliers = suppliers?.filter((s: any) => s.status === 'active').length || 0;
-    const completedTasks = tasks?.filter((t: any) => t.status === 'completed').length || 0;
-    const pendingTasksCount = tasks?.filter((t: any) => t.status !== 'completed').length || 0;
+    // const totalExpenses = expenseSummary?.total || 0;
+    // const pendingExpenses = expenseSummary?.pending || 0;
+    // const activeSuppliers = suppliers?.filter((s: any) => s.status === 'active').length || 0;
+    // const completedTasks = tasks?.filter((t: any) => t.status === 'completed').length || 0;
+    // const pendingTasksCount = tasks?.filter((t: any) => t.status !== 'completed').length || 0;
 
-    const formatCurrency = (value: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+ 
 
     return (
         <div className="space-y-6">
             {/* Operations Statistics */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <StatisticsCards
+                {/* <StatisticsCards
                     title="Despesas Totais"
                     icon={<CurrencyDollarIcon className="w-5 h-5 text-red-400" />}
                     data={formatCurrency(totalExpenses)}
                     color="red-500/5"
                     description={<div className="text-xs text-red-400 mt-1">{formatCurrency(pendingExpenses)} pendentes</div>}
-                />
-                <StatisticsCards
+                /> */}
+                {/* <StatisticsCards
                     title="Fornecedores"
                     icon={<TruckIcon className="w-5 h-5 text-blue-400" />}
                     data={suppliers?.length || 0}
@@ -200,89 +124,42 @@ export default function Operations() {
                     data={team?.length || 0}
                     color="green-500/5"
                     description={<div className="text-xs text-green-400 mt-1">Membros ativos</div>}
-                />
+                /> */}
             </div>
 
             {/* Expenses Tracking */}
-            <div className="border border-borderColor rounded p-6">
-                <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                        <CurrencyDollarIcon className="w-6 h-6 text-primary" />
-                        <h3 className="text-xl font-bold text-text">Gestão de Despesas</h3>
-                    </div>
-                    <button
-                        onClick={() => setExpenseModalOpen(true)}
-                        className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded font-semibold transition-colors flex items-center gap-2">
-                        <PlusIcon className="w-4 h-4" />
-                        Nova Despesa
-                    </button>
-                </div>
+            <div className="border-t border-borderColor pt-3">
+                {
+                    <SectionHeader
+                        icon={<CurrencyDollarIcon className="w-4 h-4 text-primary" />}
+                        title="Gestão de Despesas"
+                        onAddClick={() => setExpenseModalOpen(true)}
+                        labelButton="Nova Despesa"
+                    />
+                }
 
                 {/* Recent Expenses Table */}
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                        <thead>
-                            <tr className="border-b border-borderColor bg-white/5">
-                                <th className="px-4 py-3 text-sm font-bold text-muted">Descrição</th>
-                                <th className="px-4 py-3 text-sm font-bold text-muted">Categoria</th>
-                                <th className="px-4 py-3 text-sm font-bold text-muted">Valor</th>
-                                <th className="px-4 py-3 text-sm font-bold text-muted">Vencimento</th>
-                                <th className="px-4 py-3 text-sm font-bold text-muted">Status</th>
-                                <th className="px-4 py-3 text-sm font-bold text-muted text-right">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-borderColor">
-                            {expenses?.map((expense: any) => (
-                                <tr key={expense.id} className="hover:bg-white/5 transition-colors">
-                                    <td className="px-4 py-3 text-text font-medium">{expense.description}</td>
-                                    <td className="px-4 py-3"><span className="px-2 py-1 bg-blue-500/20 text-blue-400 text-xs font-semibold rounded">{expense.category}</span></td>
-                                    <td className="px-4 py-3 text-text font-bold">{formatCurrency(expense.amount)}</td>
-                                    <td className="px-4 py-3 text-text-muted text-sm">{new Date(expense.dueDate).toLocaleDateString('pt-BR')}</td>
-                                    <td className="px-4 py-3">
-                                        {expense.status === 'paid' ? (
-                                            <span className="flex items-center text-green-400 text-sm"><CheckCircleIcon className="w-4 h-4 mr-1" /> Pago</span>
-                                        ) : (
-                                            <span className="flex items-center text-yellow-400 text-sm"><ClockIcon className="w-4 h-4 mr-1" /> Pendente</span>
-                                        )}
-                                    </td>
-                                    <td className="px-4 py-3 text-right">
-                                        <div className="flex justify-end gap-2">
-                                            {expense.status !== 'paid' && (
-                                                <button onClick={() => handlePayExpense(expense.id)} className="p-2 hover:bg-green-500/20 rounded transition-colors" title="Marcar como pago">
-                                                    <CheckCircleIcon className="w-4 h-4 text-green-400" />
-                                                </button>
-                                            )}
-                                            <button onClick={() => deleteExpense.mutate(expense.id)} className="p-2 hover:bg-red-500/20 rounded transition-colors" title="Excluir">
-                                                <TrashIcon className="w-4 h-4 text-red-400" />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                            {(!expenses || expenses.length === 0) && (
-                                <tr>
-                                    <td colSpan={6} className="px-4 py-8 text-center text-text-muted">Nenhuma despesa registrada.</td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                {expensesLoading ? (
+                    <Loading />
+                ) : (
+                    (expenses && expenses.items.length > 0) ? (
+                        <TableExpense expenses={expenses} eventId={eventId} />
+                    ) : (
+                        <div className="px-4 py-8 text-center text-text-muted">Nenhuma despesa registrada.</div>
+                    )
+                )}
             </div>
 
             {/* Suppliers Management */}
-            <div className="border border-borderColor rounded p-6">
-                <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                        <TruckIcon className="w-6 h-6 text-primary" />
-                        <h3 className="text-xl font-bold text-text">Fornecedores</h3>
-                    </div>
-                    <button
-                        onClick={() => setSupplierModalOpen(true)}
-                        className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded font-semibold transition-colors flex items-center gap-2">
-                        <PlusIcon className="w-4 h-4" />
-                        Novo Fornecedor
-                    </button>
-                </div>
+            {/* <div className="border-t border-borderColor pt-3">
+                {
+                    <SectionHeader
+                        icon={<PlusIcon className="w-4 h-4" />}
+                        title="Fornecedores"
+                        onAddClick={() => setSupplierModalOpen(true)}
+                        labelButton="Novo Fornecedor"
+                    />
+                }
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {suppliers?.map((supplier: any) => (
@@ -327,22 +204,18 @@ export default function Operations() {
                         <div className="col-span-2 text-center text-text-muted py-8">Nenhum fornecedor cadastrado.</div>
                     )}
                 </div>
-            </div>
+            </div> */}
 
-            {/* Task Delegation */}
-            <div className="border border-borderColor rounded p-6">
-                <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                        <ClipboardDocumentListIcon className="w-6 h-6 text-primary" />
-                        <h3 className="text-xl font-bold text-text">Delegação de Tarefas</h3>
-                    </div>
-                    <button
-                        onClick={() => setTaskModalOpen(true)}
-                        className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded font-semibold transition-colors flex items-center gap-2">
-                        <PlusIcon className="w-4 h-4" />
-                        Nova Tarefa
-                    </button>
-                </div>
+            {/* Tasks */}
+            {/* <div className="border-t border-borderColor pt-3">
+                {
+                    <SectionHeader
+                        icon={<ClipboardDocumentListIcon className="w-6 h-6 text-primary" />}
+                        title="Tarefas"
+                        onAddClick={() => setTaskModalOpen(true)}
+                        labelButton="Nova Tarefa"
+                    />
+                }
 
                 <div className="space-y-4">
                     {tasks?.map((task: any) => (
@@ -389,22 +262,19 @@ export default function Operations() {
                         <div className="text-center text-text-muted py-8">Nenhuma tarefa registrada.</div>
                     )}
                 </div>
-            </div>
+            </div> */}
 
             {/* Team Management */}
-            <div className="border border-borderColor rounded p-6">
-                <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                        <UsersIcon className="w-6 h-6 text-primary" />
-                        <h3 className="text-xl font-bold text-text">Equipe do Evento</h3>
-                    </div>
-                    <button
-                        onClick={() => setTeamModalOpen(true)}
-                        className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded font-semibold transition-colors flex items-center gap-2">
-                        <PlusIcon className="w-4 h-4" />
-                        Adicionar Membro
-                    </button>
-                </div>
+            {/* <div className="border-t border-borderColor pt-3">
+                {
+                    <SectionHeader
+                        labelButton="Adicionar Membro"
+                        icon={<UsersIcon className="w-6 h-6 text-primary" />}
+                        title="Equipe do Evento"
+                        onAddClick={() => setTeamModalOpen(true)}
+                    />
+                }
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {team?.map((member) => (
                         <div key={member.id} className="p-4 border border-borderColor rounded hover:border-primary/50 transition-all relative group">
@@ -434,150 +304,61 @@ export default function Operations() {
                         <div className="col-span-4 text-center text-text-muted py-8">Nenhum membro na equipe.</div>
                     )}
                 </div>
-            </div>
+            </div> */}
 
             {/* Modals */}
             <Modal open={expenseModalOpen} onClose={() => setExpenseModalOpen(false)} title="Nova Despesa">
-                <form onSubmit={handleCreateExpense} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-muted mb-2">Descrição</label>
-                        <input name="description" required type="text" className="w-full bg-surface border border-borderColor rounded px-4 py-3 text-text" placeholder="Ex: Aluguel do espaço" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-muted mb-2">Categoria</label>
-                            <select name="category" className="w-full bg-surface border border-borderColor rounded px-4 py-3 text-text">
-                                <option value="Local">Local</option>
-                                <option value="Catering">Catering</option>
-                                <option value="Som & Luz">Som & Luz</option>
-                                <option value="Marketing">Marketing</option>
-                                <option value="Outros">Outros</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-muted mb-2">Valor (R$)</label>
-                            <input name="amount" required type="number" step="0.01" className="w-full bg-surface border border-borderColor rounded px-4 py-3 text-text" placeholder="0,00" />
-                        </div>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-muted mb-2">Vencimento</label>
-                        <input name="dueDate" required type="date" className="w-full bg-surface border border-borderColor rounded px-4 py-3 text-text" />
-                    </div>
-                    <div className="flex justify-end gap-3 pt-4">
-                        <button type="button" onClick={() => setExpenseModalOpen(false)} className="px-6 py-3 border border-borderColor hover:bg-white/5 text-text rounded font-semibold transition-all">Cancelar</button>
-                        <button type="submit" className="px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded font-semibold transition-all">Salvar</button>
-                    </div>
-                </form>
+                <CreateExpenseForm
+                    eventId={eventId}
+                    onCancel={() => setExpenseModalOpen(false)}
+                />
             </Modal>
 
-            <Modal open={supplierModalOpen} onClose={() => setSupplierModalOpen(false)} title="Novo Fornecedor">
-                <form onSubmit={handleCreateSupplier} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-muted mb-2">Nome da Empresa</label>
-                        <input name="name" required type="text" className="w-full bg-surface border border-borderColor rounded px-4 py-3 text-text" placeholder="Ex: Buffet Gourmet" />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-muted mb-2">Categoria</label>
-                        <select name="category" className="w-full bg-surface border border-borderColor rounded px-4 py-3 text-text">
-                            <option value="Catering">Catering</option>
-                            <option value="Som & Iluminação">Som & Iluminação</option>
-                            <option value="Decoração">Decoração</option>
-                            <option value="Segurança">Segurança</option>
-                            <option value="Outros">Outros</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-muted mb-2">Pessoa de Contato</label>
-                        <input name="contactName" required type="text" className="w-full bg-surface border border-borderColor rounded px-4 py-3 text-text" placeholder="Nome completo" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-muted mb-2">Telefone</label>
-                            <input name="phone" required type="tel" className="w-full bg-surface border border-borderColor rounded px-4 py-3 text-text" placeholder="(11) 98765-4321" />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-muted mb-2">Email</label>
-                            <input name="email" required type="email" className="w-full bg-surface border border-borderColor rounded px-4 py-3 text-text" placeholder="contato@empresa.com" />
-                        </div>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-muted mb-2">Valor do Contrato (R$)</label>
-                        <input name="contractValue" required type="number" step="0.01" className="w-full bg-surface border border-borderColor rounded px-4 py-3 text-text" placeholder="0,00" />
-                    </div>
-                    <div className="flex justify-end gap-3 pt-4">
-                        <button type="button" onClick={() => setSupplierModalOpen(false)} className="px-6 py-3 border border-borderColor hover:bg-white/5 text-text rounded font-semibold transition-all">Cancelar</button>
-                        <button type="submit" className="px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded font-semibold transition-all">Salvar</button>
-                    </div>
-                </form>
+            {/* <Modal open={supplierModalOpen} onClose={() => setSupplierModalOpen(false)} title="Novo Fornecedor">
+                <CreateSupplierForm
+                    onSubmit={handleCreateSupplier}
+                    onCancel={() => setSupplierModalOpen(false)}
+                />
             </Modal>
 
             <Modal open={taskModalOpen} onClose={() => setTaskModalOpen(false)} title="Nova Tarefa">
-                <form onSubmit={handleCreateTask} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-muted mb-2">Título da Tarefa</label>
-                        <input name="title" required type="text" className="w-full bg-surface border border-borderColor rounded px-4 py-3 text-text" placeholder="Ex: Confirmar equipamentos" />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-muted mb-2">Descrição</label>
-                        <textarea name="description" className="w-full bg-surface border border-borderColor rounded px-4 py-3 text-text" rows={3} placeholder="Detalhes da tarefa..."></textarea>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-muted mb-2">Prioridade</label>
-                            <select name="priority" className="w-full bg-surface border border-borderColor rounded px-4 py-3 text-text">
-                                <option value="high">Alta</option>
-                                <option value="medium">Média</option>
-                                <option value="low">Baixa</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-muted mb-2">Categoria</label>
-                            <select name="category" className="w-full bg-surface border border-borderColor rounded px-4 py-3 text-text">
-                                <option value="Técnico">Técnico</option>
-                                <option value="Catering">Catering</option>
-                                <option value="Segurança">Segurança</option>
-                                <option value="Marketing">Marketing</option>
-                                <option value="Outros">Outros</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-muted mb-2">Prazo</label>
-                        <input name="dueDate" required type="date" className="w-full bg-surface border border-borderColor rounded px-4 py-3 text-text" />
-                    </div>
-                    <div className="flex justify-end gap-3 pt-4">
-                        <button type="button" onClick={() => setTaskModalOpen(false)} className="px-6 py-3 border border-borderColor hover:bg-white/5 text-text rounded font-semibold transition-all">Cancelar</button>
-                        <button type="submit" className="px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded font-semibold transition-all">Criar Tarefa</button>
-                    </div>
-                </form>
+                <CreateTaskForm
+                    onSubmit={handleCreateTask}
+                    onCancel={() => setTaskModalOpen(false)}
+                />
             </Modal>
 
             <Modal open={teamModalOpen} onClose={() => setTeamModalOpen(false)} title="Adicionar Membro da Equipe">
-                <form onSubmit={handleAddTeamMember} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-muted mb-2">Nome Completo</label>
-                        <input name="name" required type="text" className="w-full bg-surface border border-borderColor rounded px-4 py-3 text-text" placeholder="Nome do membro" />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-muted mb-2">Função</label>
-                        <input name="role" required type="text" className="w-full bg-surface border border-borderColor rounded px-4 py-3 text-text" placeholder="Ex: Coordenador Técnico" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-muted mb-2">Telefone</label>
-                            <input name="phone" required type="tel" className="w-full bg-surface border border-borderColor rounded px-4 py-3 text-text" placeholder="(11) 98765-4321" />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-muted mb-2">Email</label>
-                            <input name="email" required type="email" className="w-full bg-surface border border-borderColor rounded px-4 py-3 text-text" placeholder="email@exemplo.com" />
-                        </div>
-                    </div>
-                    <div className="flex justify-end gap-3 pt-4">
-                        <button type="button" onClick={() => setTeamModalOpen(false)} className="px-6 py-3 border border-borderColor hover:bg-white/5 text-text rounded font-semibold transition-all">Cancelar</button>
-                        <button type="submit" className="px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded font-semibold transition-all">Adicionar</button>
-                    </div>
-                </form>
-            </Modal>
+                <CreateTeamMemberForm
+
+                    onSubmit={handleAddTeamMember}
+                    onCancel={() => setTeamModalOpen(false)}
+                />
+            </Modal> */}
+        </div>
+    )
+}
+
+
+interface SectionHeaderProps {
+    title: string;
+    icon: React.ReactNode;
+    onAddClick: () => void;
+    labelButton: string;
+}
+
+function SectionHeader({ title, onAddClick, labelButton, icon }: SectionHeaderProps) {
+    return (
+        <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-1">
+                {icon}
+                <h3 className="text-lg font-bold text-text">{title}</h3>
+            </div>
+            <Button
+                label={labelButton}
+                onClick={onAddClick}>
+                <PlusIcon className="w-4 h-4" />
+            </Button>
         </div>
     )
 }
