@@ -1,13 +1,13 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Input from "@/components/Form/Input";
 import Button from "@/components/Form/Button";
 import Select from "@/components/Form/Select";
-import { expenseCreateSchema, ExpenseStatus, Priority, type ExpenseCreateForm } from "@/schemas/validation";
+import { expenseCreateSchema, type ExpenseCreateForm } from "@/schemas/validation";
 import { useToast } from "@/contexts/ToastContext";
 import { useCreateExpense } from "@/hooks/useExpenses"
-import { PaymentStatus } from "@/types/system";
+import { PaymentStatus, Priority,ProgressStatus } from "@/types/system";
 
 interface CreateExpenseProps {
     onCancel: () => void;
@@ -16,6 +16,13 @@ interface CreateExpenseProps {
 
 export default function CreateExpense({ onCancel, eventId }: CreateExpenseProps) {
     const { success, error: showError } = useToast();
+    const isSubmittingRef = useRef(false);
+
+    useEffect(() => {
+        return () => {
+            isSubmittingRef.current = false; // Reset on unmount
+        };
+    }, []);
 
 
     const createExpenseMutation = useCreateExpense(eventId);
@@ -31,13 +38,27 @@ export default function CreateExpense({ onCancel, eventId }: CreateExpenseProps)
     });
 
     const onSubmit = async (data: ExpenseCreateForm) => {
+        // Check ref first - this persists across component instances
+        if (isSubmittingRef.current) {
+            return;
+        }
+
+        // Prevent multiple submissions
+        if (createExpenseMutation.isPending || isSubmitting) {
+            return;
+        }
+
+        // Set the ref to lock submissions
+        isSubmittingRef.current = true;
 
         createExpenseMutation.mutate({ data, eventId }, {
             onSuccess: () => {
+                isSubmittingRef.current = false; // Unlock
                 success("Despesa criada com sucesso!");
                 onCancel();
             },
             onError: (error: any) => {
+                isSubmittingRef.current = false; // Unlock on error too
                 showError(error?.response?.data?.message || "Erro ao criar despesa.");
             },
         });
@@ -50,9 +71,9 @@ export default function CreateExpense({ onCancel, eventId }: CreateExpenseProps)
     ];
 
     const statusOptions = [
-        { value: ExpenseStatus.PENDING, label: "Pendente" },
-        { value: ExpenseStatus.IN_PROGRESS, label: "Em Progresso" },
-        { value: ExpenseStatus.DONE, label: "Concluído" },
+        { value: ProgressStatus.PENDING, label: "Pendente" },
+        { value: ProgressStatus.IN_PROGRESS, label: "Em Progresso" },
+        { value: ProgressStatus.DONE, label: "Concluído" },
     ];
 
     const paymentStatusOptions = [
@@ -150,9 +171,9 @@ export default function CreateExpense({ onCancel, eventId }: CreateExpenseProps)
                 <Button
                     type="submit"
                     variant="primary"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || createExpenseMutation.isPending}
                 >
-                    {isSubmitting ? "Salvando..." : "Salvar"}
+                    {(isSubmitting || createExpenseMutation.isPending) ? "Salvando..." : "Salvar"}
                 </Button>
             </div>
         </form>

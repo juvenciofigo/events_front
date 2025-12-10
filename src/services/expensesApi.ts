@@ -1,23 +1,6 @@
-import { ExpenseCreateForm, ExpenseStatus, Priority } from "@/schemas/validation";
+import { ExpenseCreateForm } from "@/schemas/validation";
 import api from "./axiosClient";
-import { Expense, PageExpense } from "@/types/expense";
-import { PaymentStatus } from "@/types/system";
-
-
-
-// export interface CreateExpenseDTO {
-//     eventId: string;
-//     description: string;
-//     amount: number;
-//     category: string;
-//     dueDate: string;
-//     status?: 'pending' | 'paid';
-// }
-
-export interface PayExpenseDTO {
-    paymentDate: string;
-    method: string;
-}
+import { Expense, ExpensesSummary, PageExpense } from "@/types/expense";
 
 export const expensesApi = {
     getExpenses: async (eventId: string): Promise<PageExpense> => {
@@ -29,9 +12,9 @@ export const expensesApi = {
         }
     },
 
-    getExpensesSummary: async (eventId: string) => {
+    getExpensesSummary: async (eventId: string): Promise<ExpensesSummary> => {
         try {
-            const response = await api.get(`/expenses/event/${eventId}/summary`);
+            const response = await api.get(`/expenses/events/${eventId}/summary`);
             return response.data;
         } catch (error) {
             throw error;
@@ -39,8 +22,6 @@ export const expensesApi = {
     },
 
     createExpense: async (expense: ExpenseCreateForm, eventId: string): Promise<Expense> => {
-        console.log(expense);
-
         try {
             const response = await api.post(`/expenses/event/${eventId}`, expense);
             return response.data;
@@ -50,11 +31,8 @@ export const expensesApi = {
     },
 
     updateExpense: async (id: string, expense: Partial<ExpenseCreateForm>) => {
-        expense.paymentStatus = expense.paymentStatus?.toString() as PaymentStatus;
-        expense.priority = expense.priority?.toString() as Priority;
-        expense.status = expense.status?.toString() as ExpenseStatus;
         console.log(expense);
-        
+
         try {
             const response = await api.put(`/expenses/${id}`, expense);
             return response.data;
@@ -73,13 +51,4 @@ export const expensesApi = {
         }
 
     },
-
-    payExpense: async (id: string, payment: PayExpenseDTO) => {
-        try {
-            const response = await api.post(`/expenses/${id}/pay`, payment);
-            return response.data;
-        } catch (error) {
-            throw error;
-        }
-    }
 };

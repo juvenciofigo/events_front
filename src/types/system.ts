@@ -32,3 +32,15 @@ export const PaymentMethods = [
     // { label: "CARD", value: PaymentMethod.CARD },
     // { label: "PAYPAL", value: PaymentMethod.PAYPAL },
 ]
+
+export enum Priority {
+    LOW = "LOW",
+    MEDIUM = "MEDIUM",
+    HIGH = "HIGH"
+}
+
+export enum ProgressStatus {
+    PENDING = "PENDING",
+    IN_PROGRESS = "IN_PROGRESS",
+    DONE = "DONE"
+}

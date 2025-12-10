@@ -7,6 +7,7 @@ import {
     CheckCircleIcon,
     XCircleIcon,
 } from "@heroicons/react/24/outline";
+import { formatCurrency } from "@/utils";
 
 export default function Activity() {
     const [filter, setFilter] = useState("all");
@@ -88,9 +89,9 @@ export default function Activity() {
                             <div key={activity.id} className="flex items-center justify-between p-4 bg-white/5 rounded-sm border border-white/10 hover:bg-white/10 transition-colors">
                                 <div className="flex items-center gap-4">
                                     <div className={`p-3 rounded-sm ${activity.type === 'sale' ? 'bg-success/10 border border-success/20' :
-                                            activity.type === 'confirmation' ? 'bg-primary/10 border border-primary/20' :
-                                                activity.type === 'added' ? 'bg-info/10 border border-info/20' :
-                                                    'bg-error/10 border border-error/20'
+                                        activity.type === 'confirmation' ? 'bg-primary/10 border border-primary/20' :
+                                            activity.type === 'added' ? 'bg-info/10 border border-info/20' :
+                                                'bg-error/10 border border-error/20'
                                         }`}>
                                         {activity.type === 'sale' ? (
                                             <TicketIcon className="w-5 h-5 text-success" />
@@ -114,7 +115,7 @@ export default function Activity() {
                                 <div className="text-right">
                                     {activity.type === 'sale' ? (
                                         <>
-                                            <div className="font-bold text-success">+ R$ {activity.amount?.toLocaleString('pt-BR')}</div>
+                                            <div className="font-bold text-success">+ {formatCurrency(activity.amount || 0)}</div>
                                             <div className="text-xs text-muted">{activity.time}</div>
                                         </>
                                     ) : (

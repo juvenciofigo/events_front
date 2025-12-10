@@ -1,4 +1,4 @@
-import { PaymentMethod, PaymentStatus } from "@/types/system";
+import { PaymentMethod, PaymentStatus, Priority, ProgressStatus } from "@/types/system";
 import * as z from "zod";
 
 // ============ Auth Schemas ============
@@ -178,25 +178,12 @@ export type GuestEditForm = z.infer<typeof guestEditSchema>;
 
 // ============ Operations Schemas ============
 
-export enum Priority {
-    LOW = "LOW",
-    MEDIUM = "MEDIUM",
-    HIGH = "HIGH"
-}
-
-export enum ExpenseStatus {
-    PENDING = "PENDING",
-    IN_PROGRESS = "IN_PROGRESS",
-    DONE = "DONE"
-}
-
-
 export const expenseCreateSchema = z.object({
     title: z.string().min(3, "Título deve ter no mínimo 3 caracteres").optional().or(z.literal("")),
     category: z.string().min(1, "Categoria é obrigatória").optional().or(z.literal("")),
     description: z.string().min(3, "Descrição deve ter no mínimo 3 caracteres").optional().or(z.literal("")),
     priority: z.nativeEnum(Priority).optional().or(z.literal("")),
-    status: z.nativeEnum(ExpenseStatus).optional().or(z.literal("")),
+    status: z.nativeEnum(ProgressStatus).optional().or(z.literal("")),
     amount: z.coerce.number().positive("Valor deve ser positivo").optional().or(z.literal(0)).or(z.literal(0)),
     dueDate: z.string()
         .refine((date) => !date || !isNaN(new Date(date).getTime()), "Data inválida")

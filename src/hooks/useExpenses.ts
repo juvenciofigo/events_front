@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { expensesApi, PayExpenseDTO } from "../services/expensesApi";
+import { expensesApi } from "../services/expensesApi";
 import { ExpenseCreateForm } from "@/schemas/validation";
 import { useToast } from "@/contexts/ToastContext";
 
@@ -38,11 +38,11 @@ export function updateExpense(eventId: string) {
             queryClient.invalidateQueries({ queryKey: ['expenses', eventId] });
             queryClient.invalidateQueries({ queryKey: ['expenses-summary', eventId] });
         },
+
     });
 }
 
 export function deleteExpense(eventId: string) {
-    const { error } = useToast()
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (id: string) => expensesApi.deleteExpense(id),
@@ -52,26 +52,3 @@ export function deleteExpense(eventId: string) {
         },
     });
 }
-
-
-export function payExpense(eventId: string) {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: ({ id, payment }: { id: string, payment: PayExpenseDTO }) => expensesApi.payExpense(id, payment),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['expenses', eventId] });
-            queryClient.invalidateQueries({ queryKey: ['expenses-summary', eventId] });
-        },
-    });
-}
-
-//     return {
-//         expenses: expensesQuery.data,
-//         isLoading: expensesQuery.isLoading || summaryQuery.isLoading,
-//         summary: summaryQuery.data,
-//         createExpense,
-//         updateExpense,
-//         deleteExpense,
-//         payExpense,
-//     };
-// }

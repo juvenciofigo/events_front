@@ -1,5 +1,6 @@
 import React from 'react';
 import { CreditCardIcon } from "@heroicons/react/24/outline";
+import { formatCurrency } from '@/utils';
 
 interface BreakdownItem {
     id: string;
@@ -30,7 +31,7 @@ export const FinancialBreakdown: React.FC<FinancialBreakdownProps> = ({
     className = ''
 }) => {
     const isCompact = variant === 'compact';
-    const formatCurrency = (value: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+
 
     // Default colors to cycle through if not provided
     const defaultColors = ['bg-purple-500', 'bg-blue-500', 'bg-yellow-500', 'bg-green-500', 'bg-red-500', 'bg-orange-500'];

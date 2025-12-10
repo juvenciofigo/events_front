@@ -24,6 +24,7 @@ import Header from "./Header";
 import ErrorState from "@/components/ErrorState";
 import Loading from "@/components/Loading";
 import { OutletContext } from "./OrganizerDashboard";
+import { formatCurrency } from "@/utils";
 
 
 export default function Index() {
@@ -187,7 +188,7 @@ export default function Index() {
                         p1="Ingressos Vendidos"
                         p2="Apenas eventos pagos"
                         stats={stats.ticketsSold}
-                        data={stats.ticketsSold.toLocaleString('pt-BR')}
+                        data={formatCurrency(stats.ticketsSold)}
                         percent={null} />}
 
                     {/* Stat Card 3 - Revenue */}
@@ -329,7 +330,7 @@ export default function Index() {
                                         <div className="text-right">
                                             {item.type === 'sale' ? (
                                                 <>
-                                                    <div className="font-bold text-secondary">+ R$ {(item.amount ?? 0).toLocaleString('pt-BR')}</div>
+                                                    <div className="font-bold text-secondary">+ R$ {formatCurrency(item.amount ?? 0)}</div>
                                                     <div className="text-xs text-text-disabled">{item.time}</div>
                                                 </>
                                             ) : (
@@ -367,7 +368,7 @@ export default function Index() {
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <div className="font-bold text-secondary">+ R$ {sale.amount.toLocaleString('pt-BR')}</div>
+                                            <div className="font-bold text-secondary">+ {formatCurrency(sale.amount)}</div>
                                             <div className="text-xs text-text-disabled">{sale.time}</div>
                                         </div>
                                     </div>

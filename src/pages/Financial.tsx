@@ -7,6 +7,7 @@ import {
     CreditCardIcon,
     ChartBarIcon,
 } from "@heroicons/react/24/outline";
+import { formatCurrency } from "@/utils";
 
 export default function Financial() {
     // Mock data
@@ -195,7 +196,7 @@ export default function Financial() {
                                 <div className="text-right">
                                     <div className={`text-lg font-bold ${transaction.amount > 0 ? 'text-success' : 'text-error'
                                         }`}>
-                                        {transaction.amount > 0 ? '+' : ''} R$ {Math.abs(transaction.amount).toLocaleString('pt-BR')}
+                                        {transaction.amount > 0 ? '+' : ''} {formatCurrency(Math.abs(transaction.amount))}
                                     </div>
                                     <div className={`text-xs px-2 py-0.5 rounded inline-block ${transaction.status === 'completed' ? 'bg-success/20 text-success' : 'bg-warning/20 text-warning'
                                         }`}>

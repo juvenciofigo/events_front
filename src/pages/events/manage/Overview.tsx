@@ -11,6 +11,7 @@ import { useEvent } from "@/hooks/useEvents";
 import { useFinancialStats } from "@/hooks/useFinancial";
 import { useParams } from "react-router-dom";
 import { StatisticsCards } from "@/components/StatisticsCards";
+import { formatCurrency } from '@/utils';
 
 export default function Overview({ eventId }: { eventId: string }) {
     // const { id } = useParams<{ id: string }>();
@@ -48,7 +49,7 @@ export default function Overview({ eventId }: { eventId: string }) {
                         </div>
                     } />
                 <StatisticsCards
-                    data={new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalRevenue)}
+                    data={formatCurrency(totalRevenue)}
                     title="Receita Total" description="Receita bruta"
                 />
                 <StatisticsCards data={3245} description="(Simulado) Últimos 30 dias" title='Visualizações da Página' />

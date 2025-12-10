@@ -1,6 +1,6 @@
 import { useToast } from '@/contexts/ToastContext';
 import { deleteExpense, updateExpense } from '@/hooks/useExpenses';
-import { ExpenseStatus, Priority } from '@/schemas/validation';
+import { ProgressStatus, Priority } from "@/types/system";
 import { Expense, PageExpense } from '@/types/expense';
 import { PaymentStatus } from '@/types/system';
 import { formatCurrency } from '@/utils';
@@ -46,16 +46,29 @@ export default function TableExpense({ expenses, eventId }: TableExpenseProps) {
         );
     };
 
+    // delete
+
+    const handleDeleteExpense = (expense: Expense) => {
+        deleteExpenseMutation.mutate(expense.id, {
+            onSuccess: () => {
+                success('Despesa excluída com sucesso!');
+            },
+            onError: (error: any) => {
+                error(error?.response?.data?.message || "Erro ao criar despesa.");
+            }
+        })
+    };
+
     // Toggle expense status: PENDING → IN_PROGRESS → DONE → PENDING
     const handleToggleExpenseStatus = (expense: Expense) => {
-        let newStatus: ExpenseStatus;
+        let newStatus: ProgressStatus;
 
-        if (expense.status === ExpenseStatus.PENDING) {
-            newStatus = ExpenseStatus.IN_PROGRESS;
-        } else if (expense.status === ExpenseStatus.IN_PROGRESS) {
-            newStatus = ExpenseStatus.DONE;
+        if (expense.status === ProgressStatus.PENDING) {
+            newStatus = ProgressStatus.IN_PROGRESS;
+        } else if (expense.status === ProgressStatus.IN_PROGRESS) {
+            newStatus = ProgressStatus.DONE;
         } else {
-            newStatus = ExpenseStatus.PENDING;
+            newStatus = ProgressStatus.PENDING;
         }
 
         updateExpenseMutation.mutate(
@@ -103,7 +116,10 @@ export default function TableExpense({ expenses, eventId }: TableExpenseProps) {
                 updatedData.amount = numValue;
                 break;
             case 'dueDate':
-                updatedData.dueDate = value;
+                // Convert to LocalDateTime format (no timezone) for Spring Boot
+                const dateValue = new Date(value);
+                // Remove timezone and milliseconds: 2025-10-25T12:30:00.000Z -> 2025-10-25T12:30:00
+                updatedData.dueDate = dateValue.toISOString().slice(0, 19);
                 break;
         }
 
@@ -321,17 +337,17 @@ export default function TableExpense({ expenses, eventId }: TableExpenseProps) {
                                 title="Clique para alterar o status da despesa"
                             >
                                 {expense.status && (
-                                    expense.status === ExpenseStatus.PENDING ? (
+                                    expense.status === ProgressStatus.PENDING ? (
                                         <span className="flex justify-center items-center text-yellow-400">
                                             <ClockIcon className="w-4 h-4 mr-1" />
                                             Pendente
                                         </span>
-                                    ) : expense.status === ExpenseStatus.IN_PROGRESS ? (
+                                    ) : expense.status === ProgressStatus.IN_PROGRESS ? (
                                         <span className="flex justify-center items-center text-blue-400">
                                             <ClockIcon className="w-4 h-4 mr-1" />
                                             Em andamento
                                         </span>
-                                    ) : expense.status === ExpenseStatus.DONE ? (
+                                    ) : expense.status === ProgressStatus.DONE ? (
                                         <span className="flex justify-center items-center text-green-400">
                                             <CheckCircleIcon className="w-4 h-4 mr-1" />
                                             Finalizado
@@ -349,14 +365,7 @@ export default function TableExpense({ expenses, eventId }: TableExpenseProps) {
                                 <div className="flex justify-end gap-2">
                                     <button
                                         onClick={() =>
-                                            deleteExpenseMutation.mutate(expense.id, {
-                                                onSuccess: () => {
-                                                    success('Despesa excluída com sucesso!');
-                                                },
-                                                onError: (error: any) => {
-                                                    error(error?.response?.data?.message || "Erro ao criar despesa.");
-                                                }
-                                            })
+                                            handleDeleteExpense(expense)
                                         }
                                         className="p-2 hover:bg-red-500/20 rounded transition-colors"
                                         title="Excluir"
@@ -367,7 +376,7 @@ export default function TableExpense({ expenses, eventId }: TableExpenseProps) {
                             </td>
                         </tr>
                     ))}
-                    
+
                 </tbody>
             </table>
         </div>

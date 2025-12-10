@@ -14,6 +14,7 @@ import {
 import { useValidateTicket } from "@/hooks/useTickets";
 import { useToast } from "@/contexts/ToastContext";
 import Loading from "@/components/Loading";
+import { formatCurrency } from "@/utils";
 
 type ValidationMode = 'qr' | 'manual';
 
@@ -223,7 +224,7 @@ export default function TicketValidation() {
                                                 <div>
                                                     <div className="text-xs text-text-muted">Preço</div>
                                                     <div className="text-text font-semibold">
-                                                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(validatedTicket.seat.price)}
+                                                        {formatCurrency(validatedTicket.seat.price)}
                                                     </div>
                                                 </div>
                                             </div>

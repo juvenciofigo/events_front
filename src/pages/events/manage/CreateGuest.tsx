@@ -9,6 +9,7 @@ import Select, { SelectOption } from "@/components/Form/Select";
 import Button from "@/components/Form/Button";
 import { useFetchSeats } from '@/hooks/useSeats';
 import { PaymentMethod, PaymentMethods } from '@/types/system';
+import { formatCurrency } from '@/utils';
 
 interface CreateGuestProps {
     eventId: string;
@@ -65,7 +66,7 @@ export default function CreateGuest({ eventId, setModalOpen }: CreateGuestProps)
     const option: SelectOption[] = dataSeats && dataSeats.items.length > 0 ? dataSeats?.items.map(s => {
         return {
             value: s.id,
-            label: s.name + (s.isPaid ? ` (pago) ${new Intl.NumberFormat('pt-MZ', { style: 'currency', currency: 'MZN' }).format(s.price || 0)}` : ""),
+            label: s.name + (s.isPaid ? ` (pago) ${formatCurrency(s.price || 0)}` : ""),
         }
     }) : []
 

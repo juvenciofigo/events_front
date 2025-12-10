@@ -42,35 +42,42 @@ const toastConfig = {
     },
 };
 
-export default function Toast({ id, type, message, onClose }: ToastProps) {
-    const config = toastConfig[type];
-    const Icon = config.icon;
+const Toast = React.forwardRef<HTMLDivElement, ToastProps>(
+    ({ id, type, message, onClose }, ref) => {
+        const config = toastConfig[type];
+        const Icon = config.icon;
 
-    return (
-        <motion.div
-            layout
-            initial={{ opacity: 0, y: -50, scale: 0.3 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
-            className={`
+        return (
+            <motion.div
+                ref={ref}
+                layout
+                initial={{ opacity: 0, y: -50, scale: 0.3 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
+                className={`
                 flex items-center gap-3 p-2 rounded border shadow-lg backdrop-blur-sm
                 ${config.bgColor} ${config.borderColor}
                 min-w-[300px] max-w-md
             `}
-        >
-            <Icon className={`h-6 w-6 flex-shrink-0 ${config.iconColor}`} />
-
-            <p className={`flex-1 text-sm font-medium ${config.textColor}`}>
-                {message}
-            </p>
-
-            <button
-                onClick={onClose}
-                className={`flex-shrink-0 ${config.iconColor} hover:opacity-70 transition-opacity`}
-                aria-label="Close"
             >
-                <XMarkIcon className="h-5 w-5" />
-            </button>
-        </motion.div>
-    );
-}
+                <Icon className={`h-6 w-6 flex-shrink-0 ${config.iconColor}`} />
+
+                <p className={`flex-1 text-sm font-medium ${config.textColor}`}>
+                    {message}
+                </p>
+
+                <button
+                    onClick={onClose}
+                    className={`flex-shrink-0 ${config.iconColor} hover:opacity-70 transition-opacity`}
+                    aria-label="Close"
+                >
+                    <XMarkIcon className="h-5 w-5" />
+                </button>
+            </motion.div>
+        );
+    }
+);
+
+Toast.displayName = 'Toast';
+
+export default Toast;

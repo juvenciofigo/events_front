@@ -1,4 +1,4 @@
-import { ExpenseStatus } from "@/schemas/validation";
+import { ProgressStatus } from "@/types/system";
 import { Page, PaymentStatus } from "./system";
 
 export interface Expense {
@@ -8,11 +8,17 @@ export interface Expense {
     description: string;
     amount: number;
     priority: string;
-    status: ExpenseStatus;
+    status: ProgressStatus;
     paymentStatus: PaymentStatus;
     dueDate: string;
     createdAt: string;
     updatedAt: string;
+}
+
+export interface ExpensesSummary {
+    totalExpenses: number;
+    pendingExpenses: number;
+    totalAmount: number;
 }
 
 export interface PageExpense extends Page<Expense> { }

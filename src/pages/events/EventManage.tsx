@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import React from "react";
+import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
     ChartBarIcon,
     UserGroupIcon,
@@ -33,7 +33,9 @@ const TABS = [
 export default function EventManage() {
     const navigate = useNavigate();
     const { eventId } = useParams();
-    const [activeTab, setActiveTab] = useState("overview");
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const activeTab = searchParams.get("tab") || "overview";
     const { data: eventData, isLoading, error } = useEvent(eventId);
 
     if (isLoading) {
@@ -113,7 +115,7 @@ export default function EventManage() {
                     {TABS.map((tab) => (
                         <button
                             key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
+                            onClick={() => setSearchParams({ tab: tab.id })}
                             className={`flex items-center px-6 justify-center p-2 border-b-2 transition-colors whitespace-nowrap font-medium ${activeTab === tab.id
                                 ? "border-primary text-text"
                                 : "border-transparent text-muted hover:text-text hover:border-text-muted"
