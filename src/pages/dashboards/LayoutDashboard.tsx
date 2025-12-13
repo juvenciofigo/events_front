@@ -2,7 +2,7 @@ import React from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Sidebar from "./components/Sidebar";
-import { useGetOrganizerProfile, useGetSupplierProfile } from "@/hooks/useProfile"
+import { useGetOrganizerProfile, useGetSupplierProfile, usePresenceProfile } from "@/hooks/useProfile"
 import { useToast } from "@/contexts/ToastContext";
 import { organizerProfile, supplierProfile } from "@/stores/useProfileStore";
 import Loading from "@/components/Loading";
@@ -16,6 +16,8 @@ export default function LayoutDashboard() {
     const toast = useToast();
     const location = useLocation();
     const navigate = useNavigate()
+    const { status } = usePresenceProfile();
+    console.log(status);
 
     let profileData;
     let isLoading;

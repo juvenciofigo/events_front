@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { dashboardApi } from "../services/dashboardApi";
 import { useProfileStore } from "@/stores/useProfileStore";
+import { useDashboardTasks } from "./useTasks";
 
 /**
  * Hook para buscar estatísticas do dashboard do organizador
@@ -39,15 +40,15 @@ export function useSalesChart() {
 /**
  * Hook para buscar tarefas do organizador
  */
-export function useDashboardTasks() {
-    const organizerProfile = useProfileStore((state) => state.organizerProfile);
-    return useQuery({
-        queryKey: ["dashboard", "tasks"],
-        enabled: !!organizerProfile,
-        queryFn: () => dashboardApi.getTasks(organizerProfile!.id),
-        staleTime: 1000 * 60 * 2, // 2 minutos
-    });
-}
+// export function useDashboardTasks() {
+//     const organizerProfile = useProfileStore((state) => state.organizerProfile);
+//     return useQuery({
+//         queryKey: ["dashboard", "tasks"],
+//         enabled: !!organizerProfile,
+//         queryFn: () => dashboardApi.getTasks(organizerProfile!.id),
+//         staleTime: 1000 * 60 * 2, // 2 minutos
+//     });
+// }
 
 /**
  * Hook para buscar atividades recentes
@@ -63,15 +64,7 @@ export function useDashboardTasks() {
 /**
  * Hook para buscar próximos eventos
  */
-export function useUpcomingEvents() {
-    const organizerProfile = useProfileStore((state) => state.organizerProfile);
-    return useQuery({
-        queryKey: ["dashboard", "upcoming-events"],
-        enabled: !!organizerProfile,
-        queryFn: () => dashboardApi.getUpcomingEvents(organizerProfile!.id),
-        staleTime: 1000 * 60 * 5,
-    });
-}
+
 
 /**
  * Hook para buscar fornecedores contratados
@@ -117,7 +110,7 @@ export function useDashboardFeedback(limit: number = 2) {
         queryKey: ["dashboard", "feedback", limit],
         enabled: !!organizerProfile,
         queryFn: () => dashboardApi.getFeedback("organizer", organizerProfile!.id, limit),
-        staleTime: 1000 * 60 * 5,
+        staleTime: 1000 * 60 * 10,
     });
 }
 
@@ -152,7 +145,6 @@ export function useDashboardData() {
     const salesChart = useSalesChart();
     const tasks = useDashboardTasks();
     // const activity = useDashboardActivity();
-    const upcomingEvents = useUpcomingEvents();
     // const suppliers = useDashboardSuppliers();
     const messages = useDashboardMessages();
     // const financial = useDashboardFinancial();
@@ -164,8 +156,6 @@ export function useDashboardData() {
         stats,
         salesChart,
         tasks,
-        // activity,
-        upcomingEvents,
         // suppliers,
         messages,
         // financial,

@@ -1,17 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import * as api from "../services/storageApi";
 import { eventsApi } from "@/services/eventsApi";
 import { EventCreateForm } from "@/schemas/validation";
+import { useProfileStore } from "@/stores/useProfileStore";
 
-export function useEvents() {
-    return useQuery({ queryKey: ["events"], queryFn: api.getEvents });
-}
-
-export function useEvent(id?: string) {
+export function useEvent(eventId: string) {
     return useQuery({
-        queryKey: ["event", id],
-        queryFn: () => (id ? eventsApi.getEvent(id) : null),
-        enabled: !!id
+        queryKey: ["event", eventId],
+        queryFn: () => eventsApi.getEvent(eventId),
+        enabled: !!eventId
     });
 }
 
@@ -19,20 +15,43 @@ export function useCreateEvent() {
     const qc = useQueryClient();
     return useMutation({
         mutationFn: (data: EventCreateForm) => eventsApi.createEvent(data),
-        onSuccess: () => qc.invalidateQueries({ queryKey: ["events"] }),
-    });
-}
-
-export function useUpdateEvent() {
-    const qc = useQueryClient();
-    return useMutation({
-        mutationFn: ({ id, patch }: any) => api.updateEvent(id, patch),
         onSuccess: () => {
-            qc.invalidateQueries({ queryKey: ["events"] });
-            qc.invalidateQueries({ queryKey: ["event"] });
+            qc.invalidateQueries({ queryKey: ["events"] })
+            qc.invalidateQueries({ queryKey: ["events", "upcoming-events"] })
         },
     });
 }
+
+export function useUpdateEvent(eventId: string) {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: (data: Partial<EventCreateForm>) => eventsApi.updateEvent(eventId, data),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ["events"] });
+            qc.invalidateQueries({ queryKey: ["event", eventId] });
+        },
+    });
+}
+export function useUpcomingEvents() {
+    const organizerProfile = useProfileStore((state) => state.organizerProfile);
+    return useQuery({
+        queryKey: ["events", "upcoming-events"],
+        enabled: !!organizerProfile,
+        queryFn: () => eventsApi.getUpcomingEvents(organizerProfile!.id),
+    });
+}
+
+
+// export function useDeleteEvent(eventId: string) {
+//     const qc = useQueryClient();
+//     return useMutation({
+//         mutationFn: () => eventsApi.deleteEvent(eventId),
+//         onSuccess: () => {
+//             qc.invalidateQueries({ queryKey: ["events"] });
+//             qc.invalidateQueries({ queryKey: ["event", eventId] });
+//         },
+//     });
+// }
 
 export function useFetchOrganizerEvents(organizerId: string, limit: number = 10, page: number = 1, sort: string = "createdAt") {
     return useQuery({

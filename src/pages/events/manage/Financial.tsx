@@ -77,7 +77,7 @@ export default function Financial({ eventId }: { eventId: string }) {
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                 <StatisticsCards
                     title="Receita Total"
-                    icon={<CurrencyDollarIcon className="w-5 h-5 text-green-400" />}
+                    icon={<CurrencyDollarIcon className="w-3 h-3 text-green-400" />}
                     data={formatCurrency(stats?.totalRevenue || 0)}
                     color="green-500/5"
                     description={
@@ -89,28 +89,28 @@ export default function Financial({ eventId }: { eventId: string }) {
                 />
                 <StatisticsCards
                     title="Receita Líquida"
-                    icon={<BanknotesIcon className="w-5 h-5 text-blue-400" />}
+                    icon={<BanknotesIcon className="w-3 h-3 text-blue-400" />}
                     data={formatCurrency(stats?.netRevenue || 0)}
                     color="blue-500/5"
                     description="Após taxas e descontos"
                 />
                 <StatisticsCards
                     title="Despesas Totais"
-                    icon={<ReceiptPercentIcon className="w-5 h-5 text-purple-400" />}
+                    icon={<ReceiptPercentIcon className="w-3 h-3 text-purple-400" />}
                     data={formatCurrency(stats?.totalExpenses || 0)}
                     color="red-500/5"
                     description={<div className="text-xs text-red-400 mt-1">Despesas</div>}
                 />
                 <StatisticsCards
                     title="Taxas Totais"
-                    icon={<ReceiptPercentIcon className="w-5 h-5 text-purple-400" />}
+                    icon={<ReceiptPercentIcon className="w-3 h-3 text-purple-400" />}
                     data={formatCurrency(stats?.totalFees || 0)}
                     color="purple-500/5"
                     description={<div className="text-xs text-purple-400 mt-1">Taxas de processamento</div>}
                 />
                 <StatisticsCards
                     title="Descontos"
-                    icon={<ReceiptPercentIcon className="w-5 h-5 text-yellow-400" />}
+                    icon={<ReceiptPercentIcon className="w-3 h-3 text-yellow-400" />}
                     data={formatCurrency(stats?.totalDiscounts || 0)}
                     color="yellow-500/5"
                     description={<div className="text-xs text-yellow-400 mt-1">Cupons e promoções</div>}
@@ -124,7 +124,7 @@ export default function Financial({ eventId }: { eventId: string }) {
                     icon={<ChartBarIcon className="w-6 h-6 text-primary" />}
                     items={ticketTypeItems}
                     totalValue={stats?.totalRevenue || 0}
-                    emptyMessage="Nenhuma venda registrada ainda."
+                    emptyMessage="Nenhuma venda registada ainda."
                 />
 
                 <FinancialBreakdown
@@ -132,15 +132,15 @@ export default function Financial({ eventId }: { eventId: string }) {
                     icon={<CreditCardIcon className="w-6 h-6 text-primary" />}
                     items={paymentMethodItems}
                     totalValue={stats?.totalRevenue || 0}
-                    emptyMessage="Nenhum pagamento registrado ainda."
+                    emptyMessage="Nenhum pagamento registado ainda."
                     variant="compact"
                 />
             </div>
 
             {/* Recent Transactions */}
-            <div className="border-t pt-3 border-borderColor">
+            <div className="border-t pt-3 text-sm border-borderColor">
                 <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-bold text-text flex items-center gap-2">
+                    <h3 className=" font-bold text-text flex items-center gap-2">
                         <ReceiptPercentIcon className="w-6 h-6 text-primary" />
                         Transações Recentes
                     </h3>
@@ -149,22 +149,22 @@ export default function Financial({ eventId }: { eventId: string }) {
                         Exportar
                     </Button>
                 </div>
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto text-xs">
                     <table className="w-full text-left">
                         <thead>
                             <tr className="border-b border-borderColor bg-white/5">
-                                <th className="px-4 py-3 text-sm font-bold text-muted">Data</th>
-                                <th className="px-4 py-3 text-sm font-bold text-muted">Cliente</th>
-                                <th className="px-4 py-3 text-sm font-bold text-muted">Tipo</th>
-                                <th className="px-4 py-3 text-sm font-bold text-muted">Método</th>
-                                <th className="px-4 py-3 text-sm font-bold text-muted">Valor</th>
-                                <th className="px-4 py-3 text-sm font-bold text-muted">Status</th>
+                                <th className="px-4 py-3 font-bold text-muted">Data</th>
+                                <th className="px-4 py-3 font-bold text-muted">Cliente</th>
+                                <th className="px-4 py-3 font-bold text-muted">Tipo</th>
+                                <th className="px-4 py-3 font-bold text-muted">Método</th>
+                                <th className="px-4 py-3 font-bold text-muted">Valor</th>
+                                <th className="px-4 py-3 font-bold text-muted">Status</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-borderColor">
                             {stats?.recentTransactions?.map((transaction) => (
                                 <tr key={transaction.id} className="hover:bg-white/5 transition-colors">
-                                    <td className="px-4 py-3 text-text-muted text-sm">
+                                    <td className="px-4 py-3 text-text-muted">
                                         {new Date(transaction.date).toLocaleString('pt-BR')}
                                     </td>
                                     <td className="px-4 py-3 text-text font-medium">{transaction.guestName}</td>
@@ -173,14 +173,14 @@ export default function Financial({ eventId }: { eventId: string }) {
                                             {transaction.seatName}
                                         </span>
                                     </td>
-                                    <td className="px-4 py-3 text-text-muted text-sm capitalize">
+                                    <td className="px-4 py-3 text-text-muted capitalize">
                                         {transaction.paymentMethod}
                                     </td>
                                     <td className={`px-4 py-3 font-bold ${transaction.paymentStatus === 'COMPLETED' ? 'text-red-400' : 'text-green-400'}`}>
                                         {formatCurrency(transaction.amount)}
                                     </td>
                                     <td className="px-4 py-3">
-                                        <span className={`flex items-center text-sm ${transaction.paymentStatus === 'COMPLETED' ? 'text-green-400' :
+                                        <span className={`flex items-center ${transaction.paymentStatus === 'COMPLETED' ? 'text-green-400' :
                                             transaction.paymentStatus === 'PENDING' ? 'text-yellow-400' : 'text-red-400'
                                             }`}>
                                             {transaction.paymentStatus === 'COMPLETED' && <CheckCircleIcon className="w-4 h-4 mr-1" />}
@@ -237,37 +237,37 @@ export default function Financial({ eventId }: { eventId: string }) {
             </div> */}
 
             {/* Financial Actions */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <button className="p-4 border border-borderColor rounded hover:bg-white/5 transition-all text-left group">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                <button className="p-2 border border-borderColor rounded hover:bg-white/5 transition-all text-left group">
                     <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <ArrowDownTrayIcon className="w-6 h-6" />
+                        <div className="w-9 h-9 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <ArrowDownTrayIcon className="w-4 h-4" />
                         </div>
                         <div>
                             <div className="font-bold text-text">Relatório Financeiro</div>
-                            <div className="text-xs text-text-muted">PDF completo</div>
+                            <div className="text-text-muted">PDF completo</div>
                         </div>
                     </div>
                 </button>
-                <button className="p-4 border border-borderColor rounded hover:bg-white/5 transition-all text-left group">
+                <button className="p-2 border border-borderColor rounded hover:bg-white/5 transition-all text-left group">
                     <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <CalendarIcon className="w-6 h-6" />
+                        <div className="w-9 h-9 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <CalendarIcon className="w-4 h-4" />
                         </div>
                         <div>
                             <div className="font-bold text-text">Agendar Repasse</div>
-                            <div className="text-xs text-text-muted">Configurar transferência</div>
+                            <div className="text-text-muted">Configurar transferência</div>
                         </div>
                     </div>
                 </button>
-                <button className="p-4 border border-borderColor rounded hover:bg-white/5 transition-all text-left group">
+                <button className="p-2 border border-borderColor rounded hover:bg-white/5 transition-all text-left group">
                     <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <ReceiptPercentIcon className="w-6 h-6" />
+                        <div className="w-9 h-9 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <ReceiptPercentIcon className="w-4 h-4" />
                         </div>
                         <div>
                             <div className="font-bold text-text">Notas Fiscais</div>
-                            <div className="text-xs text-text-muted">Gerenciar NF-e</div>
+                            <div className="text-text-muted">Gerenciar NF-e</div>
                         </div>
                     </div>
                 </button>

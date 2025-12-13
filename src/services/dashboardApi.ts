@@ -41,17 +41,7 @@ export const dashboardApi = {
         }
     },
 
-    // Get tasks
-    getTasks: async (organizerId: string): Promise<Task[]> => {
-        try {
-            const { data } = await api.get(`organizers/${organizerId}/tasks`);
-            return data;
-        } catch (error) {
-            console.error("Erro ao buscar tarefas:", error);
 
-            throw error;
-        }
-    },
 
     // Get recent activity
     // getActivity: async (limit: number = 5): Promise<Activity[]> => {
@@ -59,17 +49,7 @@ export const dashboardApi = {
     //     return data;
     // },
 
-    // Get upcoming events
-    getUpcomingEvents: async (organizerId: string): Promise<UpcomingEvent[]> => {
-        try {
-            const { data } = await api.get(`events/organizer/${organizerId}?upcoming=true`);
-            return data;
-        } catch (error) {
-            console.error("Erro ao buscar eventos futuros:", error);
 
-            throw error;
-        }
-    },
 
     // Get suppliers
     // getSuppliers: async (): Promise<Supplier[]> => {
@@ -99,8 +79,6 @@ export const dashboardApi = {
     getFeedback: async (target: string, targetId: string, limit: number = 10): Promise<Feedback[]> => {
         try {
             const { data } = await api.get(`/reviews?target=${target}&targetId=${targetId}&limit=${limit}`);
-            console.log(data);
-            
 
             return data?.items;
         } catch (error) {

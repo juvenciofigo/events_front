@@ -116,10 +116,16 @@ export default function TableExpense({ expenses, eventId }: TableExpenseProps) {
                 updatedData.amount = numValue;
                 break;
             case 'dueDate':
-                // Convert to LocalDateTime format (no timezone) for Spring Boot
                 const dateValue = new Date(value);
-                // Remove timezone and milliseconds: 2025-10-25T12:30:00.000Z -> 2025-10-25T12:30:00
-                updatedData.dueDate = dateValue.toISOString().slice(0, 19);
+
+                const year = dateValue.getFullYear();
+                const month = String(dateValue.getMonth() + 1).padStart(2, '0');
+                const day = String(dateValue.getDate()).padStart(2, '0');
+                const hours = String(dateValue.getHours()).padStart(2, '0');
+                const minutes = String(dateValue.getMinutes()).padStart(2, '0');
+
+                // Formato exato do @JsonFormat no backend
+                updatedData.dueDate = `${year}-${month}-${day}T${hours}:${minutes}`;
                 break;
         }
 

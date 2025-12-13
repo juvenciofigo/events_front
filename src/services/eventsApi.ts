@@ -1,11 +1,13 @@
 import { Event, PageEvent } from "@/types/events";
 import api from "./axiosClient";
 import { EventCreateForm } from "@/schemas/validation";
+import { UpcomingEvent } from "@/types/dashboard";
 
 export const eventsApi = {
-    getEvent: async (eventId: string) => {
+    getEvent: async (eventId: string): Promise<Event> => {
         try {
             const { data } = await api.get(`events/${eventId}`);
+
             return data;
         } catch (error) {
             console.error("Erro ao buscar evento:", error);
@@ -22,6 +24,7 @@ export const eventsApi = {
             throw error;
         }
     },
+
     createEvent: async (event: EventCreateForm): Promise<Event> => {
         try {
             if (event.image && event.image.length > 0) {
@@ -47,5 +50,27 @@ export const eventsApi = {
             console.error("Erro ao criar evento:", error);
             throw error;
         }
-    }
+    },
+
+    updateEvent: async (eventId: string, event: Partial<EventCreateForm>): Promise<Event> => {
+        try {
+            const { data } = await api.put(`events/${eventId}`, event);
+            return data;
+        } catch (error) {
+            console.error("Erro ao atualizar evento:", error);
+            throw error;
+        }
+    },
+
+    // Get upcoming events
+    getUpcomingEvents: async (organizerId: string): Promise<UpcomingEvent[]> => {
+        try {
+            const { data } = await api.get(`events/organizer/${organizerId}?upcoming=true`);
+            return data;
+        } catch (error) {
+            console.error("Erro ao buscar eventos futuros:", error);
+
+            throw error;
+        }
+    },
 }

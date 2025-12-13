@@ -5,6 +5,7 @@ export interface Task {
     responsibleName: string;
     responsiblePhone: string;
     title: string;
+    eventTitle: string;
     description: string;
     priority: Priority;
     taskStatus: ProgressStatus;

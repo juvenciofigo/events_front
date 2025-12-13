@@ -119,7 +119,7 @@ export default function GuestList({ eventId }: { eventId: string }) {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 text-sm">
             {/* Statistics Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <StatisticsCards
@@ -152,7 +152,7 @@ export default function GuestList({ eventId }: { eventId: string }) {
             <div>
                 <div className="flex items-center gap-3 mb-4">
                     <FunnelIcon className="w-5 h-5 text-primary" />
-                    <h3 className="text-lg font-bold text-text">Filtros e Ações</h3>
+                    <h3 className="font-bold text-text">Filtros e Ações</h3>
                 </div>
                 <div className="grid grid-cols-1 lg:flex gap-4">
                     <div className="grid grid-cols-3 flex-1 md:grid-cols-3 gap-2">
@@ -257,7 +257,7 @@ export default function GuestList({ eventId }: { eventId: string }) {
             </div>
 
             {/* Guest List Table */}
-            <div className="border border-borderColor rounded overflow-hidden">
+            <div className="border border-borderColor rounded overflow-hidden text-xs">
                 <div className="overflow-x-auto">
                     <table className="w-full text-center">
                         <thead>
@@ -295,43 +295,43 @@ export default function GuestList({ eventId }: { eventId: string }) {
                                     </td>
                                     <td className="p-2 border-r border-borderColor">
                                         {guest.ticket.seat ? (
-                                            <span className="px-3 whitespace-nowrap py-1 bg-primary/20 text-primary-light text-sm font-bold">
+                                            <span className="px-3 whitespace-nowrap py-1 bg-primary/20 text-primary-light font-bold">
                                                 {guest.ticket.seat.name}
                                             </span>
                                         ) : (
-                                            <span className="text-muted text-sm italic">Não atribuído</span>
+                                            <span className="text-muted italic">Não atribuído</span>
                                         )}
                                     </td>
                                     <td className="p-2 border-r border-borderColor">
                                         {guest.ticket.ticketStatus === 'CONFIRMED' && (
-                                            <span className="flex justify-center items-center text-green-400 text-sm font-medium">
+                                            <span className="flex justify-center items-center text-green-400 font-medium">
                                                 <CheckCircleIcon className="w-4 h-4 mr-1" /> Confirmado
                                             </span>
                                         )}
                                         {guest.ticket.ticketStatus === 'PENDING' && (
-                                            <span className="flex  justify-center items-center text-yellow-400 text-sm font-medium">
+                                            <span className="flex  justify-center items-center text-yellow-400 font-medium">
                                                 <span className="w-2 h-2 rounded-full bg-yellow-400 mr-2 animate-pulse"></span> Pendente
                                             </span>
                                         )}
                                         {guest.ticket.ticketStatus === 'DECLINED' && (
-                                            <span className="flex justify-center items-center text-red-400 text-sm font-medium">
+                                            <span className="flex justify-center items-center text-red-400 font-medium">
                                                 <XCircleIcon className="w-4 h-4 mr-1" /> Recusado
                                             </span>
                                         )}
                                     </td>
                                     <td className="p-2 border-r border-borderColor">
                                         {guest.ticket.ticketStatus === "VALIDATED" ? (
-                                            <span className="flex items-center text-green-400 text-sm font-medium">
+                                            <span className="flex items-center text-green-400 font-medium">
                                                 <CheckBadgeIcon className="w-4 h-4 mr-1" /> Feito
                                             </span>
                                         ) : (
-                                            <span className="text-muted text-sm">Pendente</span>
+                                            <span className="text-muted">Pendente</span>
                                         )}
                                     </td>
-                                    <td className="p-2 text-text-muted text-sm border-r border-borderColor">
+                                    <td className="p-2 text-text-muted border-r border-borderColor">
                                         {new Date(guest.ticket.createdAt).toLocaleDateString('pt-BR')}
                                     </td>
-                                    <td className="p-2 text-text-muted text-sm border-r border-borderColor">
+                                    <td className="p-2 text-text-muted border-r border-borderColor">
                                         {guest.ticket.respondedAt ? new Date(guest.ticket.respondedAt).toLocaleDateString('pt-BR') : "-"}
                                     </td>
                                     <td className="p-2">

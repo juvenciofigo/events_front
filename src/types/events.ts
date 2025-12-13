@@ -3,16 +3,16 @@ import { Page } from "./system";
 export interface Event {
     id: string;
     title: string;
-    description?: string;
+    category: string;
+    isPublic: boolean;
     dateStart: string;
     dateEnd?: string;
+    description?: string;
+    coverImage?: string;
     location?: string;
     status?: string;
-    coverImage?: string;
-    category: string;
     budgetEstimated?: number;
     budgetSpent?: number;
-    isPublic: boolean;
     estimatedGuest?: number;
 }
 

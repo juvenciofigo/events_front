@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore, SelectedProfile } from "../../stores/useAuthStore";
 import { PlusCircleIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 import Header from "./Header";
+import Button from "@/components/Form/Button";
+import { usePresenceProfile } from "@/hooks/useProfile";
 
 type ProfileOption = {
     type: "organizer" | "supplier";
@@ -69,6 +71,7 @@ export default function RoleSelect() {
             navigate("/auth/register-suppliers");
         }
     }
+   
 
     React.useEffect(() => {
         if (selected) {
@@ -100,24 +103,13 @@ export default function RoleSelect() {
                     }
                 />
 
-                {/* {hasBothRoles && (
-                    <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded">
-                        <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
-                            <CheckCircleIcon className="h-5 w-5" />
-                            <p className="text-sm font-medium">
-                                Você tem acesso a ambos os perfis! Escolha qual deseja usar agora.
-                            </p>
-                        </div>
-                    </div>
-                )} */}
-
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:grow  py-2">
                     {profileOptions.map((option) => (
                         <div
                             key={option.type}
                             onClick={() => handleSelectProfile(option)}
                             className={`
-                                group relative p-4 h-fit self-center border rounded cursor-pointer text-center transition-all
+                                group relative p-2 h-fit self-center border rounded cursor-pointer text-center transition-all
                                 ${option.hasRole
                                     ? "border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-900/10 hover:border-green-400 dark:hover:border-green-600 hover:shadow-lg hover:shadow-green-500/10"
                                     : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-fuchsia-400 dark:hover:border-fuchsia-600 hover:shadow-lg hover:shadow-fuchsia-500/10"
@@ -128,12 +120,12 @@ export default function RoleSelect() {
                             {/* Status Badge */}
                             <div className="absolute top-3 right-3">
                                 {option.hasRole ? (
-                                    <div className="flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-xs font-medium">
+                                    <div className="flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded text-xs font-medium">
                                         <CheckCircleIcon className="h-3 w-3" />
                                         Ativo
                                     </div>
                                 ) : (
-                                    <div className="flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full text-xs font-medium">
+                                    <div className="flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded text-xs font-medium">
                                         <PlusCircleIcon className="h-3 w-3" />
                                         Criar
                                     </div>
@@ -141,12 +133,12 @@ export default function RoleSelect() {
                             </div>
 
                             {/* Emoji */}
-                            <div className="text-5xl mb-2 transform group-hover:scale-110 transition-transform duration-300">
+                            <div className="text-3xl mb-2 transform group-hover:scale-110 transition-transform duration-300">
                                 {option.emoji}
                             </div>
 
                             {/* Title */}
-                            <div className={`font-bold text-xl transition-colors ${option.hasRole
+                            <div className={`font-bold text-lg transition-colors ${option.hasRole
                                 ? "text-green-700 dark:text-green-400"
                                 : "text-gray-900 dark:text-white group-hover:text-primary dark:group-hover:text-primary-light"
                                 }`}>
@@ -154,18 +146,15 @@ export default function RoleSelect() {
                             </div>
 
                             {/* Description */}
-                            <div className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                            <div className="text-xs text-gray-600 dark:text-gray-400 mb-4">
                                 {option.desc}
                             </div>
 
                             {/* Action Button */}
-                            <div className={`
-                                inline-flex items-center gap-2 px-4 py-2 rounded text-sm font-medium transition-colors
-                                ${option.hasRole
-                                    ? "bg-green-600 text-white group-hover:bg-green-700"
-                                    : "bg-primary text-white group-hover:bg-primary-hover"
-                                }
-                            `}>
+                            <Button
+                                size="sm"
+                                fullWidth
+                                variant={option.hasRole ? "primary" : "secondary"}>
                                 {option.hasRole ? (
                                     <>
                                         <CheckCircleIcon className="h-4 w-4" />
@@ -177,19 +166,10 @@ export default function RoleSelect() {
                                         Criar
                                     </>
                                 )}
-                            </div>
+                            </Button>
                         </div>
                     ))}
                 </div>
-
-                {/* Info Message */}
-                {/* {!hasAnyRole && (
-                    <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded">
-                        <p className="text-sm text-blue-700 dark:text-blue-400 text-center">
-                            💡 Você pode criar ambos os perfis e alternar entre eles quando quiser!
-                        </p>
-                    </div>
-                )} */}
             </div>
         </div>
     );

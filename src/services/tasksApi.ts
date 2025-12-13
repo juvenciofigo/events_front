@@ -55,5 +55,18 @@ export const tasksApi = {
             throw error;
         }
 
-    }
+    },
+
+    // Get tasks
+    getTasksProfile: async (profile: string, organizerId: string): Promise<Task[]> => {
+        try {
+            const { data } = await api.get(`${profile}s/${organizerId}/tasks`);
+            return data;
+        } catch (error) {
+            console.error("Erro ao buscar tarefas:", error);
+
+            throw error;
+        }
+    },
+
 };

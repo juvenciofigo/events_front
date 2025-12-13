@@ -33,10 +33,11 @@ export default function Header({ name, title, description, buttonLabel, buttonLi
             </div>
             {buttonLabel && buttonLink &&
                 <Button
+                    size='sm'
                     onClick={() => navigate(buttonLink)}>
                     <div className="flex flex-row items-center gap-1">
-                        <PlusIcon className="md:w-5 md:h-5 w-4 h-4" />
-                        <span className="text-sm font-semibold text-nowrap">{buttonLabel}</span>
+                        <PlusIcon className="w-3 h-3" />
+                        {buttonLabel}
                     </div>
                 </Button>}
         </div>

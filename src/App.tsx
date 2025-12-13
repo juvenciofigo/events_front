@@ -23,8 +23,7 @@ import SeatsConfig from "./pages/events/SeatsConfig";
 import TicketTypes from "./pages/events/TicketTypes";
 
 // Chat
-import ChatList from "./pages/chat/ChatList";
-import ChatRoom from "./pages/chat/ChatRoom";
+import ChatPage from "./pages/chat/ChatPage";
 
 // Marketplace
 import ProvidersList from "./pages/marketplace/ProvidersList";
@@ -33,8 +32,6 @@ import Home from "./pages/Home";
 import ExploreEvents from "./pages/events/ExploreEvents";
 import ServiceRequestsList from "./pages/marketplace/ServiceRequestsList";
 import ServiceRequestDetails from "./pages/marketplace/ServiceRequestDetails";
-import ChatPage from "./pages/chat/ChatPage";
-import Ticket from "./pages/ticket";
 import TicketValidation from "./pages/TicketValidation";
 
 // Plans / Payments / Invitations
@@ -52,7 +49,7 @@ import Tasks from "./pages/Tasks";
 import Activity from "./pages/Activity";
 import Suppliers from "./pages/Suppliers";
 import Reviews from "./pages/Reviews";
-import Waitlist from "./pages/Waitlist";
+import WaitList from "./pages/WaitList";
 
 // Content Pages
 import Features from "./pages/content/Features";
@@ -171,6 +168,15 @@ export default function App() {
                             path="events/:eventId/manage"
                             element={<EventManage />}
                         />
+
+
+                        {/* Chat */}
+                        <Route
+                            path="messages"
+                            element={
+                                <ChatPage />
+                            }
+                        />
                     </Route>
 
                     {/* Supplier */}
@@ -232,7 +238,13 @@ export default function App() {
 
                 {/* Chat */}
                 <Route
-                    path="/chat"
+                    path="/messages"
+                    element={
+                        <ChatPage />
+                    }
+                />
+                <Route
+                    path="/messages/:chatId"
                     element={
                         // <ProtectedRoute allowedProfile={["organizer", "supplier", "guest"]}>
                         <ChatPage />
@@ -240,15 +252,7 @@ export default function App() {
                     }
                 />
                 <Route
-                    path="/chat/:chatId"
-                    element={
-                        // <ProtectedRoute allowedProfile={["organizer", "supplier", "guest"]}>
-                        <ChatPage />
-                        // </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/chat/new"
+                    path="/messages/new"
                     element={
                         // <ProtectedRoute allowedProfile={["organizer", "supplier", "guest"]}>
                         <ChatPage />
@@ -349,10 +353,10 @@ export default function App() {
                     }
                 />
                 <Route
-                    path="/waitlist"
+                    path="/waitList"
                     element={
                         // <ProtectedRoute allowedProfile={["organizer"]}>
-                        <Waitlist />
+                        <WaitList />
                         // </ProtectedRoute>
                     }
                 />

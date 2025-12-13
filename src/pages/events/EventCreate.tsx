@@ -60,7 +60,7 @@ export default function EventCreate() {
 
 
     return (
-        <div className="min-h-screen text-text font-sans selection:bg-primary selection:text-text flex justify-center relative overflow-hidden">
+        <div className="min-h-screen text-text font-sans selection:bg-primary selection:text-text flex justify-center relative overflow-hidden p-2">
             {/* Background Effects */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden">
                 <div className="absolute top-1/2 left-1/2 w-[800px] h-[500px] bg-primary/30 rounded-full blur-[120px] animate-orbit-slow"></div>

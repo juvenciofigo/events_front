@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { tasksApi } from "../services/tasksApi";
+import { useProfileStore } from "@/stores/useProfileStore";
 
 export function getTasks(eventId: string) {
     return useQuery({
@@ -13,7 +14,7 @@ export function createTask(eventId: string) {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (task:any) => tasksApi.createTask(eventId, task),
+        mutationFn: (task: any) => tasksApi.createTask(eventId, task),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tasks', eventId] });
         },
@@ -50,5 +51,17 @@ export function assignTask(eventId: string) {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tasks', eventId] });
         },
+    });
+}
+
+export function useDashboardTasks() {
+    const organizerProfile = useProfileStore((state) => state.organizerProfile);
+    console.log(organizerProfile);
+    
+    return useQuery({
+        queryKey: ["dashboard", "tasks", organizerProfile?.id],
+        enabled: !!organizerProfile,
+        queryFn: () => tasksApi.getTasksProfile("organizer", organizerProfile!.id),
+        staleTime: 1000 * 60 * 2, // 2 minutos
     });
 }

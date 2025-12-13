@@ -37,8 +37,8 @@ export const FinancialBreakdown: React.FC<FinancialBreakdownProps> = ({
     const defaultColors = ['bg-purple-500', 'bg-blue-500', 'bg-yellow-500', 'bg-green-500', 'bg-red-500', 'bg-orange-500'];
 
     return (
-        <div className={`border-t border-borderColor pt-3 ${className}`}>
-            <h3 className="text-xl font-bold text-text mb-4 flex items-center gap-2">
+        <div className={`border-t border-borderColor pt-3 text-sm ${className}`}>
+            <h3 className="font-bold text-text mb-4 flex items-center gap-2">
                 {icon}
                 {title}
             </h3>
@@ -79,7 +79,7 @@ export const FinancialBreakdown: React.FC<FinancialBreakdownProps> = ({
                     );
                 })}
                 {(!items || items.length === 0) && (
-                    <div className={isCompact ? "col-span-full text-center text-text-muted py-8" : "text-center text-text-muted py-8"}>
+                    <div className={isCompact ?  "col-span-full text-center text-text-muted py-8" : "text-center text-text-muted py-8"}>
                         {emptyMessage}
                     </div>
                 )}

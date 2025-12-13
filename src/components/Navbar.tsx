@@ -12,7 +12,6 @@ import {
     Cog6ToothIcon,
     SwatchIcon
 } from "@heroicons/react/24/outline";
-import Button from "./Form/Button";
 import NotificationList from "./NotificationList";
 import ToggleTheme from "./ToggleTheme";
 import Logo from "./Logo";
@@ -21,7 +20,7 @@ import { useSystemStore } from "../stores/useSystem";
 import { useProfileStore } from "../stores/useProfileStore";
 
 export default function Navbar() {
-    const { setMobileMenuOpen } = useSystemStore();
+    const { setMobileMenuOpen, setHideLabelSidebar } = useSystemStore();
     const user = useAuthStore((s) => s.user);
     const logout = useAuthStore((s) => s.logout);
     const { theme, toggleTheme } = useTheme();
@@ -53,8 +52,10 @@ export default function Navbar() {
 
             <div className="flex gap-2">
                 <PathMorphing aria-label="Toggle menu" onClick={() => setMobileMenuOpen()} paths={MENU_PATHS} className="flex lg:hidden" />
+                <PathMorphing aria-label="Toggle menu" onClick={() => setHideLabelSidebar()} paths={MENU_PATHS} className="hidden lg:flex" />
                 <Logo />
             </div>
+
 
             <div className="flex items-center">
                 {/* Theme Toggle */}

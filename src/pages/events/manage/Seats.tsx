@@ -17,6 +17,8 @@ import Button from "@/components/Form/Button";
 import { Seat } from "@/types/seat";
 import { useFetchSeats } from "@/hooks/useSeats"
 import { useParams } from "react-router-dom";
+import { formatCurrency } from "@/utils";
+import Select from "@/components/Form/Select";
 
 type Sector = {
     id: string;
@@ -80,7 +82,7 @@ export default function Seats({ eventId }: { eventId: string }) {
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
                         <SquaresPlusIcon className="w-6 h-6 text-primary" />
-                        <h3 className="text-xl font-bold text-text">Assentos do Evento</h3>
+                        <h3 className="text-sm font-bold text-text">Assentos do Evento</h3>
                     </div>
                     <Button
                         onClick={() => setModalOpen(true)}
@@ -88,7 +90,7 @@ export default function Seats({ eventId }: { eventId: string }) {
                         <PlusIcon className="w-4 h-4" />
                     </Button>
                 </div>
-                <div className="flex gap-4 overflow-x-auto pb-2">
+                <div className="flex gap-2 overflow-x-auto pb-2">
                     {seats.map((seat) => {
                         const seatsSold = (seat.totalSeats || 0) - (seat.availableSeats || 0);
                         const seatsAvailable = seat.availableSeats || 0;
@@ -96,7 +98,7 @@ export default function Seats({ eventId }: { eventId: string }) {
                             <div
                                 key={seat.id}
                                 onClick={() => setSelectedSector(seat.id === selectedSector ? null : seat.id)}
-                                className={`border-2 rounded p-4 cursor-pointer transition-all min-w-[280px] flex-shrink-0 ${selectedSector === seat.id
+                                className={`border border-borderColor text-xs rounded p-2 cursor-pointer transition-all min-w-[280px] flex-shrink-0 ${selectedSector === seat.id
                                     ? 'border-primary bg-primary/10'
                                     : 'border-borderColor hover:border-primary/50'
                                     }`}>
@@ -106,7 +108,7 @@ export default function Seats({ eventId }: { eventId: string }) {
                                     ></div>
                                     <div className="font-bold text-text">{seat.name}</div>
                                 </div>
-                                <div className="space-y-2 text-sm">
+                                <div className="space-y-2">
                                     <div className="flex justify-between text-text-muted">
                                         <span>Total:</span>
                                         <span className="font-semibold text-text">{seat.totalSeats || 0}</span>
@@ -117,9 +119,9 @@ export default function Seats({ eventId }: { eventId: string }) {
                                     </div>
                                     <div className="flex justify-between text-text-muted">
                                         <span>Preço:</span>
-                                        <span className="font-semibold text-text">R$ {seat.price || 0}</span>
+                                        <span className="font-semibold text-text">{formatCurrency(seat.price || 0)}</span>
                                     </div>
-                                    <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden mt-2">
+                                    <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
                                         <div
                                             className="h-full bg-primary"
                                             style={{ width: `${seat.totalSeats ? (seatsSold / seat.totalSeats) * 100 : 0}%` }}
@@ -133,59 +135,55 @@ export default function Seats({ eventId }: { eventId: string }) {
             </div>
 
             {/* Seat Management */}
-            <div className="flex flex-col lg:flex-row 2 gap-6">
+            <div className="flex flex-col lg:flex-row 2 gap-6 text-sm">
                 {/* Left Column: Controls & Filters */}
-                <div className="space-y-6 flex-1">
-                    <div className="border-y py-4 border-borderColor rounded">
-                        <h3 className="text-lg font-bold text-text mb-4 flex items-center gap-2">
-                            <FunnelIcon className="w-4 h-4 text-primary" />
-                            Filtros
-                        </h3>
-                        <div className="space-y-3">
-                            <div>
-                                <label className="text-sm text-muted mb-2 block">Status</label>
-                                <select
-                                    value={filterStatus}
-                                    onChange={(e) => setFilterStatus(e.target.value)}
-                                    className="w-full bg-surface border border-borderColor rounded p-2 text-text">
-                                    <option value="all">Todos</option>
-                                    {/* <option value="available">Disponíveis</option> */}
-                                    {/* <option value="sold">Vendidos</option> */}
-                                    {/* <option value="reserved">Reservados</option> */}
-                                </select>
-                            </div>
-                            <div>
-                                <label className="text-sm text-muted mb-2 block">Setor</label>
-                                <select
-                                    value={selectedSector || ''}
-                                    onChange={(e) => setSelectedSector(e.target.value || null)}
-                                    className="w-full bg-surface border border-borderColor rounded p-2 text-text">
-                                    <option value="">Todos os setores</option>
-                                    {sectors.map(s => (
-                                        <option key={s.id} value={s.id}>{s.name}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
+                <div className="space-y-6 flex-1 border-y py-4 border-borderColor">
+                    <h3 className=" font-bold text-text mb-4 flex items-center gap-2">
+                        <FunnelIcon className="w-4 h-4 text-primary" />
+                        Filtros
+                    </h3>
+                    <div className="space-y-3 text-x">
+                        <Select
+                            label="Status"
+                            value={filterStatus}
+                            onChange={(e) => setFilterStatus(e.target.value)}
+                            options={[
+                                { value: 'all', label: 'Todos' },
+                                { value: 'available', label: 'Disponíveis' },
+                                { value: 'sold', label: 'Vendidos' },
+                                { value: 'reserved', label: 'Reservados' },
+                            ]}
+                        />
+
+                        <Select
+                            label="Setor"
+                            value={selectedSector || ''}
+                            onChange={(e) => setSelectedSector(e.target.value || null)}
+                            options={sectors.map(s => ({ value: s.id, label: s.name }))}
+                        />
                     </div>
 
                     <div className="border-b border-borderColor pb-4 ">
-                        <h3 className="text-lg font-bold text-text mb-4">Ações Rápidas</h3>
+                        <h3 className=" font-bold text-text mb-4">Ações Rápidas</h3>
                         <div className="space-y-2">
                             <Button
+                                size="sm"
+                                label="Adicionar Assento"
                                 variant="primary"
                                 fullWidth
                                 onClick={() => setModalOpen(true)}>
                                 <PlusIcon className="w-4 h-4" />
-                                Adicionar Assento
+
                             </Button>
                             <Button
+                                size="sm"
                                 variant="secondary"
                                 fullWidth
                                 onClick={() => setModalOpen(true)}>
                                 Importar Layout
                             </Button>
                             <Button
+                                size="sm"
                                 variant="secondary"
                                 fullWidth>
                                 Exportar Mapa
@@ -195,34 +193,32 @@ export default function Seats({ eventId }: { eventId: string }) {
                 </div>
 
                 {/* Right Column: Seat Map */}
-                <div className="">
-                    <div className="lg:border-t border-borderColor">
-                        <h3 className="text-xl font-bold text-text mb-6">Mapa de Assentos</h3>
+                <div className="lg:border-t border-borderColor  py-4">
+                    <h3 className="font-bold text-text mb-6">Mapa de Assentos</h3>
 
-                        <div className="rounded min-h-[400px]">
-                            <SeatMap
-                                initial={seats}
-                                onChange={(next: Seat[]) => setSeats(next)}
-                                eventId={eventId}
-                            />
-                            {seats.length === 0 && (
-                                <div className="flex flex-col items-center justify-center h-[400px] text-center">
-                                    <Squares2X2Icon className="w-16 h-16 text-text-muted mb-4" />
-                                    <h4 className="text-lg font-bold text-text mb-2">Nenhum assento configurado</h4>
-                                    <p className="text-text-muted text-sm max-w-md">
-                                        Comece adicionando assentos ao mapa ou importe um layout existente.
-                                    </p>
-                                    <Button
-                                        size="lg"
-                                        onClick={() => setModalOpen(true)}>
-                                        <PlusIcon className="w-4 h-4" />
-                                        Adicionar Primeiro Assento
-                                    </Button>
-                                </div>
-                            )}
-                        </div>
-
+                    <div className="rounded min-h-[400px]">
+                        <SeatMap
+                            initial={seats}
+                            onChange={(next: Seat[]) => setSeats(next)}
+                            eventId={eventId}
+                        />
+                        {seats.length === 0 && (
+                            <div className="flex flex-col items-center justify-center h-[400px] text-center">
+                                <Squares2X2Icon className="w-16 h-16 text-text-muted mb-4" />
+                                <h4 className="text-lg font-bold text-text mb-2">Nenhum assento configurado</h4>
+                                <p className="text-text-muted text-sm max-w-md">
+                                    Comece adicionando assentos ao mapa ou importe um layout existente.
+                                </p>
+                                <Button
+                                    size="lg"
+                                    onClick={() => setModalOpen(true)}>
+                                    <PlusIcon className="w-4 h-4" />
+                                    Adicionar Primeiro Assento
+                                </Button>
+                            </div>
+                        )}
                     </div>
+
                 </div>
             </div>
 

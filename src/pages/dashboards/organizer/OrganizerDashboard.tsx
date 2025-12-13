@@ -26,7 +26,7 @@ export default function OrganizerDashboard() {
         // { path: `/dashboard/${role}s/events/create`, label: "Criar Evento", icon: PlusCircleIcon },
         { path: `/marketplace`, label: "Marketplace", icon: ShoppingBagIcon },
         { path: `/dashboard/${role}s/marketplace/requests`, label: "Oportunidades", icon: BriefcaseIcon },
-        { path: `/dashboard/${role}s/chat`, label: "Mensagens", icon: ChatBubbleLeftRightIcon },
+        { path: `/dashboard/${role}s/messages`, label: "Mensagens", icon: ChatBubbleLeftRightIcon },
         { path: "/plans", label: "Planos", icon: CreditCardIcon },
         { path: "/invitations", label: "Convites", icon: EnvelopeIcon },
     ];
@@ -35,7 +35,7 @@ export default function OrganizerDashboard() {
         <>
             <Sidebar navItems={navItems} />
             {/* Main content shifts when sidebar is visible on desktop */}
-            <main className="flex-1 overflow-y-auto">
+            <main className="flex-1 overflow-y-auto ">
                 <Outlet context={{ profile: organizer, role: "organizer" }} />
             </main>
         </>

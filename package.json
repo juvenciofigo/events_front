@@ -10,6 +10,7 @@
     "dependencies": {
         "@heroicons/react": "^2.0.18",
         "@hookform/resolvers": "^3.1.1",
+        "@stomp/stompjs": "^7.2.1",
         "@tanstack/react-query": "^5.0.0",
         "ag-grid-community": "^30.2.1",
         "ag-grid-react": "^30.2.1",
@@ -22,12 +23,14 @@
         "react-dom": "^18.2.0",
         "react-hook-form": "^7.45.1",
         "react-router-dom": "^6.14.1",
+        "sockjs-client": "^1.6.1",
         "zod": "^3.23.2",
         "zustand": "^4.4.0"
     },
     "devDependencies": {
         "@types/react": "^18.2.21",
         "@types/react-dom": "^18.2.7",
+        "@types/sockjs-client": "^1.5.4",
         "@vitejs/plugin-react": "^4.0.0",
         "autoprefixer": "^10.4.14",
         "postcss": "^8.4.31",

@@ -14,7 +14,7 @@ export interface SidebarProps {
 }
 
 export default function Sidebar({ className, navItems }: SidebarProps) {
-    const { mobileMenuOpen } = useSystemStore();
+    const { mobileMenuOpen, hideLabelSidebar } = useSystemStore();
     const location = useLocation();
     const selectedProfile = useAuthStore((s) => s.selectedProfile);
 
@@ -26,9 +26,8 @@ export default function Sidebar({ className, navItems }: SidebarProps) {
     };
 
     return (
-        <aside className={`w-56 fixed lg:relative inset-y-0 left-0 top-[60px] lg:top-0 z-50 transform transition-transform duration-300 ease-in-out lg:translate-x-0  bg-surface border border-borderColor flex flex-col justify-between  ${className} ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"} `}>
+        <aside className={`fixed lg:relative ${hideLabelSidebar && !mobileMenuOpen ? "w-16" : "w-56"} inset-y-0 left-0 top-[60px] lg:top-0 z-50 transform transition-all duration-300 ease-in-out lg:translate-x-0  bg-surface border border-borderColor flex flex-col justify-between  ${className} ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"}`}>
             <nav className="flex-1 overflow-y-auto p-2 space-y-1">
-                {/* px-3 py-2 font-medium text-text-secondary hover:text-secondary hover:bg-white/5 rounded */}
                 {navItems.map((item) => (
                     <Link
                         key={item.path}
@@ -38,14 +37,14 @@ export default function Sidebar({ className, navItems }: SidebarProps) {
                             : "text-text-secondary hover:bg-white/5 hover:text-secondary"
                             }`}
                     >
-                        <item.icon className={`w-4 h-4 mr-2 ${isActive(item.path) ? "text-white " : "text-text-secondary group-hover:text-secondary"
+                        <item.icon className={` ${hideLabelSidebar && !mobileMenuOpen ? "w-6 h-6" : "w-4 h-4"} ${isActive(item.path) ? "text-white " : "text-text-secondary group-hover:text-secondary"
                             }`} />
-                        {item.label}
+                        <span className={`${hideLabelSidebar ? "hidden" : ""} ml-2 whitespace-nowrap`}>{item.label}</span>
                     </Link>
                 ))}
             </nav>
 
-            <div className="p-3 border-t text-text border-white/5">
+            {!hideLabelSidebar && !mobileMenuOpen && <div className="p-3 border-t text-text border-white/5">
                 <div className="bg-gradient-to-br from-surface-hover to-surface rounded p-3 border border-white/5">
                     <h4 className="text-xs font-bold  mb-1">Precisa de ajuda?</h4>
                     <p className="text-[10px] text-text-muted mb-2">Confira nossa documentação ou fale com o suporte.</p>
@@ -53,7 +52,7 @@ export default function Sidebar({ className, navItems }: SidebarProps) {
                         Suporte
                     </button>
                 </div>
-            </div>
+            </div>}
         </aside>
     );
 }

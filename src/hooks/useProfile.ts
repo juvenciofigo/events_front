@@ -6,6 +6,11 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useProfileStore } from "@/stores/useProfileStore";
 import { SupplierForm } from "@/pages/auth/RegisterSupplier";
 
+import { useEffect, useState, useRef } from 'react';
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
+import { Message } from "@/types/chats";
+
 export function useOrganizerRegister() {
     const qc = useQueryClient();
     return useMutation<any, Error, OrganizerForm>({
@@ -100,3 +105,95 @@ export function useGetSupplierProfile() {
         },
     });
 }
+
+
+interface PresenceStatus {
+    userId: string;
+    status: "online" | "offline";
+}
+
+export const usePresenceProfile = () => {
+    const selectedProfile = useAuthStore((state) => state.selectedProfile);
+    const [status, setStatus] = useState<"online" | "offline">("offline");
+    const clientRef = useRef<Client | null>(null);
+
+    useEffect(() => {
+        if (!selectedProfile) return;
+
+        const socket = new SockJS("http://localhost:8080/events-livechat");
+
+        const client = new Client({
+            webSocketFactory: () => socket,
+            connectHeaders: {
+                userId: selectedProfile.id, // <-- ESSENCIAL
+            },
+            debug: () => { },
+            reconnectDelay: 5000,
+            onConnect: () => {
+                console.log("WS conectado para presence:", selectedProfile.id);
+
+                // Inscreve no canal de presença deste usuário
+
+                client.subscribe(`/topic/presence/${selectedProfile.id}`, (msg) => {
+                    const data: PresenceStatus = JSON.parse(msg.body);
+                    setStatus(data.status);
+                });
+            },
+            onStompError: (frame) => {
+                console.error("Erro STOMP:", frame.headers["message"]);
+            },
+        });
+
+        client.activate();
+        clientRef.current = client;
+
+        return () => {
+            client.deactivate();
+        };
+    }, [selectedProfile]);
+
+    return { status };
+};
+
+export const usePresenceListener = (targetUserId?: string, initialStatus: string = "offline") => {
+    const [status, setStatus] = useState<string>(initialStatus);
+    const clientRef = useRef<Client | null>(null);
+
+    // Update local status if initialStatus changes (e.g. from a fresh fetch)
+    useEffect(() => {
+        setStatus(initialStatus);
+    }, [initialStatus]);
+
+    useEffect(() => {
+        if (!targetUserId) return;
+
+        const socket = new SockJS("http://localhost:8080/events-livechat");
+
+        const client = new Client({
+            webSocketFactory: () => socket,
+            // We don't necessarily need to identify *ourselves* to listen, 
+            // but usually auth is required. Assuming anonymous or same session cookie works,
+            // or if we rely on the backend allowing subscription.
+            // If explicit auth is needed, we might need to pass headers.
+            // For now, mirroring usePresenceProfile but purely for listening.
+            debug: () => { },
+            reconnectDelay: 5000,
+            onConnect: () => {
+                // Subscribe to the target user's presence topic
+                client.subscribe(`/topic/presence/${targetUserId}`, (msg) => {
+                    const data: { status: string } = JSON.parse(msg.body);
+                    setStatus(data.status);
+                });
+            }
+        });
+
+        client.activate();
+        clientRef.current = client;
+
+        return () => {
+            client.deactivate();
+        };
+    }, [targetUserId]);
+
+    return status;
+};

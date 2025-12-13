@@ -6,8 +6,8 @@ import {
 } from "@heroicons/react/24/outline";
 import Button from "@/components/Form/Button";
 
-export default function Waitlist() {
-    const waitlist = [
+export default function WaitList() {
+    const waitList = [
         { id: 1, name: "Roberto Santos", email: "roberto@email.com", phone: "(11) 98765-4321", event: "Festival de Verão", position: 1, addedAt: "26/01/2025 10:30" },
         { id: 2, name: "Juliana Costa", email: "juliana@email.com", phone: "(11) 91234-5678", event: "Festival de Verão", position: 2, addedAt: "26/01/2025 11:15" },
         { id: 3, name: "Fernando Alves", email: "fernando@email.com", phone: "(11) 99876-5432", event: "Tech Summit", position: 1, addedAt: "25/01/2025 14:20" },
@@ -16,7 +16,7 @@ export default function Waitlist() {
     ];
 
     const stats = {
-        total: waitlist.length,
+        total: waitList.length,
         byEvent: {
             "Festival de Verão": 3,
             "Tech Summit": 1,
@@ -24,11 +24,11 @@ export default function Waitlist() {
         }
     };
 
-    const groupedByEvent = waitlist.reduce((acc, person) => {
+    const groupedByEvent = waitList.reduce((acc, person) => {
         if (!acc[person.event]) acc[person.event] = [];
         acc[person.event].push(person);
         return acc;
-    }, {} as Record<string, typeof waitlist>);
+    }, {} as Record<string, typeof waitList>);
 
     return (
         <div className="min-h-screen bg-background text-text p-8">
@@ -62,7 +62,7 @@ export default function Waitlist() {
                         <div className="text-xs text-muted">Maior Fila</div>
                     </div>
                     <div className="bg-surface/50 backdrop-blur-xl border border-white/10 rounded-sm p-4">
-                        <div className="text-2xl font-black text-success">{waitlist.filter(p => p.position === 1).length}</div>
+                        <div className="text-2xl font-black text-success">{waitList.filter(p => p.position === 1).length}</div>
                         <div className="text-xs text-muted">Primeiros da Fila</div>
                     </div>
                 </div>
